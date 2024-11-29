@@ -2,38 +2,17 @@
 func main()
 var a,b,c;
 begin
-	a = true;
-	b = true;
+	a = 'abcdefghijklmnopqrstuvwxyz';
+	b = a.substr(0,10).substr(0,9).substr(0,5);
+	print(b);
+	print(b.length());
 
-	if ( true == true )
-		print('ok0');
-	endif
+	a = 'abcdefghijklmnopqrstuvwxyz';
+	b = a.replace( 'wxyz', 'AAAA');
+	print(b);
+	print(b.toUpper());
 
-	if ( (a == b) || (a!=a) && (a!=a) )
-		print('ok1');
-	endif	
-	if ( ((a == b) || (a!=a)) && (a==a) )
-		print('ok2');
-	endif	
-
-//	if ( a == b || a!=a )
-//	if ( (a == b || a!=a) )
-//	if ( a == b || a!=a && a!=a )
-//	if ( (a == b || a!=a) && a!=a )
-//	if ( a == b || (a!=a && a!=a) )
-//	if ( (a == b || a!=a) && (a!=a) )
-//		print('ok');
-//	endif	
-	return 1;
-
-	
 
 end
 
 
-func f1()
-var a,b,c;
-begin
-	return 1;	
-
-end

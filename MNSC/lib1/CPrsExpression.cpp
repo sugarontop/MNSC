@@ -2,7 +2,6 @@
 #include "CPrsNode.h"
 #include "FVariantArray.h"
 
-extern wstring gAssign;
 
 class SMethod
 {
@@ -182,10 +181,9 @@ public:
 	std::shared_ptr<CPrsFactor> factor;
 	int			token;
 };
-/// <summary>
-/// //////////////////////////////////////////////////////////////////////////////////
-/// </summary>
-/// <param name="sym"></param>
+
+/////////////////////////////////////////////////////////////////////////////////////
+
 CPrsTerm::CPrsTerm(CPrsSymbol& sym) :CPrsNode(sym)
 {
 
@@ -321,17 +319,6 @@ void CPrsFactor::Parse()
 
 	SToken	st = getSymbol();
 
-#ifdef _DEBUG	
-	if (gAssign == L"c")
-	{
-		int a = 0;
-	}
-	if (gAssign == L"d")
-	{
-		int a = 0;
-	}
-#endif
-
 	m_Token = st.Token;
 
 	auto& localtbl = m_Symbol.getSymbolTable();
@@ -464,39 +451,28 @@ void CPrsFactor::Parse()
 
 	if (st2.Token == rParen)
 	{
-		st2 = m_Symbol.getNewPeekSymbol();
-		/*if (st2.Token == Dot)
-		{
-			getNewSymbol();
-			m_dot_next = std::make_shared<CPrsVarFunction>(m_Symbol);
-			m_dot_next->Parse();
-			
-			return;
-		}*/
-
+		st2 = m_Symbol.getNewPeekSymbol();		
 	}
 	else if (st2.Token == Dot)
 	{
-		
-		// .‚Í‚Q‚Â‚Ü‚Å
+		int i = 0;
+		CPrsVarFunction* nnext = nullptr;
+		while(st2.Token == Dot)
 		{
 			getNewSymbol();
 			auto next = std::make_shared<CPrsVarFunction>(m_Symbol);
 			next->Parse();
-			m_dot_next = next;
 
+			if (i == 0)
+				m_dot_next = next;
+			else if (i > 0)
+				nnext->next_ = next;
+			
 			st2 = getSymbol();
 
-			if (st2.Token == Dot)
-			{
-				getNewSymbol();
-				auto next2 = std::make_shared<CPrsVarFunction>(m_Symbol);
-				next2->Parse();
-				next->next_ = next2;
-			}
-
-		}
-		return;
+			nnext = static_cast<CPrsVarFunction*>(next.get());
+			i++;
+		}		
 	}
 	else if (st2.Token == lSquare && flg == 1)
 	{		
@@ -516,13 +492,9 @@ void CPrsFactor::Parse()
 			st2 = getSymbol();
 
 			nnext = static_cast<CPrsIdentArray*>(next.get());
-			i++;
-			
+			i++;			
 		}
-
 	}
-
-	
 }
 void CPrsFactor::ParseVarPoint(SToken& st)
 {
