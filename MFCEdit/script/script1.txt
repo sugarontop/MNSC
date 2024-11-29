@@ -41,11 +41,6 @@ begin
 	endwhile
 	print(c);
 
-	//a = _app.test('donald', ' trump');
-	//b =_app.tool();
-	//c = b.inetGet('xxxxx');
-	
-	
-	
+
 
 end
