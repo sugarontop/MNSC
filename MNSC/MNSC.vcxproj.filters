@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\lib1">
+      <UniqueIdentifier>{008bbf92-dd82-458d-9942-c755fce30f0e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="mnsc.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\FSscriptEasy.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsSymbol.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsProgram.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\FVariant.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsDeclare.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CSymbolTable.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsPrint.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsExpression.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsParameters.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsAssign.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsFunction.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\FVariantArray.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsVarFunction.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\FVariantFunction.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsReturn.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsCondition.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsIf.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsFor.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsBreak.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsWhile.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsDo.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsIdentArray.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+    <ClCompile Include="lib1\CPrsBuiltinFunction.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="mnsc.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lib1\CPrsSymbol.h">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClInclude>
+    <ClInclude Include="lib1\CPrsNode.h">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClInclude>
+    <ClInclude Include="lib1\FVariant.h">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClInclude>
+    <ClInclude Include="lib1\CSymbolTable.h">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClInclude>
+    <ClInclude Include="lib1\FVariantArray.h">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClInclude>
+    <ClInclude Include="lib1\FVariantFunction.h">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MNSC.rc">
+      <Filter>リソース ファイル</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

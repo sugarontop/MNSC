@@ -1,0 +1,51 @@
+
+func main( pm1 )
+var a,b,c;
+begin
+	print(pm1);
+
+	a = 1;
+	b = 10;
+	c = 100;
+
+	if ( a == 1 )
+		print('ok');
+	endif
+
+	if ( a == 1 && (b!=1 || c !=1) )
+		print('ok');
+	endif
+
+	c = 0;
+	a = range(10);
+	for b in a
+		c += b;
+	next
+	print(c);
+
+	c=0;
+	for(b=0; b<10; b++)
+		c += b;
+	next
+	print(c);
+
+	c = 0;
+	b = 0;
+	while(true)
+		c += b;
+		if (b==9)
+			break;
+		endif
+
+		b++;
+	endwhile
+	print(c);
+
+	//a = _app.test('donald', ' trump');
+	//b =_app.tool();
+	//c = b.inetGet('xxxxx');
+	
+	
+	
+
+end

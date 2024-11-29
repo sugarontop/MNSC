@@ -1,0 +1,29 @@
+
+func main()
+var a,b,c;
+begin
+
+	if ( true )
+		print('ok');
+	endif
+
+
+end
+func main2()
+var a,b,c;
+begin
+	
+	a = true;
+	b = true;
+	if (  (a == b || a!=a) && a!=a )
+		print(a);
+	endif
+	
+	a = 8;
+	if ( a < 10 && a /2 < 10)
+		print('ok');
+	endif
+end
+
+
+

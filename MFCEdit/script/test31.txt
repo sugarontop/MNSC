@@ -1,0 +1,39 @@
+
+func main()
+var a,b,c;
+begin
+	a = true;
+	b = true;
+
+	if ( true == true )
+		print('ok0');
+	endif
+
+	if ( (a == b) || (a!=a) && (a!=a) )
+		print('ok1');
+	endif	
+	if ( ((a == b) || (a!=a)) && (a==a) )
+		print('ok2');
+	endif	
+
+//	if ( a == b || a!=a )
+//	if ( (a == b || a!=a) )
+//	if ( a == b || a!=a && a!=a )
+//	if ( (a == b || a!=a) && a!=a )
+//	if ( a == b || (a!=a && a!=a) )
+//	if ( (a == b || a!=a) && (a!=a) )
+//		print('ok');
+//	endif	
+	return 1;
+
+	
+
+end
+
+
+func f1()
+var a,b,c;
+begin
+	return 1;	
+
+end

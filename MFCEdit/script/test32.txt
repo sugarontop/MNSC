@@ -1,0 +1,34 @@
+
+func main()
+var a,b,c,d,e,str,ar;
+begin
+	
+	a = { 'hoi': 'json', 'addr': [12,2,3,{'hoi': 222111}]};
+	a['post'] = '232';
+
+	ar = [1,2, a ];
+		
+
+	d = ar[2]['addr'][3]['hoi'];
+	print(d);
+	//str =  json_stringify(ar);
+	
+
+	ar =  json_parse("[1,2,[0,1]]");
+
+	a = "{ 'hoi': '100', 'real' : [10,2,3] }";
+
+	b = a.replace( "'" , '"' );
+	print(b);
+
+	ar = json_parse(b);
+
+	
+	d = ar['real'];
+	
+	print( ar['real'][2] );
+
+
+	//print(str);
+end
+

@@ -1,0 +1,53 @@
+func main()
+var a,b;
+begin
+	a = f1;
+	b = a('a');
+	print(b);
+	
+	a = a1();
+	print(a);
+	b = addr1();
+	print(b['addr']);
+	
+
+	return 'success';
+end
+
+
+
+func f1(x)
+begin
+	return 'test' + x  ;
+end
+
+
+func a1()
+var a,b,c;
+begin
+
+	a = _ap.status('success');
+
+	if ( a == "a" )
+		return "a";
+	elsif ( a == "success" )
+		return "SUCCESS";
+	elsif ( a == "ng" )
+		return "ng";
+	endif
+
+	return a;
+
+end
+
+func addr1()
+var a,b,c;
+begin
+	a = {};
+	a['addr'] = 'yokohama';
+	a['post'] = '232';
+	a['tel'] = '09099999999';
+	return a;
+
+end
+

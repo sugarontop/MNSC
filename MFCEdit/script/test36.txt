@@ -1,0 +1,25 @@
+
+func main()
+var a,b,c;
+begin
+	c = 0;
+	a = '[{"a1":{"b1": [1,2,3], "c1": 100 }}]';
+
+	b = json_parse(a);
+	if ( 1==  b[0]["a1"]["b1"][0])
+		c++;
+	endif
+	if ( 2==  b[0]["a1"]["b1"][1])
+		c++;
+	endif
+	if ( 100==  b[0]["a1"]["c1"])
+		c++;
+	endif
+
+	if ( c == 3 )
+		c++;
+	endif
+
+	print(c);
+end
+

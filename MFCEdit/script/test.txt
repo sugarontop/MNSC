@@ -1,0 +1,39 @@
+func main()
+var k,a,b,c,d,res;
+begin
+	tes_json();
+end
+
+
+func tes_json()
+var k,a,b,c,d,res,key,i;
+begin
+	//a = '{"id1":100, "topi1cs1":{}}';
+	//a = '{"id1":[[[]]], "a":[[]]}';
+	//a = '[[]]';
+	//a = '[1,2,[],3,[10],{}]';
+	//a = '[{}]';
+
+	a = '{ "a": {}, "b":[1,2,3],"c": {} }';
+	
+	// string a->object b
+	b = json_parse(a);
+	c = b.keys();
+	
+	for key in c
+		print(key);
+	next
+	
+	// object b->string c
+	c = json_stringify(b); 
+	print(c);
+	
+	res = b["b"];
+	
+	for i in res
+		print(i);
+	next
+	
+
+
+end

@@ -1,0 +1,23 @@
+func test()
+var a,key;
+begin
+	a = {};
+	a['name'] = 'furuya';
+	a['addr'] = 'yokohama';
+	a['post' ]  ='2320088';
+	key  = 'num';
+	a[key] = 2000;
+	return a;
+end
+
+func main()
+var a,b,c;
+begin
+	b = _ap.tool();
+	a = test();
+	b = a['post'];
+	print(b);
+	print(a['post'] + a['addr']);
+	print(a['num'] / 2);	
+
+end
