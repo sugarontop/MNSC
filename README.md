@@ -1,9 +1,11 @@
 # MNSC
-### ƒ~ƒjƒXƒNƒŠƒvƒg
+### ãƒŸãƒ‹ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 
-ƒŒƒWƒXƒgƒŠ•s—v‚ÅDLL‚ÌƒRƒs[‚Ì‚Ý‚Å“®ì‚·‚éB
-ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Å”­¶‚·‚éƒCƒxƒ“ƒg‚ðˆ—‚·‚é‚Ì‚ª–Ú“IB
-EXE‘¤‚Åobject‚ð’è‹`ì¬‚µAƒXƒNƒŠƒvƒg‘¤‚Å‘€ì‚Å‚«‚éB
-IDispatch‚ðŽg—p‚µ‚È‚¢AŠÈˆÕ‚ÈInvoke‹@\‚ðŽg—p‚·‚éB
-‰ºŒü‚«\•¶‰ðÍ‚ÅƒcƒŠ[‚ðˆÛŽ‚µ‚½‚Ü‚ÜŽÀs‚·‚éƒ^ƒCƒvB
-C++ 20B
+ãƒ¬ã‚¸ã‚¹ãƒˆãƒªä¸è¦ã§DLLã®ã‚³ãƒ”ãƒ¼ã®ã¿ã§å‹•ä½œã™ã‚‹ã€‚  
+ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã§ç™ºç”Ÿã™ã‚‹ã‚¤ãƒ™ãƒ³ãƒˆã‚’å‡¦ç†ã™ã‚‹ã®ãŒç›®çš„ã€‚  
+EXEå´ã§objectã‚’å®šç¾©ä½œæˆã—ã€ã‚¹ã‚¯ãƒªãƒ—ãƒˆå´ã§æ“ä½œã§ãã‚‹ã€‚  
+IDispatchã‚’ä½¿ç”¨ã—ãªã„ã€ç°¡æ˜“ãªInvokeæ©Ÿæ§‹ã‚’ä½¿ç”¨ã™ã‚‹ã€‚  
+ä¸‹å‘ãæ§‹æ–‡è§£æžã§ãƒ„ãƒªãƒ¼ã‚’ç¶­æŒã—ãŸã¾ã¾å®Ÿè¡Œã™ã‚‹ã‚¿ã‚¤ãƒ—ã€‚  
+C++ 20ã€‚  
+/MSSC, script dll  
+/MFCEdit, simple script editor  
