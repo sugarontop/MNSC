@@ -341,7 +341,7 @@ class CVARIANTTool : public IVARIANTAbstract
 			return ret;
 		}
 	public:
-		HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) {
+		virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) override {
 			if (riid == IID_IUnknown) {
 				*ppv = static_cast<IUnknown*>(this);
 			}
@@ -352,7 +352,7 @@ class CVARIANTTool : public IVARIANTAbstract
 			AddRef();
 			return S_OK;
 		}
-		VARIANT Invoke(std::wstring funcnm, VARIANT* prm, int vcnt)
+		virtual VARIANT Invoke(std::wstring funcnm, VARIANT* prm, int vcnt) override
 		{
 			if (vcnt == 1 && funcnm == L"inetGet")
 			{				
@@ -419,7 +419,7 @@ public :
 	}
 
 public :
-	HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) {
+	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) override {
 		if (riid == IID_IUnknown) {
 			*ppv = static_cast<IUnknown*>(this);
 		}
@@ -430,7 +430,7 @@ public :
 		AddRef();
 		return S_OK;
 	}
-	VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt)
+	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt) override
 	{		
 		if ( vcnt == 2 && funcnm == L"test")
 		{

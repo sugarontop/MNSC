@@ -1,19 +1,27 @@
 
 func main()
-var a,b,c,a1,b1,map;
+var a,b,c,a1,b1,map,s,head;
 begin
 	
 	b =_ap.tool();
 	b1 = "https://api.github.com/repos/octocat/Hello-World";
-	//b1 = "https://restcountries.com/v3.1/all";
 	c = b.inetGet(b1);
-	//c = b.inetGet("https://openlibrary.org/api/books?bibkeys=ISBN:9780140328721&format=json&jscmd=data");
+
+	head = c.keys();
+	
+	//for s in head
+	//	print(s);
+	//next
+	
+	print("length:" + c["Content-Length"]);
+	print("type:" + c["Content-Type"]);
 
 	a = c["json"];
 
 	print(a);
 
 	map = json_parse(a);
-
+	print(map["id"]);
+	print(map["node_id"]);
 end
 
