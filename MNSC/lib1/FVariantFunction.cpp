@@ -68,16 +68,27 @@ static VARIANT substr(const VARIANT target, const VARIANT spos, const VARIANT le
 		UINT ispos = (UINT)spos.llVal;
 		UINT iepos = min(::SysStringLen(s), ((UINT)len.llVal + ispos));
 
-		auto len = iepos-ispos;
+		if ( ispos < iepos )
+		{
+			auto len = iepos-ispos;
 
-		std::vector<WCHAR> cb(len+1);
-		memcpy( &cb[0], s+ispos, sizeof(WCHAR)*len);
-		cb[len]=0;
+			std::vector<WCHAR> cb(len+1);
+			memcpy( &cb[0], s+ispos, sizeof(WCHAR)*len);
+			cb[len]=0;
 					
-		FVariant ret;
-		ret.setBSTR(&cb[0]);
+			FVariant ret;
+			ret.setBSTR(&cb[0]);
 
-		return ret.ToVARIANT();		
+			return ret.ToVARIANT();		
+		}
+		else if (ispos == iepos )
+		{
+			FVariant ret;
+			ret.setS(L"");
+			return ret.ToVARIANT();
+		}
+		else
+			THROW(L"substr err");
 	}
 	return FVariant(L"").ToVARIANT();
 }

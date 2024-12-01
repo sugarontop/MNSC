@@ -1,33 +1,11 @@
- 
-func json_test()
-var a,b,c,map;
-begin
-	b =_ap.tool();
-	a = "https://api.github.com/repos/octocat/Hello-World";
-	c = b.inetGet(a);
-	a = c["json"];
 
-	print(a);
-
-	// json->array,map 
-	map = json_parse(a);	
-	print(map["html_url"]);
-	print(map["owner"]["id"]);
-
-
-	// array,map->json
-	c = json_stringify(map);
-	print(c);
-
-	
-end
 
 func main( pm1 )
 var a,b,c;
 begin
 	print(pm1);
-//	test1();
-	json_test();
+
+	test1();
 end
 
 
@@ -72,11 +50,5 @@ begin
 	endwhile
 	print(c);
 
-	//a = _app.test('donald', ' trump');
-	//b =_app.tool();
-	//c = b.inetGet('xxxxx');
-	
-	
-	
 
 end

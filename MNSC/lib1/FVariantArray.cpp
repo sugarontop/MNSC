@@ -27,9 +27,13 @@ bool IVARIANTArrayImp::Get(int idx, VARIANT* dst)
 {
 	::VariantClear(dst);
 
-	if (S_OK != ::VariantCopy(dst, &ar[idx]))		
-		THROW(L"VariantCopy err 2");
-
+	if (idx < (int)ar.size())
+	{
+		if (S_OK != ::VariantCopy(dst, &ar[idx]))		
+			THROW(L"VariantCopy err 2");
+	}
+	else
+		THROW(L"array size err");
 	return true;
 }
 void IVARIANTArrayImp::Clear()
@@ -48,6 +52,8 @@ void IVARIANTArrayImp::Set(int idx, VARIANT& v)
 		if ( S_OK != ::VariantCopy(&ar[idx], &v))
 			THROW(L"VariantCopy err 3");
 	}
+	else
+		THROW(L"array size err");
 }
 HRESULT __stdcall IVARIANTArrayImp::QueryInterface(REFIID riid, void** ppv) { IUNKNOWN_ITERFACE;}
 HRESULT __stdcall IVARIANTMapImp::QueryInterface(REFIID riid, void** ppv) { IUNKNOWN_ITERFACE;}
