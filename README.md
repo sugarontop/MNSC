@@ -23,3 +23,23 @@ begin
  &emsp;   print(c);  
 &emsp;   return "ok";  
 end  
+
+////////////////////////////////////////////////////////////////////  
+// sample2, application side  
+class IVARIANTAbstract : public IUnknown  
+class CVARIANTTool : public IVARIANTAbstract  
+{  
+&emsp; virtual VARIANT Invoke(std::wstring funcnm, VARIANT* prm, int prmcnt) override   
+&emsp; {  
+&emsp;&emsp; if (funcnm == L"sampleFunc")  
+&emsp;&emsp;&emsp;  	return sampleFunc(prm, prmcnt);  
+&emsp;}  
+};  
+// sample2, script side  
+func main()    
+var a,b,tool;    
+begin  
+&emsp;tool = _ap.tool();  
+&emsp;tool.sampleFunc("abcde");  
+&emsp;...  
+end  
