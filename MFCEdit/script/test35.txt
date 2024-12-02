@@ -7,21 +7,27 @@ begin
 	b1 = "https://api.github.com/repos/octocat/Hello-World";
 	c = b.inetGet(b1);
 
-	head = c.keys();
+	if ( c["result"] == 200)	
+		head = c.keys();
 	
-	//for s in head
-	//	print(s);
-	//next
+		for s in head
+			print(s);
+		next
+
 	
-	print("length:" + c["Content-Length"]);
-	print("type:" + c["Content-Type"]);
+	
+		print("★length:" + c["Content-Length"]);
+		print("★type:" + c["Content-Type"]);
 
-	a = c["json"];
+		a = c["json"];
 
-	print(a);
+		print(a);
 
-	map = json_parse(a);
-	print(map["id"]);
-	print(map["node_id"]);
+		map = json_parse(a);
+		print(map["id"]);
+		print(map["node_id"]);
+	endif
+
+
 end
 

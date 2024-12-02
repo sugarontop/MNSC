@@ -16,8 +16,8 @@ begin
 		c++;
 	endif
 
-	if ( c == 3 )
-		c++;
+	if ( c == 3  )
+		print("ok");
 	endif
 
 	print(c);
