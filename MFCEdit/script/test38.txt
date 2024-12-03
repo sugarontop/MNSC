@@ -1,0 +1,26 @@
+
+func main()
+var a,b,c,d,ar;
+begin
+	
+
+	ar = [7,8,{"key": "value100"}];
+
+	a = '[1,2,{"ho":10, "lola":[3,4,5]}]';
+	
+
+	b = json_parse(a);
+
+	c = b.add(ar);
+
+	c = json_stringify(b);
+	
+	print(c);
+
+	c = _ap.tool();	
+	d = c.value(b, '3,2,"key"');
+	
+
+	print(d);
+end
+

@@ -269,7 +269,7 @@ void CMFCEditView::SetFont(int type)
 		GetDlgItem(i)->SetFont(&cfn);
 }
 
-
+#include <queue>
 class CVARIANTTool : public IVARIANTAbstract
 {
 	public :
@@ -340,6 +340,103 @@ class CVARIANTTool : public IVARIANTAbstract
 
 			return ret;
 		}
+
+		VARIANT Value(const VARIANT obj, const VARIANT query)
+		{
+			if (obj.vt != VT_UNKNOWN || query.vt != VT_BSTR)
+				THROW(L"Query err");
+
+			LPCWSTR p = query.bstrVal;
+
+			struct st
+			{
+				st(int a) :typ(a), keyN(0) {}
+				int typ;
+				std::wstring keyS;
+				UINT keyN;
+
+			};
+
+			std::queue< std::shared_ptr<st>> qu;
+			while (*p)
+			{
+				while (*p <= ' ') p++;
+
+				if (*p == '"')
+				{
+					auto x = std::make_shared<st>(2);
+					qu.push(x);
+
+					p++;
+					std::wstringstream sm;
+					while (*p != '"')
+					{
+						sm << *p;
+						p++;
+					}
+					x->keyS = sm.str();
+				}
+				else if ('0' <= *p && *p <= '9')
+				{
+					auto x = std::make_shared<st>(1);
+					qu.push(x);
+
+					std::wstringstream sm;
+					while ('0' <= *p && *p <= '9')
+					{
+						sm << *p++;
+					}
+					int idx = _wtoi(sm.str().c_str());
+					x->keyN = idx;
+					p--;
+				}
+
+				p++;
+			}
+
+			IUnknown* target = obj.punkVal;
+			_variant_t ret;
+			while (1)
+			{
+				_variant_t v;
+
+				auto st = qu.front();
+				if (st->typ == 1)
+				{
+					auto ar = dynamic_cast<IVARIANTArray*>(target);
+					if (ar == nullptr)
+						goto err;
+
+					auto idx = st->keyN;
+
+					if (idx < ar->Count())
+						ar->Get(idx, &v);
+					else
+						goto err;
+				}
+				else if (st->typ == 2)
+				{
+					auto map = dynamic_cast<IVARIANTMap*>(target);
+					if (map == nullptr)
+						goto err;
+
+					if (!map->GetItem(st->keyS, &v))
+						goto err;
+				}
+
+				qu.pop();
+
+				if (v.vt != VT_UNKNOWN || qu.empty())
+				{
+					ret = v;
+					break;
+				}
+
+				target = v.punkVal;
+			}
+		err:
+			return ret.Detach();
+		}
 	public:
 		virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) override {
 			if (riid == IID_IUnknown) {
@@ -360,8 +457,11 @@ class CVARIANTTool : public IVARIANTAbstract
 
 				return inetGet(url);
 			}
-			else
-				THROW(L"Tool err");
+			else if (vcnt == 2 && funcnm == L"value")
+			{
+				return Value(prm[0],prm[1]);
+			}
+			
 
 		}
 		

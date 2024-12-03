@@ -30,7 +30,8 @@ public:
 	~IVARIANTMapImp() { Clear(); }
 
 public:
-	std::map<std::wstring, FVariant> map;
+	//std::map<std::wstring, FVariant> map;
+	std::unordered_map<std::wstring, FVariant> map;
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv);
 	virtual int TypeId() { return FVariantType::MAP; }
