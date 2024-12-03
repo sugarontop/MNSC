@@ -22,7 +22,6 @@ CPrsVarFunction::~CPrsVarFunction()
 {
 	Flush();
 
-	//::VariantClear(&Return_);
 }
 void CPrsVarFunction::Parse()
 {
@@ -119,8 +118,6 @@ void CPrsVarFunction::Flush()
 	m_parameter = nullptr;
 	m_expression = nullptr;
 
-	//::VariantClear(&Return_);
-	
 }
 void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 {	
@@ -162,7 +159,8 @@ void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 	{
 		// Ident function
 
-		
+		_ASSERT(m_value.vt != VT_EMPTY);
+
 		bool bUpdate = false;
 		::VariantInit(&v[0]);
 		v[0] = m_value.ToVARIANT();

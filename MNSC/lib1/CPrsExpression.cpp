@@ -95,11 +95,10 @@ void CPrsExpression::Generate(stackGntInfo& stinfo)
 
 	if ( m_bMinus )
 	{
-		if (m_Value.VT() == VT_I8)
+		auto vt = m_Value.vt;
+		if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || vt == VT_INT)
 			m_Value.setN(-m_Value.getN());
-		else if (m_Value.VT() == VT_R8)
-			m_Value.setD(-m_Value.getD());
-		else if (m_Value.VT() == VT_BSTR)
+		else if (vt == VT_R8 || vt == VT_R4)
 			m_Value.setD(-m_Value.getD());
 	}
 
@@ -367,6 +366,19 @@ void CPrsFactor::Parse()
 				m_dot_next->Parse();
 				return;
 			}
+		}
+		break;
+
+		case Dot:
+		{
+			auto pre = this->m_Symbol.getPreSymbol();
+			m_IdentName = pre.Value;
+
+			getNewSymbol();
+			m_node = std::make_shared<CPrsVarFunction>(m_Symbol);
+			m_node->Parse();
+
+			
 		}
 		break;
 		case Quotation:
@@ -829,6 +841,34 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 
 				m_Value = dynamic_cast<CPrsExpression*>(m_node.get())->getValue();
 			}
+		break;
+		case Dot:
+		{
+			if (m_node)
+			{
+				FVariant var;
+				if (0 != symtbl.getAt(m_IdentName, var))
+				{
+					if (0 != symtblG.getAt(m_IdentName, var))
+					{
+						wstring err = L"not def Idnet in Generate: ";
+						err += m_IdentName;
+						throw(err);
+					}
+				}
+
+
+
+
+
+				auto func = static_cast<CPrsVarFunction*>(m_node.get());
+
+				func->setgetValue(var);
+
+				func->Generate(stinfo);
+
+			}
+		}
 		break;
 		case IdentFunc:
 		{

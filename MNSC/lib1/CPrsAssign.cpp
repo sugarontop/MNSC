@@ -59,6 +59,12 @@ gAssign = m_AssignName;
 				m_expression->Parse();
 				bPlusplus = true;
 			}
+			else if (st.Token == Dot)
+			{
+				//st = getNewSymbol();
+				m_expression = std::make_shared<CPrsExpression>(m_Symbol);
+				m_expression->Parse();
+			}
 			
 		}
 
@@ -132,16 +138,19 @@ void CPrsAssign::HGenerate(stackGntInfo& stinfo)
 
 		FVariant var = m_expression->getValue();
 
-		CSymbolTable& symtbl = m_Symbol.getSymbolTable();
-		if (0 != symtbl.updateAt(m_AssignName, var))
+		if ( var.vt != VT_EMPTY)
 		{
-			CSymbolTable& symtblG = m_Symbol.getGlobalSymbolTable();
-
-			if (0 != symtblG.updateAt(m_AssignName, var))
+			CSymbolTable& symtbl = m_Symbol.getSymbolTable();
+			if (0 != symtbl.updateAt(m_AssignName, var))
 			{
-				wstring er;
-				er = L"not find symtable " + m_AssignName;
-				throw(er);
+				CSymbolTable& symtblG = m_Symbol.getGlobalSymbolTable();
+
+				if (0 != symtblG.updateAt(m_AssignName, var))
+				{
+					wstring er;
+					er = L"not find symtable " + m_AssignName;
+					throw(er);
+				}
 			}
 		}
 	}

@@ -11,7 +11,7 @@ begin
 
 	b = json_parse(a);
 
-	c = b.add(ar);
+	b.add(ar);
 
 	c = json_stringify(b);
 	

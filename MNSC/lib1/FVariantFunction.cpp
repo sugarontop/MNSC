@@ -192,7 +192,22 @@ static VARIANT strReplace(const VARIANT target, const VARIANT oldstr, const VARI
 
 	return target;
 }
+static VARIANT addItem(const VARIANT target, const VARIANT val, const VARIANT , const VARIANT)
+{
+	FVariant ret;
+	if (target.vt == VT_UNKNOWN)
+	{
+		IVARIANTArray* p = dynamic_cast<IVARIANTArray*>(target.punkVal);
+		if (p)
+		{
+			p->Add( (VARIANT&)val);
+		}
 
+	}
+	return target;
+
+
+}
 
 #pragma endregion
 
@@ -208,4 +223,5 @@ void VarFunctionInit(std::map<wstring, VARIANTFUNC>& map)
 	map[L"split"] = Split;
 	map[L"[]"] = getSquare;
 	map[L"replace"] = strReplace;
+	map[L"add"] = addItem;
 }
