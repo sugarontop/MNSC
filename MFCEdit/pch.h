@@ -14,4 +14,5 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <initguid.h>
 #endif //PCH_H

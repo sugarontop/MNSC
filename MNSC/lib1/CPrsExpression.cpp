@@ -1043,8 +1043,8 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 			{
 				BSTR s = var.bstrVal;
 				ULONG len = ::SysStringLen(s);
-
-				if ( idx.llVal < len )
+				
+				if ( idx.getN() < len && (idx.vt== VT_I8|| idx.vt == VT_I4))
 				{
 					WCHAR cb[2]={};
 					cb[0] = s[idx.llVal];

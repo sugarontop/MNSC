@@ -14,7 +14,7 @@
 #include <memory>
 #include <functional>
 #include <random>
-
+#include <initguid.h>
 
 #define THROW(s)	throw(std::wstring(s))
 typedef std::wstring wstring;

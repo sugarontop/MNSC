@@ -16,6 +16,7 @@
 #include "mnsc.h"
 #include <codecvt>
 #include <regex>
+#include <queue>
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -269,7 +270,7 @@ void CMFCEditView::SetFont(int type)
 		GetDlgItem(i)->SetFont(&cfn);
 }
 
-#include <queue>
+
 class CVARIANTTool : public IVARIANTAbstract
 {
 	public :
@@ -437,6 +438,36 @@ class CVARIANTTool : public IVARIANTAbstract
 		err:
 			return ret.Detach();
 		}
+
+		VARIANT OpenTextFile(const VARIANT filename)
+		{
+			_variant_t ret;
+			CFile cf;
+			if (filename.vt == VT_BSTR && cf.Open(filename.bstrVal, CStdioFile::modeRead))
+			{
+				char cb[256]={};
+				std::stringstream sm;
+				while( cf.Read(cb, 255))
+				{					
+					sm << cb;
+					memset(cb, 0, 256);
+				}
+				cf.Close();
+
+				auto cstr = sm.str();
+				int len = ::MultiByteToWideChar(CP_UTF8,0,cstr.c_str(),-1,NULL,NULL);
+				std::vector<WCHAR> ar(len+1);
+				::MultiByteToWideChar(CP_UTF8, 0, cstr.c_str(), -1,&ar[0], len);
+
+				BSTR cstr2 = ::SysAllocString(&ar[0]);
+
+				ret.vt = VT_BSTR;
+				ret.bstrVal= cstr2;
+			}
+
+			return ret;
+		}
+
 	public:
 		virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) override {
 			if (riid == IID_IUnknown) {
@@ -461,7 +492,13 @@ class CVARIANTTool : public IVARIANTAbstract
 			{
 				return Value(prm[0],prm[1]);
 			}
-			
+			else if (vcnt == 1 && funcnm == L"read_file_utf8")
+			{
+				return OpenTextFile(prm[0]);
+			}
+
+			_variant_t ret;
+			return ret;
 
 		}
 		

@@ -2,9 +2,13 @@
 func main()
 var a,b,c;
 begin
-	a = [1,2,3];
-	a.add(10);
-	print(a[2]);
+	b = _ap.tool();
+	a = b.read_file_utf8("C:\\inetpub\\wwwroot\\test.json");
+
+	b = json_parse(a);
 	
+	c = b["url"];
+
+	print( c );
 end
 
