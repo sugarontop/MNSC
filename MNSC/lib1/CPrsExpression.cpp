@@ -436,6 +436,7 @@ void CPrsFactor::Parse()
 		{			
 			m_Token = IdentVarFunc;
 			ParseVarFunction(st);
+			flg = 2;
 		}
 		else if (st.Token == lSquare)
 		{
@@ -503,8 +504,35 @@ void CPrsFactor::Parse()
 
 			st2 = getSymbol();
 
+			if ( st2.Token == Semicol )
+				break;
+
 			nnext = static_cast<CPrsIdentArray*>(next.get());
 			i++;			
+		}
+	}
+	else if (st2.Token == lSquare && flg == 2)
+	{
+		auto& target = this->m_dot_next;
+		int i = 0;
+		CPrsIdentArray* nnext = nullptr;
+		while (st2.Token == lSquare)
+		{
+			auto next = factory(nullptr, IdentArray);
+			next->Parse();
+
+			if (i == 0)
+				m_dot_next = next;
+			else if (i > 0)
+				nnext->next_ = next;
+
+			st2 = getSymbol();
+
+			if (st2.Token == Semicol)
+				break;
+
+			nnext = static_cast<CPrsIdentArray*>(next.get());
+			i++;
 		}
 	}
 }
@@ -1072,15 +1100,17 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 			pf->setgetValue(m_Value);
 			pf->Generate(stinfo);
 			m_Value = pf->Return();
+			return;
 		}
-		else
+
+		CPrsIdentArray* pf2 = dynamic_cast<CPrsIdentArray*>(m_dot_next.get());
+		if (pf2)
 		{
-			CPrsIdentArray* pf2 = dynamic_cast<CPrsIdentArray*>(m_dot_next.get());
 			pf2->setgetValue(m_Value);
 			pf2->Generate(stinfo);
 			m_Value = pf2->Value();
+			return;
 		}
-
 	}
 }
 

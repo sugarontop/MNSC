@@ -64,3 +64,32 @@ DLLEXPORT VARIANT MNSCCreateArray()
 	ret.vt = VT_UNKNOWN;
 	return ret;
 }
+
+
+
+DLLEXPORT bool MNSCReadUtf8(LPCWSTR fnm, BSTR* ret)
+{
+	FILE* cf=nullptr;
+	if ( 0 ==_wfopen_s(&cf, fnm, L"rb") && cf!=0)
+	{
+		char cb[256] = {};
+		std::stringstream sm;
+		
+		while(fread_s(cb, sizeof(cb),1, sizeof(cb), cf))
+		{
+			sm << cb;
+			memset(cb, 0, sizeof(cb));
+		}
+		fclose(cf);
+		
+
+		auto cstr = sm.str();
+		int len = ::MultiByteToWideChar(CP_UTF8, 0, cstr.c_str(), -1, NULL, NULL);
+		std::vector<WCHAR> ar(len + 1);
+		::MultiByteToWideChar(CP_UTF8, 0, cstr.c_str(), -1, &ar[0], len);
+
+		*ret = ::SysAllocString(&ar[0]);
+		return true;
+	}
+	return false;
+}

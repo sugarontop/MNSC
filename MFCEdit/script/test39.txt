@@ -1,14 +1,17 @@
 
+func test1()
+var a;
+begin
+	return [1,2,3,4];
+end
+
+
 func main()
 var a,b,c;
 begin
-	b = _ap.tool();
-	a = b.read_file_utf8("C:\\inetpub\\wwwroot\\test.json");
 
-	b = json_parse(a);
-	
-	c = b["url"];
+	a = test1;
+	print(a()[3]);
 
-	print( c );
 end
 

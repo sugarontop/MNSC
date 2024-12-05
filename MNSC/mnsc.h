@@ -16,16 +16,17 @@ struct ScriptSt
 };
 
 DLLEXPORT ScriptSt MNSCInitilize(LPVOID sender, DWORD script_engine_type); 
-
 DLLEXPORT bool MNSCParse(ScriptSt st, LPCWSTR script, LPCWSTR appnm, const VARIANT app);
-
 DLLEXPORT VARIANT MNSCCall(ScriptSt st, LPCWSTR funcnm, VARIANT* prm=nullptr, int pmcnt=0);
-
 DLLEXPORT void MNSCClose(ScriptSt st);
-
 
 DLLEXPORT VARIANT MNSCCreateMap();
 DLLEXPORT VARIANT MNSCCreateArray();
+
+
+DLLEXPORT bool MNSCReadUtf8(LPCWSTR fnm, BSTR* ret);
+
+
 
 class IVARIANTAbstract : public IUnknown
 {
