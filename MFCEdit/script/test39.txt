@@ -1,17 +1,22 @@
 
-func test1()
-var a;
-begin
-	return [1,2,3,4];
-end
-
-
 func main()
 var a,b,c;
 begin
 
-	a = test1;
-	print(a()[3]);
+	a = '{"param1":["品川", "東京","神戸", "横浜"]}';
+	b = json_parse(a);
+	return b["param1"];
 
 end
 
+func OnClick()
+var a,b,c,d;
+begin
+
+	c = _ap.Ctrls();
+	d = c["lb1"];
+	
+	//d.AddString("This is test");
+
+	return "success";
+end

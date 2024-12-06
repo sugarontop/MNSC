@@ -74,14 +74,13 @@ DLLEXPORT bool MNSCReadUtf8(LPCWSTR fnm, BSTR* ret)
 	{
 		char cb[256] = {};
 		std::stringstream sm;
-		
-		while(fread_s(cb, sizeof(cb),1, sizeof(cb), cf))
+
+		size_t bytesRead;
+		while ((bytesRead = fread_s(cb, sizeof(cb), sizeof(char), sizeof(cb), cf)) > 0)
 		{
-			sm << cb;
-			memset(cb, 0, sizeof(cb));
+			sm.write(cb, bytesRead); // バッファの内容をストリームに追加
 		}
 		fclose(cf);
-		
 
 		auto cstr = sm.str();
 		int len = ::MultiByteToWideChar(CP_UTF8, 0, cstr.c_str(), -1, NULL, NULL);
