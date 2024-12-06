@@ -43,14 +43,18 @@ void CPrsIdentArray::Parse()
 }
 void CPrsIdentArray::Generate(stackGntInfo& stinfo)
 {
+	FVariant PrValue = Return_;
+
+	Return_.clear();
+
 	expression_->Generate(stinfo);
 
-	if (Return_.vt == VT_UNKNOWN)
+	if (PrValue.vt == VT_UNKNOWN)
 	{
 		VARIANT v;
 		::VariantInit(&v);
 
-		auto ar = dynamic_cast<IVARIANTArray*>(Return_.punkVal);
+		auto ar = dynamic_cast<IVARIANTArray*>(PrValue.punkVal);
 		if ( ar )
 		{
 			auto idx = (int)expression_->getValue().getN();
@@ -61,7 +65,7 @@ void CPrsIdentArray::Generate(stackGntInfo& stinfo)
 		}
 		else
 		{
-			auto map = dynamic_cast<IVARIANTMap*>(Return_.punkVal);
+			auto map = dynamic_cast<IVARIANTMap*>(PrValue.punkVal);
 			_ASSERT(map);
 
 			std::wstring key = expression_->getValue().getS();
@@ -73,13 +77,7 @@ void CPrsIdentArray::Generate(stackGntInfo& stinfo)
 	}
 	else if ( Return_.vt == 0)
 		Return_ = expression_->getValue();
-	else
-	{
-		std::wstringstream sm;
-		sm << L"CPrsIdentArray err3: " << Return_.vt;
-		THROW(sm.str());
-	}
-
+	
 	if ( next_ )
 	{
 		auto nnext = dynamic_cast<CPrsIdentArray*>(next_.get());
@@ -121,6 +119,8 @@ void CPrsIdentFunctionPointer::Parse()
 }
 void CPrsIdentFunctionPointer::Generate(stackGntInfo& stinfo)
 {
+	Return_.clear();
+
 	auto x = new IVARIANTFunctionImp(); 
 
 	auto func = m_Symbol.CreateFunc(funcnm_);

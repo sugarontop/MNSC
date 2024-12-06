@@ -428,6 +428,7 @@ class CPrsIdentArray : public CPrsNode
 		std::shared_ptr<CPrsExpression> expression_;
 		FVariant Return_;
 		
+		
 };
 
 class CPrsIdentFunctionPointer : public CPrsNode

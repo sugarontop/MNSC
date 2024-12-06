@@ -78,16 +78,16 @@ DLLEXPORT bool MNSCReadUtf8(LPCWSTR fnm, BSTR* ret)
 		size_t bytesRead;
 		while ((bytesRead = fread_s(cb, sizeof(cb), sizeof(char), sizeof(cb), cf)) > 0)
 		{
-			sm.write(cb, bytesRead); // バッファの内容をストリームに追加
+			sm.write(cb, bytesRead);
 		}
 		fclose(cf);
 
 		auto cstr = sm.str();
 		int len = ::MultiByteToWideChar(CP_UTF8, 0, cstr.c_str(), -1, NULL, NULL);
-		std::vector<WCHAR> ar(len + 1);
-		::MultiByteToWideChar(CP_UTF8, 0, cstr.c_str(), -1, &ar[0], len);
+		std::vector<WCHAR> ar(len);
+		if (0!=::MultiByteToWideChar(CP_UTF8, 0, cstr.c_str(), -1, ar.data(), len))
+			*ret = ::SysAllocString(ar.data());
 
-		*ret = ::SysAllocString(&ar[0]);
 		return true;
 	}
 	return false;

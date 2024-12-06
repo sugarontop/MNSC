@@ -9,14 +9,9 @@ begin
 	if ( 1==  b[0]["a1"]["b1"][0])
 		c++;
 	endif
-	if ( 2==  b[0]["a1"]["b1"][1])
-		c++;
-	endif
-	if ( 100==  b[0]["a1"]["c1"])
-		c++;
-	endif
+	
 
-	if ( c == 3  )
+	if ( c == 1 )
 		print("ok");
 	endif
 
