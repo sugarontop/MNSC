@@ -49,7 +49,7 @@ void CPrsParameters::Parse()
 	do
 	{
 		st = getNewSymbol();
-		if (st.Token == Ident || st.Token == Number || st.Token == Minus || st.Token == Quotation || st.Token == Float)
+		if (st.Token == Ident || st.Token == Number || st.Token == Minus || st.Token == Quotation || st.Token == Float || st.Token == lSquare)
 		{
 			auto expression = std::make_shared<CPrsExpression>(m_Symbol);
 			expression->Parse();

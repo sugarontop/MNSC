@@ -507,6 +507,26 @@ class CVARIANTTool : public IVARIANTAbstract
 };
 
 
+std::vector<_variant_t> ParseArray(VARIANT a)
+{
+	std::vector<_variant_t> rar;
+	if (a.vt == VT_UNKNOWN)
+	{
+		auto ar = dynamic_cast<IVARIANTArray*>(a.punkVal);
+		if (ar)
+		{
+			for (int i = 0; i < ar->Count(); i++)
+			{
+				_variant_t vv;
+				ar->Get(i, &vv);				
+				rar.push_back(vv);
+			}
+		}
+	}
+	return rar;
+}
+
+
 class IVARIANTApplication : public IVARIANTAbstract
 {
 public:
@@ -516,12 +536,22 @@ public:
 public :
 	virtual void Clear(){} 
 	virtual int TypeId() { return 1000; }
-	VARIANT Test(const VARIANT a, const VARIANT b)
+	VARIANT Test(const VARIANT a)
 	{
-		std::wstring a1 = a.bstrVal;
-		std::wstring b1 = b.bstrVal;
+		std::wstring a1;
+		if ( a.vt == VT_UNKNOWN)
+		{
+			auto ar = ParseArray(a);
+			int a = ar.size();
 
-		a1 = a1 + b1;
+
+			a1 = ar[0].bstrVal;
+		}
+		else		
+			a1 = a.bstrVal;
+		
+
+		
 		std::wstring str = a1;
 
 		VARIANT v;
@@ -571,9 +601,9 @@ public :
 	}
 	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt) override
 	{		
-		if ( vcnt == 2 && funcnm == L"test")
+		if ( funcnm == L"test")
 		{
-			return Test(v[0],v[1]);
+			return Test(v[0]);
 		}
 		else if ( funcnm == L"tool" )
 		{
