@@ -29,8 +29,7 @@ public:
 	IVARIANTMapImp();
 	~IVARIANTMapImp() { Clear(); }
 
-public:
-	//std::map<std::wstring, FVariant> map;
+public:	
 	std::unordered_map<std::wstring, FVariant> map;
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv);
@@ -61,6 +60,25 @@ public:
 			}
 		}
 		return false;
+	}
+	virtual UINT Keys(VARIANT* ret)
+	{
+		auto ar = new IVARIANTArrayImp();
+		for(auto& it : map)
+		{
+			VARIANT v;
+			::VariantInit(&v);
+			v.bstrVal = ::SysAllocString(it.first.c_str());
+			v.vt = VT_BSTR;
+			ar->Add(v);
+		}
+
+		
+		::VariantInit(ret);
+		ret->punkVal = ar;
+		ret->vt = VT_UNKNOWN;
+		
+		return map.size();
 	}
 	virtual void Clear(){}
 };

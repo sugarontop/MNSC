@@ -13,6 +13,10 @@ CPrsFunction::CPrsFunction(const CPrsFunction& src) :CPrsBlock(src), m_InnerTabl
 	m_decaration = src.m_decaration;
 	m_body = src.m_body;
 	m_declar = src.m_declar;
+
+	//m_decaration = std::make_shared<CPrsDecaration>(*src.m_decaration);
+	//m_body = std::make_shared<CPrsBody>(*src.m_body);
+	//m_declar = std::make_shared<CPrsDeclarVar>(*src.m_declar);
 }
 CPrsFunction::~CPrsFunction()
 {

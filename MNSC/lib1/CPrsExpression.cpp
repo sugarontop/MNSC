@@ -40,6 +40,7 @@ CPrsExpression::CPrsExpression(const CPrsExpression& src) :CPrsNode(src.m_Symbol
 	m_Ls = src.m_Ls;
 	m_Value = src.m_Value;
 	m_bMinus = src.m_bMinus;
+	next_ = src.next_;
 }
 CPrsExpression::~CPrsExpression()
 {
@@ -978,21 +979,27 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 			auto it = m_node;
 			while (true)
 			{
-				CPrsExpression* exp = (CPrsExpression*)it.get(); 
+				CPrsExpression* src = (CPrsExpression*)it.get(); 
+
+				// exp->Generate後にexpのvalueが変わるので、その防止のためにコピーを使う
+				std::unique_ptr<CPrsExpression> exp = std::make_unique<CPrsExpression>(*src);
 
 				if ( exp )
 				{
 					FVariant key;
-					key = exp->getValue(); //>m_Value;
+					key = exp->getValue();
 
-					if ( key.vt = VT_BSTR && key.bstrVal )
+					if ( key.vt == VT_BSTR && key.bstrVal )
 					{
 						exp->Generate(stinfo);			
 						map[key.getSS()] = exp->getValue();
 					}	
 
 					if (exp->next_)
+					{
 						it = exp->next_;
+						exp=nullptr;
+					}
 					else
 						break;
 				}

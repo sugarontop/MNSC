@@ -264,6 +264,8 @@ bool FVariant::getDic(const FVariant& key, FVariant* ret) const
 
 void FVariant::setAr(const std::vector<FVariant>& ar)
 {
+	clear_init();
+	
 	IVARIANTArrayImp* par = new IVARIANTArrayImp();
 
 	for(auto v : ar)
@@ -278,6 +280,8 @@ void FVariant::setAr(const std::vector<FVariant>& ar)
 
 void FVariant::setMap(std::map<wstring, FVariant>& map)
 {
+	clear_init();
+
 	IVARIANTMapImp* pmap = new IVARIANTMapImp();
 
 	for(auto& it : map)
@@ -294,6 +298,7 @@ void FVariant::setMap(std::map<wstring, FVariant>& map)
 
 void FVariant::setUnknown(const FVariant& var)
 {
+	clear_init();
 	_ASSERT((var.vt&VT_UNKNOWN) == VT_UNKNOWN);
 	InnerCopy(&var);
 }

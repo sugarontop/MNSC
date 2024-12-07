@@ -1,21 +1,26 @@
 
+func test()
+var a,b,c;
+begin
+	a = [];
+	
+	a.add({"cd": "cdns", "cnt": 20,"x":100,"y":100, "typ":1 });
+	return a;
+end
+
+
+
 func main()
 var a,b,c;
 begin
 
-	//b = _ap.tool();
-	c = _ap.test(['1','2','3']);
-
-end
-
-func OnClick()
-var a,b,c,d;
-begin
-
-	c = _ap.Ctrls();
-	d = c["lb1"];
+	a = test();
+print( a[0]["cnt"]);
 	
-	//d.AddString("This is test");
+	b = test();
+	
 
-	return "success";
 end
+
+
+
