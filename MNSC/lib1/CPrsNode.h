@@ -231,7 +231,7 @@ public:
 	virtual void Flush();
 	virtual void Parse();
 	virtual void Generate(stackGntInfo& stinfo);
-	const FVariant& getValue() { return m_Value; }
+	const FVariant& getValue(){ return m_Value; }
 	std::shared_ptr<CPrsNode> next_;
 protected:
 	FVariant		m_Value;

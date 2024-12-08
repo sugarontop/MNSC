@@ -75,7 +75,18 @@ DLLEXPORT bool MNSCReadUtf8(LPCWSTR fnm, BSTR* ret)
 		char cb[256] = {};
 		std::stringstream sm;
 
-		size_t bytesRead;
+		unsigned char bom[3] = {};
+		size_t bytesRead = fread(bom, 1, 3, cf);
+		if (bytesRead == 3 && bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF)
+		{
+			// UTF-8 BOMÅi0xEF, 0xBB, 0xBFÅjÇîªíË				
+		}
+		else
+		{
+			sm.write(reinterpret_cast<char*>(bom), bytesRead);
+		}
+
+		
 		while ((bytesRead = fread_s(cb, sizeof(cb), sizeof(char), sizeof(cb), cf)) > 0)
 		{
 			sm.write(cb, bytesRead);
@@ -88,6 +99,25 @@ DLLEXPORT bool MNSCReadUtf8(LPCWSTR fnm, BSTR* ret)
 		if (0!=::MultiByteToWideChar(CP_UTF8, 0, cstr.c_str(), -1, ar.data(), len))
 			*ret = ::SysAllocString(ar.data());
 
+		return true;
+	}
+	return false;
+}
+
+
+DLLEXPORT bool MNSCWriteUtf8(LPCWSTR fnm, BSTR text)
+{
+	FILE* cf = nullptr;
+	if (0 == _wfopen_s(&cf, fnm, L"wb") && cf != 0 && text)
+	{
+		int len = ::SysStringLen(text);
+		int ulen = ::WideCharToMultiByte(CP_UTF8,0,text,len,nullptr,0,nullptr,nullptr);
+		std::vector<char> ar(ulen);
+		if (0 != ::WideCharToMultiByte(CP_UTF8, 0, text, len, ar.data(), ulen, nullptr,nullptr))
+		{			
+			fwrite(ar.data(),1,ulen,cf);
+		}
+		fclose(cf);
 		return true;
 	}
 	return false;

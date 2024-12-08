@@ -25,7 +25,7 @@ DLLEXPORT VARIANT MNSCCreateArray();
 
 
 DLLEXPORT bool MNSCReadUtf8(LPCWSTR fnm, BSTR* ret);
-
+DLLEXPORT bool MNSCWriteUtf8(LPCWSTR fnm, BSTR text);
 
 
 class IVARIANTAbstract : public IUnknown
@@ -74,6 +74,7 @@ public:
 public:
 	virtual void SetItem(const std::wstring& key, VARIANT& v) = 0;
 	virtual bool GetItem(const std::wstring& key, VARIANT* v) = 0;	
+	virtual UINT Keys(VARIANT* ar) = 0;
 };
 
 

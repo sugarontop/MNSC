@@ -977,7 +977,7 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 			std::map<wstring,FVariant> map;
 
 			auto it = m_node;
-			while (true)
+			while (true && m_node)
 			{
 				CPrsExpression* src = (CPrsExpression*)it.get(); 
 
@@ -998,7 +998,7 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 					if (exp->next_)
 					{
 						it = exp->next_;
-						exp=nullptr;
+						
 					}
 					else
 						break;
