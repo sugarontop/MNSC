@@ -287,7 +287,7 @@ void FVariant::setMap(std::map<wstring, FVariant>& map)
 	for(auto& it : map)
 	{
 		VARIANT v = it.second.ToVARIANT();
-		pmap->SetItem(it.first, v);
+		pmap->SetItem(it.first.c_str(), v);
 
 	}
 
@@ -351,7 +351,7 @@ void FVariant::setAr(const FVariant& key, const FVariant& var)
 		
 		VARIANT v = var.ToVARIANT();
 		
-		par->SetItem(ckey, v);
+		par->SetItem(ckey.c_str(), v);
 	}
 
 }

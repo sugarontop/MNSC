@@ -69,7 +69,7 @@ void CPrsIdentArray::Generate(stackGntInfo& stinfo)
 			_ASSERT(map);
 
 			std::wstring key = expression_->getValue().getS();
-			if (map->GetItem(key, &v))
+			if (map->GetItem(key.c_str(), &v))
 				Return_ = v;
 			else
 				THROW(L"CPrsIdentArray err2");

@@ -42,7 +42,7 @@ public:
 	
 	virtual int TypeId() = 0;
 	virtual void Clear() = 0;
-	virtual VARIANT Invoke( std::wstring funcnm, VARIANT* v, int vcnt ) = 0;
+	virtual VARIANT Invoke( LPCWSTR funcnm, VARIANT* v, int vcnt ) = 0;
 };
 
 
@@ -54,7 +54,7 @@ public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) = 0;
 	virtual int TypeId() = 0;
 	virtual void Clear() = 0;
-	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt) = 0;
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
 public:
 	virtual void Add(VARIANT& v) = 0;
 	virtual bool Get(int idx, VARIANT*) = 0;
@@ -70,10 +70,10 @@ public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) = 0;
 	virtual int TypeId() = 0;
 	virtual void Clear() = 0;
-	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt) = 0;
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
 public:
-	virtual void SetItem(const std::wstring& key, VARIANT& v) = 0;
-	virtual bool GetItem(const std::wstring& key, VARIANT* v) = 0;	
+	virtual void SetItem(LPCWSTR key, VARIANT& v) = 0;
+	virtual bool GetItem(LPCWSTR key, VARIANT* v) = 0;
 	virtual UINT Keys(VARIANT* ar) = 0;
 };
 

@@ -2,7 +2,7 @@
 #include "mnsc.h"
 #include "FScript.h"
 #include "lib1\FScriptEasy.h"
-#include "lib1\FVariantArray.h"
+#include "lib1\FVariantArray.h" 
 
 inline FScript* Handle(ScriptSt st)
 {

@@ -1063,7 +1063,7 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 
 					VARIANT v;
 					::VariantInit(&v);
-					if ( m->GetItem(key, &v))
+					if ( m->GetItem(key.c_str(), &v))
 						m_Value = v;
 					else
 					{

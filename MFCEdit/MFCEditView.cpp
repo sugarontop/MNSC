@@ -320,7 +320,7 @@ class CVARIANTTool : public IVARIANTAbstract
 					if ( xar.size() == 2 )
 					{
 						_variant_t v(xar[1].c_str());
-						map->SetItem(xar[0], v.Detach() );
+						map->SetItem(xar[0].c_str(), v.Detach() );
 					}
 				}
 
@@ -423,7 +423,7 @@ class CVARIANTTool : public IVARIANTAbstract
 					if (map == nullptr)
 						goto err;
 
-					if (!map->GetItem(st->keyS, &v))
+					if (!map->GetItem(st->keyS.c_str(), &v))
 						goto err;
 				}
 
@@ -482,8 +482,9 @@ class CVARIANTTool : public IVARIANTAbstract
 			AddRef();
 			return S_OK;
 		}
-		virtual VARIANT Invoke(std::wstring funcnm, VARIANT* prm, int vcnt) override
+		virtual VARIANT Invoke(LPCWSTR cfuncnm, VARIANT* prm, int vcnt) override
 		{
+			std::wstring funcnm = cfuncnm;
 			if (vcnt == 1 && funcnm == L"inetGet")
 			{				
 				VARIANT url = prm[0];
@@ -515,7 +516,7 @@ std::vector<_variant_t> ParseArray(VARIANT a)
 		auto ar = dynamic_cast<IVARIANTArray*>(a.punkVal);
 		if (ar)
 		{
-			for (int i = 0; i < ar->Count(); i++)
+			for (UINT i = 0; i < ar->Count(); i++)
 			{
 				_variant_t vv;
 				ar->Get(i, &vv);				
@@ -542,7 +543,7 @@ public :
 		if ( a.vt == VT_UNKNOWN)
 		{
 			auto ar = ParseArray(a);
-			int a = ar.size();
+			int a = (int)ar.size();
 
 
 			a1 = ar[0].bstrVal;
@@ -599,8 +600,9 @@ public :
 		AddRef();
 		return S_OK;
 	}
-	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt) override
+	virtual VARIANT Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt) override
 	{		
+		std::wstring funcnm = cfuncnm;
 		if ( funcnm == L"test")
 		{
 			return Test(v[0]);
@@ -626,7 +628,7 @@ void CMFCEditView::OnBnClickedBtnRun()
 
 	CWaitCursor _w;
 
-	// change stt::wcout
+	// change std::wcout
 	std::wstringstream sm;
 	std::wcout.rdbuf(sm.rdbuf());
 

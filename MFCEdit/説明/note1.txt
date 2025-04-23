@@ -1,0 +1,69 @@
+
+struct ScriptSt
+{
+	LPVOID sender;
+	LPVOID p;
+};
+
+
+DLLEXPORT ScriptSt MNSCInitilize(LPVOID sender, DWORD script_engine_type); 
+DLLEXPORT bool MNSCParse(ScriptSt st, LPCWSTR script, LPCWSTR appnm, const VARIANT app);
+DLLEXPORT VARIANT MNSCCall(ScriptSt st, LPCWSTR funcnm, VARIANT* prm=nullptr, int pmcnt=0);
+DLLEXPORT void MNSCClose(ScriptSt st);
+
+DLLEXPORT VARIANT MNSCCreateMap();
+DLLEXPORT VARIANT MNSCCreateArray();
+
+
+DLLEXPORT bool MNSCReadUtf8(LPCWSTR fnm, BSTR* ret);
+DLLEXPORT bool MNSCWriteUtf8(LPCWSTR fnm, BSTR text);
+
+
+
+usage ------------------------------------------
+
+// change std::wcout
+std::wstringstream sm;
+std::wcout.rdbuf(sm.rdbuf());
+
+// 1 create IUnknow object on application side.
+VARIANT v1;
+::VariantInit(&v1);
+v1.punkVal = new IVARIANTApplication(m_hWnd);
+v1.vt = VT_UNKNOWN;
+
+// 2 script initialize
+ScriptSt sc = MNSCInitilize(this, 1);
+
+
+try 
+{	
+	CString script = L"....";
+
+	// 3 script parse
+	if (MNSCParse(sc, script, L"_ap", v1))
+	{
+		VARIANT prms[1];
+		_variant_t prm1 = L"Hello world";
+		prms[0] = prm1.Detach();
+
+		// 4 script execute
+		VARIANT v = MNSCCall(sc,L"main", prms, 1 );
+
+		::VariantClear(&v);
+
+		// std::wcout string to window
+		CString output = sm.str().c_str();
+	}
+}
+catch(std::wstring x)
+{
+	GetDlgItem(IDC_ED_OUTPUT)->SetWindowText(x.c_str());
+}
+
+// 5 script close
+MNSCClose(sc);
+
+
+
+

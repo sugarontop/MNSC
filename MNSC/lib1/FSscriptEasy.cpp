@@ -33,7 +33,8 @@ bool FScriptEasy::Parse(LPCWSTR script, LPCWSTR appnn, VARIANT app)
 		int line = symbol_->getLineNumber();
 		std::wstringstream sm;
 		sm << L"line number: " << line << L" " << err;
-		throw sm.str();
+		err += sm.str();
+		throw err;
 	}
 	return false;
 }

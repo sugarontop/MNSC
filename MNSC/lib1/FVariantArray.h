@@ -20,7 +20,7 @@ public:
 	virtual bool Get(int idx, VARIANT*);
 	virtual ULONG Count() { return (ULONG)ar.size(); }
 	virtual void Set(int idx, VARIANT& v);
-	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt);
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt);
 };
 
 class IVARIANTMapImp : public IVARIANTMap
@@ -36,14 +36,14 @@ public:
 	virtual int TypeId() { return FVariantType::MAP; }
 	
 	virtual ULONG Count() { return (ULONG)map.size(); }	
-	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt);
-	virtual void SetItem(const std::wstring& key, VARIANT& v)
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt);
+	virtual void SetItem(LPCWSTR key, VARIANT& v)
 	{	
 		// v‚ð‹zŽû‚·‚é‚Ì‚ÅAVariantClear‚Í•s—v
 		map[key] =v;
 
 	}
-	virtual bool GetItem(const std::wstring& key, VARIANT* v)
+	virtual bool GetItem(LPCWSTR key, VARIANT* v)
 	{
 		if ( map.find(key) != map.end())
 		{
@@ -78,7 +78,7 @@ public:
 		ret->punkVal = ar;
 		ret->vt = VT_UNKNOWN;
 		
-		return map.size();
+		return (UINT)map.size();
 	}
 	virtual void Clear(){}
 };
@@ -93,7 +93,7 @@ public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv);
 	virtual int TypeId() { return FVariantType::FUNCTIONPOINTER; }
 	virtual void Clear();
-	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt);
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt);
 public:
 	virtual void SetItem(std::shared_ptr<CPrsFunction> func)
 	{

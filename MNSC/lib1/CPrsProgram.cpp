@@ -44,7 +44,9 @@ void CPrsProgram::Parse()
 void CPrsProgram::SetPreGlobalVariant(LPCWSTR ident, VARIANT val)
 {
 	FVariant f(val);
-	m_Symbol.getGlobalSymbolTable().setAt(ident,f);
+
+	if (ident)
+		m_Symbol.getGlobalSymbolTable().setAt(ident,f);
 
 }
 FVariant CPrsProgram::Return() const

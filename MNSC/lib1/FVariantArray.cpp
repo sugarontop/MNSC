@@ -61,8 +61,9 @@ HRESULT __stdcall IVARIANTFunctionImp::QueryInterface(REFIID riid, void** ppv) {
 
 // Array ---------------------------------------------------------------------------------------------------
 
-VARIANT IVARIANTArrayImp::Invoke(std::wstring funcnm, VARIANT* v, int vcnt)
+VARIANT IVARIANTArrayImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 {
+	std::wstring funcnm = cfuncnm;
 	VARIANT x;
 	::VariantInit(&x);
 
@@ -94,8 +95,9 @@ IVARIANTMapImp::IVARIANTMapImp()
 {
 	int a = 0;
 }
-VARIANT IVARIANTMapImp::Invoke(std::wstring funcnm, VARIANT* v, int vcnt)
+VARIANT IVARIANTMapImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 {
+	std::wstring funcnm = cfuncnm;
 	VARIANT x;
 	::VariantInit(&x);
 
@@ -107,7 +109,7 @@ VARIANT IVARIANTMapImp::Invoke(std::wstring funcnm, VARIANT* v, int vcnt)
 	else if (funcnm == L"get" && vcnt > 0 && v[0].vt == VT_BSTR)
 	{
 		wstring key = v[0].bstrVal;
-		if (!GetItem(key, &x))
+		if (!GetItem(key.c_str(), &x))
 		{
 			THROW(L"map err");
 		}
@@ -139,8 +141,9 @@ IVARIANTFunctionImp::IVARIANTFunctionImp()
 {	
 	int a = 0;
 }
-VARIANT IVARIANTFunctionImp::Invoke(std::wstring funcnm, VARIANT* v, int vcnt)
+VARIANT IVARIANTFunctionImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 {
+	std::wstring funcnm = cfuncnm;
 	if ( funcnm == L"NONAME")
 	{
 		stackGntInfo temp;

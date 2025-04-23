@@ -140,7 +140,7 @@ void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 		// Variant fcuntion
 		IVARIANTAbstract* p = dynamic_cast<IVARIANTAbstract*>(m_value.punkVal);
 		
-		auto nm = (DotFuncName_.empty() ? L"NONAME" : DotFuncName_);
+		std::wstring nm = (DotFuncName_.empty() ? L"NONAME" : DotFuncName_);
 
 		for (int i = 0; i < param_count; i++)
 		{									
@@ -148,7 +148,7 @@ void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 			v[i] = ls[i].ToVARIANT();
 		}
 
-		Return_ = p->Invoke(nm, v, param_count);
+		Return_ = p->Invoke(nm.c_str(), v, param_count);
 
 		for (int i = 0; i < param_count; i++)
 		{
