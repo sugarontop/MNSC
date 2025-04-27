@@ -28,13 +28,14 @@ bool FScriptEasy::Parse(LPCWSTR script, LPCWSTR appnn, VARIANT app)
 		prg_->Parse();
 		return true;
 	}
-	catch(wstring err)
+	catch(const std::runtime_error& err)
 	{
 		int line = symbol_->getLineNumber();
-		std::wstringstream sm;
-		sm << L"line number: " << line << L" " << err;
-		err += sm.str();
-		throw err;
+		std::stringstream sm;
+		sm << "line number: " << line << ", " << err.what();
+		
+		throw std::runtime_error(sm.str());
+		
 	}
 	return false;
 }
@@ -48,7 +49,7 @@ VARIANT FScriptEasy::Call(LPCWSTR funcnm, VARIANT* prm, int prmcnt)
 
 		return prg_->Return().ToVARIANT();
 	}
-	catch (wstring err)
+	catch (const std::runtime_error& err)
 	{
 		throw err;
 	}

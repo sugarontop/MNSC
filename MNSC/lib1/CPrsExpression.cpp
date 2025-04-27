@@ -419,8 +419,28 @@ void CPrsFactor::Parse()
 	if ( st.Token == Equal || st.Token == notEqual)
 		return;
 
-	if ( st.Token != Semicol )
-		st = getNewSymbol();
+	
+	
+	if (m_Symbol.getStat() == CPrsSymbol::STAT::IN_PARSING) //“¦‚°‚ÌˆêŽè
+	{
+		auto st1 = getNewPeekSymbol(); 
+		//if ( st1.Token == 46 || st1.Token == 47 || st1.Token == 31 )
+		if (st1.Token == lSquare || st1.Token == rSquare || st1.Token == lParen || st1.Token == rParen)
+			st = getNewSymbol();
+
+	}
+	else
+	{
+		if ( st.Token != Semicol )
+		{
+			//auto st1 = getNewPeekSymbol();
+			//if (st1.Token != Semicol)
+			//	st = getNewSymbol();		
+			st = getNewSymbol();
+		}
+	}	
+
+
 
 	// ‚±‚±‚Åst‚Íexpression‚ÌŽŸ‚Ì’iŠK
 
@@ -556,6 +576,9 @@ void CPrsFactor::ParseIdentSquare(SToken& st)
 void CPrsFactor::ParselSquare(const SToken& st)
 {
 	SToken st2;
+
+
+	auto old = m_Symbol.setStat(CPrsSymbol::STAT::NONE);
 	
 	st2 = getNewSymbol();
 	if (st2.Token != rSquare)
@@ -582,6 +605,8 @@ void CPrsFactor::ParselSquare(const SToken& st)
 			st2 = getSymbol();
 		}
 	}
+
+	m_Symbol.setStat(old);
 	
 	st2 = getSymbol();
 	if (st2.Token != rSquare)

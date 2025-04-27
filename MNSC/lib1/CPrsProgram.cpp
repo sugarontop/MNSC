@@ -2,7 +2,7 @@
 #include "CSymbolTable.h"
 #include "CPrsNode.h"
 
-
+static int glinenum_debug = 0;
 ///////////////////////////////////////////////////////////////////////////////////
 CPrsProgram::CPrsProgram(CPrsSymbol& sym) :CPrsNode(sym)
 {
@@ -26,6 +26,8 @@ void CPrsProgram::Flush()
 void CPrsProgram::Parse()
 {
 	DEBUG_PARSE(CPrsProgram)
+
+	glinenum_debug = 0;
 
 	// Pre-register functions
 	auto ar = m_Symbol.getFuncNames();
@@ -139,29 +141,38 @@ void CPrsBody::Generate(stackGntInfo& stinfo)
 void CPrsBody::Parse()
 {
 	DEBUG_PARSE(CPrsBody)
-	SToken	st = getSymbol();
-
-	switch (st.Token)
+	try
 	{
-		case beginSym:
-			m_statementlist = std::make_shared<CPrsStatmentList>(m_Symbol, ENDSYMBOL_END);
-		break;
-		default:
-			THROW( L"'BEGIN' expected");		
-	}
 
-	if (m_statementlist)
-	{
+		SToken	st = getSymbol();
+
+		switch (st.Token)
+		{
+			case beginSym:
+				m_statementlist = std::make_shared<CPrsStatmentList>(m_Symbol, ENDSYMBOL_END);
+			break;
+			default:
+				THROW( L"'BEGIN' expected");		
+		}
+
+		if (m_statementlist)
+		{
+			getNewSymbol();
+			m_statementlist->Parse();
+		}
+
+		st = getSymbol();
+
+		if (st.Token != endSym)
+			THROW(L"'END' expected");
+
 		getNewSymbol();
-		m_statementlist->Parse();
 	}
-
-	st = getSymbol();
-
-	if (st.Token != endSym)
-		THROW(L"'END' expected");
-
-	getNewSymbol();
+	catch(std::runtime_error& er)
+	{
+		Flush();
+		throw er;
+	}
 
 }
 
@@ -199,46 +210,56 @@ void CPrsStatmentList::Generate(stackGntInfo& stinfo)
 void CPrsStatmentList::Parse()
 {
 	DEBUG_PARSE(CPrsStatmentList)
-	SToken st = getSymbol();
-
-	if ( st.Token == OROR || st.Token == ANDAND )
-		THROW(L"token OROR or ANDAND");
 
 
-	// loop
-	for (;;)
-	{
-		auto statement = std::make_shared<CPrsStatment>(m_Symbol);
-		m_ls.push_back(statement);
+	try{
 
-		statement->HParse();
-	
-		st = getSymbol();
+		SToken st = getSymbol();
 
-		switch (st.Token)
+		if ( st.Token == OROR || st.Token == ANDAND )
+			THROW(L"token OROR or ANDAND");
+
+
+		// loop
+		for (;;)
 		{
-			case endSym:
-				if (m_Endsymbol & ENDSYMBOL_END) return;
-			break;
-			case nextSym:
-				if (m_Endsymbol & ENDSYMBOL_ENDNEXT) return;
-			break;
-			case endwhileSym:
-				if (m_Endsymbol & ENDSYMBOL_ENDWHILE) return;
-			break;
-			case elseSym:
-				if (m_Endsymbol & ENDSYMBOL_ELSE) return;
-			break;
-			case endifSym:
-				if (m_Endsymbol & ENDSYMBOL_ENDIF) return;
-			break;
-			case whileSym:
-				if (m_Endsymbol & ENDSYMBOL_WHILEEND) return;
-			break;
-			case elsifSym:
-				if (m_Endsymbol & ENDSYMBOL_ELSIF) return;
-			break;
+			auto statement = std::make_shared<CPrsStatment>(m_Symbol);
+			m_ls.push_back(statement);
+
+			statement->HParse();
+	
+			st = getSymbol();
+
+			switch (st.Token)
+			{
+				case endSym:
+					if (m_Endsymbol & ENDSYMBOL_END) return;
+				break;
+				case nextSym:
+					if (m_Endsymbol & ENDSYMBOL_ENDNEXT) return;
+				break;
+				case endwhileSym:
+					if (m_Endsymbol & ENDSYMBOL_ENDWHILE) return;
+				break;
+				case elseSym:
+					if (m_Endsymbol & ENDSYMBOL_ELSE) return;
+				break;
+				case endifSym:
+					if (m_Endsymbol & ENDSYMBOL_ENDIF) return;
+				break;
+				case whileSym:
+					if (m_Endsymbol & ENDSYMBOL_WHILEEND) return;
+				break;
+				case elsifSym:
+					if (m_Endsymbol & ENDSYMBOL_ELSIF) return;
+				break;
+			}
 		}
+	}
+	catch(std::runtime_error& er)
+	{
+		Flush();
+		throw er;
 	}
 }
 
@@ -285,15 +306,16 @@ void CPrsStatment::HGenerate(stackGntInfo& stinfo)
 	}
 }
 
-static int glinenum = 0;
+
 void CPrsStatment::HParse()
 {
 	DEBUG_PARSE(CPrsStatment)
 
 
-if (glinenum++ > 1000)
-	THROW(L"limitter over 1000 lines");
-
+if (glinenum_debug++ > 1000)
+{
+	THROW(L"limiter over 1000 lines");
+}
 	const SToken&	st = getSymbol();
 	CPrsNode* node = nullptr;
 
@@ -326,7 +348,7 @@ if (glinenum++ > 1000)
 	}
 	catch (wstring msg)
 	{
-		throw msg;
+		throw std::runtime_error( w2a(msg));
 	}
 }
 std::shared_ptr<CPrsNode> CPrsStatment::factoryParse(int nodetype, CPrsNode* src, int subnodetype)

@@ -44,9 +44,16 @@ void CPrsVarFunction::Parse()
 
 
 	st = getSymbol();
-	if ( st.Token != Semicol && st.Token == rParen )
+
+
+	if (m_Symbol.getStat() == CPrsSymbol::STAT::IN_PARSING)
+	{
+		// “¦‚°‚ÌˆêŽè
+	}
+	else if ( st.Token != Semicol && st.Token == rParen )
 		st = getNewSymbol(); // ';'
 }
+
 void CPrsVarFunction::Parse2()
 {
 	SToken			st = getSymbol();

@@ -14,8 +14,8 @@ CPrsFor::CPrsFor(const CPrsFor& src) :CPrsNode(src.m_Symbol)
 	m_icr_assign = src.m_icr_assign;
 	in_parameters_ = src.in_parameters_;
 	in_ident_nm_ = src.in_ident_nm_;
-	in_object_nm_ = src.in_object_nm_;
-
+	in_object_nm_ = src.in_object_nm_;	
+	m_in_expression = src.m_in_expression;
 }
 CPrsFor::~CPrsFor()
 {
@@ -29,6 +29,8 @@ void CPrsFor::Flush()
 	m_ini_assign = nullptr;
 	m_icr_assign = nullptr;
 	in_parameters_ = nullptr;
+	
+	m_in_expression = nullptr;
 	in_ident_nm_.clear();
 	in_object_nm_.clear();
 }
@@ -51,10 +53,31 @@ void CPrsFor::Parse2()
 					in_parameters_->Parse();
 				}
 			}
+			
 			else if (st.Token == Ident)
 			{
 				in_object_nm_ = st.Value;
+
+				
+				auto olds = m_Symbol.setStat(CPrsSymbol::STAT::IN_PARSING);
+				m_in_expression = std::make_shared<CPrsExpression>(m_Symbol);
+				m_in_expression->Parse();
+				m_Symbol.setStat(olds);
+				st = getSymbol();
+		
 			}
+			else if (st.Token == lSquare)
+			{
+				in_object_nm_ = L"square";
+				auto olds = m_Symbol.setStat(CPrsSymbol::STAT::IN_PARSING);
+				m_in_expression = std::make_shared<CPrsExpression>(m_Symbol);
+				m_in_expression->Parse();
+				m_Symbol.setStat(olds);
+				st = getSymbol();
+
+
+			}
+
 		}
 	}
 }
@@ -174,22 +197,28 @@ void CPrsFor::Generate(stackGntInfo& stinfo)
 	}
 	else if (!in_object_nm_.empty())
 	{
-		FVariant ar;
-		m_Symbol.getSymbolTable().getAt(in_object_nm_,ar);
-		if ( ar.vt == VT_UNKNOWN )
+		//FVariant ar;
+		//m_Symbol.getSymbolTable().getAt(in_object_nm_, ar);
+
+
+		m_in_expression->Generate(stinfo);
+		const FVariant& ar = m_in_expression->getValue();
+
+
+		if (ar.vt == VT_UNKNOWN)
 		{
 			auto par = dynamic_cast<IVARIANTArray*>(ar.punkVal);
-			if ( par == nullptr )
+			if (par == nullptr)
 				THROW(L"for in object err");
 
 			auto cnt = par->Count();
 
-			for(ULONG i = 0; i < cnt; i++)
+			for (ULONG i = 0; i < cnt; i++)
 			{
 				VARIANT v;
 				::VariantInit(&v);
-				
-				par->Get(i,&v);
+
+				par->Get(i, &v);
 
 				FVariant fv(v);
 				m_Symbol.getSymbolTable().setAt(in_ident_nm_, fv);
@@ -210,6 +239,7 @@ void CPrsFor::Generate(stackGntInfo& stinfo)
 			}
 		}
 	}
+	
 	else
 		THROW(L"CPrsFor err");
 }

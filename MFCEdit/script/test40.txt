@@ -1,0 +1,23 @@
+
+func main()
+var k,a,b,c,d,res;
+begin
+	k = {"a":"1,2,3,4,5"};
+	
+	a = k["a"].split(",");
+	
+	for b in [1,2]
+		print(b);
+	next
+	
+	for b in a
+		print(b);
+	next
+
+	for b in k["a"].split(",")
+		print(b);
+	next
+
+end
+
+

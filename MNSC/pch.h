@@ -15,8 +15,12 @@
 #include <functional>
 #include <random>
 #include <initguid.h>
+#include <exception>
 
-#define THROW(s)	throw(std::wstring(s))
+std::string w2a(std::wstring ws); // CPrsAssign.cpp
+
+#define THROW(ws)	throw(std::runtime_error(w2a(ws)))
+
 typedef std::wstring wstring;
 
 

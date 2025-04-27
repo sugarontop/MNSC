@@ -40,7 +40,7 @@ static keyword_item Method[] =
 };
 
 CPrsSymbol::CPrsSymbol(LPCWSTR script_text)
-	:line_number_(1), paren_number_(0), end_(false), global_symtable_(this), plocal_symtable_(&global_symtable_)
+	:line_number_(1), paren_number_(0), end_(false), global_symtable_(this), plocal_symtable_(&global_symtable_), stat_(STAT::NONE)
 {
 	sm_ << script_text;
 
@@ -50,7 +50,7 @@ CPrsSymbol::CPrsSymbol(LPCWSTR script_text)
 
 void CPrsSymbol::clear()
 {
-
+	stat_ = STAT::NONE;
 }
 WCHAR CPrsSymbol::getChar()
 {

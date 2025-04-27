@@ -69,6 +69,9 @@ gAssign = m_AssignName;
 		}
 
 
+		if (getNewPeekSymbol().Token == Semicol)
+			getNewSymbol();
+
 		st = getSymbol();
 		if ( !bPlusplus )
 		{
@@ -83,6 +86,7 @@ gAssign = m_AssignName;
 		}
 		else
 		{
+			
 			if (st.Token == Semicol)
 				getNewSymbol();
 		}
@@ -115,6 +119,8 @@ gAssign = m_AssignName;
 			}
 		}
 
+		if (getNewPeekSymbol().Token == Semicol)
+			getNewSymbol();
 
 		if (getSymbol().Token != Semicol)
 		{
@@ -464,5 +470,19 @@ void CPrsAssignPlusEqual::Generate(stackGntInfo& stinfo)
 	}
 
 	symtbl.setAt(m_AssignName, varsource);
+}
+
+
+std::string w2a(std::wstring ws)
+{
+	int nSize = WideCharToMultiByte(CP_ACP, 0, ws.c_str(), -1, NULL, 0, NULL, NULL);
+	if (nSize > 0)
+	{
+		std::string str(nSize, '\0');
+		WideCharToMultiByte(CP_ACP, 0, ws.c_str(), -1, &str[0], nSize, NULL, NULL);
+		return str;
+	}
+	return std::string();
+
 }
 

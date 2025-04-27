@@ -663,9 +663,10 @@ void CMFCEditView::OnBnClickedBtnRun()
 			GetDlgItem(IDC_ED_OUTPUT)->SetWindowText(sm.str().c_str());
 		}
 	}
-	catch(std::wstring x)
+	catch(std::exception& x)
 	{
-		GetDlgItem(IDC_ED_OUTPUT)->SetWindowText(x.c_str());
+		std::string ss = x.what();
+		SetWindowTextA(GetDlgItem(IDC_ED_OUTPUT)->GetSafeHwnd(), ss.c_str());
 	}
 
 	// 5 script close

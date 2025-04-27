@@ -66,6 +66,13 @@ class CPrsSymbol
 
 		int getLineNumber() { return line_number_; }
 		int getParenNumber(){ return paren_number_;}
+
+		enum STAT { NONE, IN_PARSING };
+
+		STAT getStat(){ return stat_;}
+		STAT setStat(STAT ns){ auto old=stat_; stat_=ns; return old; }
+
+
 	private :
 		std::map<wstring, std::shared_ptr<CPrsFunction>>	m_funcdic;
 
@@ -78,5 +85,5 @@ class CPrsSymbol
 		CSymbolTable* plocal_symtable_;
 		CSymbolTable global_symtable_;
 		std::queue<SToken>	queue_token_;
-
+		STAT stat_;
 };

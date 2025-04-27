@@ -12,7 +12,7 @@ public:
 	
 	virtual int TypeId() = 0;
 	virtual void Clear() = 0;
-	virtual VARIANT Invoke( std::wstring funcnm, VARIANT* v, int vcnt ) = 0;
+	virtual VARIANT Invoke( LPCWSTR funcnm, VARIANT* v, int vcnt ) = 0;
 };
 
 
@@ -24,7 +24,7 @@ public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) = 0;
 	virtual int TypeId() = 0;
 	virtual void Clear() = 0;
-	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt) = 0;
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
 public:
 	virtual void Add(VARIANT& v) = 0;
 	virtual bool Get(int idx, VARIANT*) = 0;
@@ -40,9 +40,76 @@ public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) = 0;
 	virtual int TypeId() = 0;
 	virtual void Clear() = 0;
-	virtual VARIANT Invoke(std::wstring funcnm, VARIANT* v, int vcnt) = 0;
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
 public:
-	virtual void SetItem(const std::wstring& key, VARIANT& v) = 0;
-	virtual bool GetItem(const std::wstring& key, VARIANT* v) = 0;	
+	virtual void SetItem(LPCWSTR key, VARIANT& v) = 0;
+	virtual bool GetItem(LPCWSTR key, VARIANT* v) = 0;	
 	virtual UINT Keys(VARIANT* ar) = 0;
 };
+
+// esay ----------------------------------------------------------------------
+
+VARIANT v1;
+::VariantInit(&v1);
+
+ScriptSt sc = MNSCInitilize(0, 1);
+
+try
+{
+	CComBSTR script;
+	bool bl = MNSCReadUtf8(L"init.txt", &script);
+	
+	/* init.txt
+	func init()
+	var a;
+	begin
+		a = { "a1":"Server=(local);Database=sample1;Trusted_Connection=True;",
+			"a2":"Server=(local);Database=sample2;Trusted_Connection=True;"};	
+		return a;
+	end
+	*/
+	
+	
+	// 3 script parse
+	if (MNSCParse(sc, script,nullptr,v1))
+	{			
+		VARIANT v = MNSCCall(sc, L"init", nullptr,0);
+
+		auto map = (IVARIANTMap*)v.punkVal;
+
+		CComVariant v1;
+		map->GetItem(L"a1", &v1);
+		std::wcout << v1.bstrVal << L"\n";
+		map->GetItem(L"a2", &v1);
+		std::wcout << v1.bstrVal << L"\n";
+
+		::VariantClear(&v);
+	}
+}
+catch (std::wstring x)
+{
+	auto err = x;
+}
+
+// 5 script close
+MNSCClose(sc);
+
+
+--------------------------------------------------------------------------------
+
+a = []; // IVARIANTArrayImp
+b = 1;
+a.add( b );
+b = a[0]; // IVARIANTArrayImp::Get
+c = a.count(); //IVARIANTArrayImp::Count
+
+a = {}; // IVARIANTMapImp
+a["a1"] = "a1";// IVARIANTMapImp::SetItem
+a["b1"] = "b1";
+
+b = a["a1"]; // IVARIANTMapImp::GetItem
+c = a.count();// IVARIANTMapImp::Count
+d = a.keys();// IVARIANTMapImp::Keys
+
+
+

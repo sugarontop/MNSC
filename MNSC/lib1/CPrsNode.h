@@ -272,6 +272,8 @@ class CPrsAssign : public CPrsNode
 };
 
 
+
+
 class CPrsParameters : public CPrsNode
 {
 	public:
@@ -373,6 +375,7 @@ class CPrsVarFunction : public CPrsNode
 		static VARIANT VarInvoke(std::wstring funcnm, bool* bUpdate, VARIANT* v, int vcnt);
 		void Parse2();
 		void Generate2(stackGntInfo& stinfo);
+
 	protected:
 		std::shared_ptr <CPrsParameters> m_parameter;
 		std::shared_ptr <CPrsExpression> m_expression;
@@ -499,6 +502,7 @@ protected:
 	std::shared_ptr <CPrsAssignPlusEqual> m_icr_assign;
 	std::shared_ptr <CPrsConditionEx> m_condition;
 	std::shared_ptr <CPrsStatmentList> m_statementlist;
+	std::shared_ptr <CPrsExpression> m_in_expression;
 
 	std::shared_ptr <CPrsParameters> in_parameters_;
 	std::wstring in_ident_nm_, in_object_nm_;
