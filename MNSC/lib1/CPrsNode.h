@@ -381,7 +381,6 @@ class CPrsVarFunction : public CPrsNode
 		std::shared_ptr <CPrsExpression> m_expression;
 		FVariant m_value;
 		std::wstring DotFuncName_;
-		//VARIANT Return_;
 		FVariant Return_;
 		std::shared_ptr<CPrsVarFunction> next_;
 };

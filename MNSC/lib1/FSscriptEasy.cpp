@@ -23,7 +23,8 @@ bool FScriptEasy::Parse(LPCWSTR script, LPCWSTR appnn, VARIANT app)
 
 	try
 	{
-		prg_->SetPreGlobalVariant(appnn,app);
+		if (appnn)
+			prg_->SetPreGlobalVariant(appnn,app);
 
 		prg_->Parse();
 		return true;

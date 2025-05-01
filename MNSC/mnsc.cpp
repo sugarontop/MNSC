@@ -9,6 +9,8 @@ inline FScript* Handle(ScriptSt st)
 	return (FScript*)st.p;
 }
 
+std::wstring _A2W(std::string& s);
+
 DLLEXPORT ScriptSt MNSCInitilize(LPVOID sender, DWORD script_engine_type)
 {
 	ScriptSt st = {};
@@ -18,33 +20,69 @@ DLLEXPORT ScriptSt MNSCInitilize(LPVOID sender, DWORD script_engine_type)
 	{
 		FScript* sc = new FScriptEasy();
 		st.p = sc;
+		st.result = true;
 	}
 	return st;
 }
-DLLEXPORT bool MNSCParse(ScriptSt st, LPCWSTR script, LPCWSTR appnm,const VARIANT app)
+DLLEXPORT bool MNSCParse(ScriptSt& st, LPCWSTR script, LPCWSTR appnm,const VARIANT app)
 {
-	auto sc = Handle(st);
-	bool bl = sc->Parse(script, appnm, app);
-
-	return bl;
+	st.result = false;
+	try
+	{
+		auto sc = Handle(st);
+		st.result = sc->Parse(script, appnm, app);
+	}
+	catch(std::runtime_error& er)
+	{
+		std::string s = er.what();
+		st.error_msg = ::SysAllocString( _A2W(s).c_str());
+	}
+	catch(...)
+	{
+		st.error_msg = ::SysAllocString(L"throw catched");
+	}
+	return st.result;
 
 }
 
-DLLEXPORT VARIANT MNSCCall(ScriptSt st, LPCWSTR funcnm, VARIANT* prms, int pmcnt)
+DLLEXPORT VARIANT MNSCCall(ScriptSt& st, LPCWSTR funcnm, VARIANT* prms, int pmcnt)
 {
-	auto sc = Handle(st);
+	_ASSERT(st.result == true);
+	VARIANT ret;
+	::VariantInit(&ret);
 	
-	VARIANT ret = sc->Call(funcnm, prms, pmcnt);
+	try
+	{
+		auto sc = Handle(st);
+	
+		ret = sc->Call(funcnm, prms, pmcnt);
+
+		st.result = true;
+	}
+	catch (std::runtime_error& er)
+	{
+		std::string s = er.what();
+		st.error_msg = ::SysAllocString(_A2W(s).c_str());	
+		st.result = false;
+	}
+	catch (...)
+	{
+		st.error_msg = ::SysAllocString(L"runtime_error, throw catched");		
+		st.result = false;
+	}
 
 	return ret;
 }
 
-DLLEXPORT void MNSCClose(ScriptSt st)
+DLLEXPORT void MNSCClose(ScriptSt& st)
 {
 	if (st.p)
 		delete Handle(st);
+	if (st.error_msg)
+		::SysFreeString(st.error_msg);
 	
 	st.p = nullptr;
+	st.error_msg = nullptr;
 }
 
 DLLEXPORT VARIANT MNSCCreateMap()
@@ -121,4 +159,12 @@ DLLEXPORT bool MNSCWriteUtf8(LPCWSTR fnm, BSTR text)
 		return true;
 	}
 	return false;
+}
+
+std::wstring _A2W(std::string& s)
+{
+	int wlen = ::MultiByteToWideChar(CP_ACP, 0, s.c_str(), (int)s.length(), nullptr, 0);
+	std::unique_ptr<WCHAR[]> wcb(new WCHAR[wlen]);
+	::MultiByteToWideChar(CP_ACP, 0, s.c_str(), (int)s.length(), wcb.get(), wlen);
+	return std::wstring(wcb.get(), wlen);
 }

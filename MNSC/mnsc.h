@@ -13,12 +13,14 @@ struct ScriptSt
 {
 	LPVOID sender;
 	LPVOID p;
+	BSTR error_msg;
+	bool result;
 };
 
 DLLEXPORT ScriptSt MNSCInitilize(LPVOID sender, DWORD script_engine_type); 
-DLLEXPORT bool MNSCParse(ScriptSt st, LPCWSTR script, LPCWSTR appnm, const VARIANT app);
-DLLEXPORT VARIANT MNSCCall(ScriptSt st, LPCWSTR funcnm, VARIANT* prm=nullptr, int pmcnt=0);
-DLLEXPORT void MNSCClose(ScriptSt st);
+DLLEXPORT bool MNSCParse(ScriptSt& st, LPCWSTR script, LPCWSTR appnm, const VARIANT app);
+DLLEXPORT VARIANT MNSCCall(ScriptSt& st, LPCWSTR funcnm, VARIANT* prm=nullptr, int pmcnt=0);
+DLLEXPORT void MNSCClose(ScriptSt& st);
 
 DLLEXPORT VARIANT MNSCCreateMap();
 DLLEXPORT VARIANT MNSCCreateArray();

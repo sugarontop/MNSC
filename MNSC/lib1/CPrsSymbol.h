@@ -11,13 +11,13 @@ enum TokenType
 	Greater, Becomes, Dot, IdentArray, Comma, //30
 	lParen, rParen, Quotation, GreaterEqual, printSym,
 	funcSym, IdentFunc, returnSym, lBracket, rBracket, //40
-	objectSym, nextSym, endwhileSym, breakSym, IdentVarFunc,
+	objectSym, nextSym, BuiltinFunc, breakSym, IdentVarFunc,
 	setSym, lSquare, rSquare, PlusEqual, Plusplus, // 50
 	Minusminus, exportSym, pointSym, IdentVarPoint, IdentExport,
 	ofSym, Float, IdentVarDic, expdataSym, ANDAND, // 60
 	OROR, asyncSym,awaitSym,inSym, Colon,
-	funcPointerSym,BuiltinFunc, MinusEqual,ParameterSym,trueSym,//70
-	falseSym,Semicol
+	funcPointerSym,MinusEqual,ParameterSym,trueSym,falseSym,//70
+	Semicol
 };
 
 typedef std::pair<wstring, int> keyword_item;

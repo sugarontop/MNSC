@@ -641,33 +641,37 @@ void CMFCEditView::OnBnClickedBtnRun()
 	// 2 script initialize
 	ScriptSt sc = MNSCInitilize(this, 1);
 
-	try 
-	{	
-		CString script;
-		GetDlgItem(IDC_ED_INPUT)->GetWindowText(script);
+		
+	CString script;
+	GetDlgItem(IDC_ED_INPUT)->GetWindowText(script);
 
-		// 3 script parse
-		if (MNSCParse(sc, script, L"_ap", v1))
-		{
-			VARIANT prms[1];
-			_variant_t prm1 = L"Hello world";
-			prms[0] = prm1.Detach();
-
-			// 4 script execute
-			VARIANT v = MNSCCall(sc,L"main", prms, 1 );
-
-			::VariantClear(&v);
-
-
-			// std::wcout string to window
-			GetDlgItem(IDC_ED_OUTPUT)->SetWindowText(sm.str().c_str());
-		}
-	}
-	catch(std::exception& x)
+	// 3 script parse
+	if (MNSCParse(sc, script, L"_ap", v1))
 	{
-		std::string ss = x.what();
-		SetWindowTextA(GetDlgItem(IDC_ED_OUTPUT)->GetSafeHwnd(), ss.c_str());
+		VARIANT prms[1];
+		_variant_t prm1 = L"Hello world";
+		prms[0] = prm1.Detach();
+
+		
+		// 4 script execute
+		VARIANT v = MNSCCall(sc,L"main", prms, 1 );
+
+		if (!sc.result)
+		{
+			std::wstring err1 = sc.error_msg;
+			::SetWindowTextW(GetDlgItem(IDC_ED_OUTPUT)->GetSafeHwnd(), err1.c_str());
+		}
+		else
+			GetDlgItem(IDC_ED_OUTPUT)->SetWindowText(sm.str().c_str());
+
+		::VariantClear(&v);
 	}
+	else
+	{
+		std::wstring err1 = sc.error_msg;
+		::SetWindowTextW(GetDlgItem(IDC_ED_OUTPUT)->GetSafeHwnd(), err1.c_str());
+	}
+	
 
 	// 5 script close
 	MNSCClose(sc);

@@ -424,7 +424,6 @@ void CPrsFactor::Parse()
 	if (m_Symbol.getStat() == CPrsSymbol::STAT::IN_PARSING) //“¦‚°‚ÌˆêŽè
 	{
 		auto st1 = getNewPeekSymbol(); 
-		//if ( st1.Token == 46 || st1.Token == 47 || st1.Token == 31 )
 		if (st1.Token == lSquare || st1.Token == rSquare || st1.Token == lParen || st1.Token == rParen)
 			st = getNewSymbol();
 
@@ -432,12 +431,7 @@ void CPrsFactor::Parse()
 	else
 	{
 		if ( st.Token != Semicol )
-		{
-			//auto st1 = getNewPeekSymbol();
-			//if (st1.Token != Semicol)
-			//	st = getNewSymbol();		
 			st = getNewSymbol();
-		}
 	}	
 
 

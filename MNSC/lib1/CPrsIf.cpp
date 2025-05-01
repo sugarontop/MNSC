@@ -17,26 +17,10 @@ endif
 ///////////////////////////////////////////////////////////////////////////////////
 CPrsIf::CPrsIf(CPrsSymbol& sym) :CPrsNode(sym)
 {
-	//m_statementlist_else = nullptr;
+
 }
 CPrsIf::CPrsIf(const CPrsIf& src) :CPrsNode(src.m_Symbol)
 {
-	//m_statementlist_else = nullptr;
-
-	/*for (UINT i = 0; i < src.m_conAr.size(); i++)
-	{
-		stThen* pst = new stThen;
-		pst->m_condition = nullptr;
-		pst->m_statementlist_then = nullptr;
-
-		if (src.m_conAr[i]->m_condition)
-			pst->m_condition = new CPrsCondition(*(src.m_conAr[i]->m_condition));
-		if (src.m_conAr[i]->m_statementlist_then)
-			pst->m_statementlist_then = new CPrsStatmentList(*(src.m_conAr[i]->m_statementlist_then));
-
-		m_conAr.push_back(pst);
-	}*/
-
 	m_conAr = src.m_conAr;
 	m_statementlist_else = src.m_statementlist_else;
 }
@@ -47,13 +31,6 @@ CPrsIf::~CPrsIf()
 
 void CPrsIf::Flush()
 {
-	/*for (UINT i = 0; i < m_conAr.size(); i++)
-	{
-		stThen* pst = m_conAr[i];
-		delete pst->m_condition;
-		delete pst->m_statementlist_then;
-		delete pst;
-	}*/
 	m_conAr.clear();
 
 	m_statementlist_else = nullptr;
@@ -69,8 +46,6 @@ void CPrsIf::Parse()
 		if (getNewSymbol().Token == lParen)
 		{
 			auto pst = std::make_shared<stThen>();
-			//pst->m_condition = NULL;
-			//pst->m_statementlist_then = NULL;
 			m_conAr.push_back(pst);
 
 

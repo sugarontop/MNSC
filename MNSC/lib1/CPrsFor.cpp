@@ -197,11 +197,8 @@ void CPrsFor::Generate(stackGntInfo& stinfo)
 	}
 	else if (!in_object_nm_.empty())
 	{
-		//FVariant ar;
-		//m_Symbol.getSymbolTable().getAt(in_object_nm_, ar);
-
-
 		m_in_expression->Generate(stinfo);
+
 		const FVariant& ar = m_in_expression->getValue();
 
 

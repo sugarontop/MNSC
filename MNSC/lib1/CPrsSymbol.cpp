@@ -7,7 +7,6 @@
 static keyword_item Method[] =
 {
 	keyword_item::pair(_T("next"),		nextSym),
-	keyword_item::pair(_T("endwhile"),	endwhileSym),
 	keyword_item::pair(_T("object"),	objectSym),
 	keyword_item::pair(_T("BEGIN"),	beginSym),
 	keyword_item::pair(_T("begin"),	beginSym),

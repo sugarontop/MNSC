@@ -2,7 +2,7 @@
 #include "CPrsNode.h"
 // CPrsAssign
 
-wstring gAssign;
+//static wstring gAssign;
 
 CPrsAssign::CPrsAssign(CPrsSymbol& sym) :CPrsNode(sym)
 {
@@ -36,7 +36,7 @@ void CPrsAssign::HParse()
 	{
 		m_AssignName = st.Value;
 
-gAssign = m_AssignName;
+//gAssign = m_AssignName;
 
 		if (type == CSymbolTable::TYPE_OBJECT)
 		{
@@ -314,7 +314,7 @@ void CPrsAssignSquare::Parse()
 		throw(s1);
 	}
 }
-// a[] = ["furuya", "xxxxxx", "yokohama"];
+
 void CPrsAssignSquare::ParseAutoAr()
 {
 	SToken	st = getSymbol();

@@ -238,9 +238,6 @@ void CPrsStatmentList::Parse()
 				case nextSym:
 					if (m_Endsymbol & ENDSYMBOL_ENDNEXT) return;
 				break;
-				case endwhileSym:
-					if (m_Endsymbol & ENDSYMBOL_ENDWHILE) return;
-				break;
 				case elseSym:
 					if (m_Endsymbol & ENDSYMBOL_ELSE) return;
 				break;

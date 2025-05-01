@@ -38,7 +38,7 @@ begin
 		endif
 
 		b++;
-	endwhile
+	end
 	print(c);
 
 

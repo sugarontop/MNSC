@@ -34,8 +34,6 @@ void CPrsDo::Generate(stackGntInfo& stinfo)
 		{
 			if (m_statementlist)
 			{
-				// statementlist“à‚Åbreak‚ªŒø‚­‚æ‚¤‚Éİ’è
-
 				stinfo.top().m_stackInfo.push(CPrsGntInfo::in_loop);
 
 				m_statementlist->Generate(stinfo);

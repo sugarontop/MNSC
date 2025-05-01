@@ -150,9 +150,6 @@ void CPrsDeclarFunction::Parse()
 
 	if (st.Token == lParen)
 	{
-		// CPrsFunctionを作成してparseをかける。そして、SymbolTableへ登録する。
-		// deleteはm_Symbolがうけもつ。
-
 		std::shared_ptr<CPrsFunction> func = m_Symbol.RegistMasterFunc(funcname);
 		if (func) func->Parse();
 

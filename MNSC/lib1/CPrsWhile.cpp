@@ -5,7 +5,7 @@
 while ( ... )
 
 	...
-endwhile
+end
 
 
 */
@@ -40,11 +40,6 @@ void CPrsWhile::Generate(stackGntInfo& stinfo)
 
 			if (m_statementlist)
 			{
-				// statementlist“à‚Åbreak‚ªŒø‚­‚æ‚¤‚ÉÝ’è
-
-				// loop“à‚Å‚Ìreturn‚ªŒø‚©‚È‚¢bug‚ ‚è 2003.02
-
-
 				stinfo.top().m_stackInfo.push(CPrsGntInfo::in_loop);
 
 				m_statementlist->Generate(stinfo);
@@ -77,12 +72,12 @@ void CPrsWhile::Parse()
 	if (getSymbol().Token == rParen)
 	{
 		getNewSymbol();
-		m_statementlist = std::make_shared <CPrsStatmentList>(m_Symbol, ENDSYMBOL_ENDWHILE);
+		m_statementlist = std::make_shared <CPrsStatmentList>(m_Symbol, ENDSYMBOL_END);
 		m_statementlist->Parse();
 
-		if (getSymbol().Token != endwhileSym)
+		if (getSymbol().Token != endSym)
 		{
-			THROW(L"'endwhile' expected");
+			THROW(L"'end' expected");
 		}
 
 		getNewSymbol();

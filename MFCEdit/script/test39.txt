@@ -2,20 +2,28 @@
 func test()
 var a,b,c;
 begin
-	//a = [];
-	a = {};
-	//a.add({"cd": "cdns", "cnt": 20,"x":100,"y":100, "typ":1 });
+	a = [];
+	//a = {};
+	a.add({"cd": "cdns", "cnt": 20,"x":100,"y":100, "typ":1 });
 	return a;
 end
 
-
+// test()の上書き
+func test()
+var a,b,c;
+begin
+	a = [];
+	//a = {};
+	a.add({"cd": "cdns", "cnt": 30,"x":100,"y":100, "typ":1 });
+	return a;
+end
 
 func main()
 var a,b,c;
 begin
 
 	a = test();
-//print( a[0]["cnt"]);
+	print( a[0]["cnt"]);
 	
 	//b = test();
 	
