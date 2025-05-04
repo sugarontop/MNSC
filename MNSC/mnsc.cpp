@@ -45,6 +45,31 @@ DLLEXPORT bool MNSCParse(ScriptSt& st, LPCWSTR script, LPCWSTR appnm,const VARIA
 
 }
 
+DLLEXPORT bool MNSCUpdate(ScriptSt& st, LPCWSTR script)
+{
+	_ASSERT(st.result == true);
+
+	try
+	{
+		VARIANT dumy={};
+		auto sc = Handle(st);
+		st.result = sc->Parse(script, nullptr, dumy);
+	}
+	catch (std::runtime_error& er)
+	{
+		std::string s = er.what();
+		st.error_msg = ::SysAllocString(_A2W(s).c_str());
+		st.result = false;
+	}
+	catch (...)
+	{
+		st.error_msg = ::SysAllocString(L"throw catched");
+		st.result = false;
+	}
+	return st.result;
+	
+}
+
 DLLEXPORT VARIANT MNSCCall(ScriptSt& st, LPCWSTR funcnm, VARIANT* prms, int pmcnt)
 {
 	_ASSERT(st.result == true);
@@ -81,8 +106,7 @@ DLLEXPORT void MNSCClose(ScriptSt& st)
 	if (st.error_msg)
 		::SysFreeString(st.error_msg);
 	
-	st.p = nullptr;
-	st.error_msg = nullptr;
+	st = {};	
 }
 
 DLLEXPORT VARIANT MNSCCreateMap()
