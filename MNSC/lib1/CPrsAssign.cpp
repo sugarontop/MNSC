@@ -2,9 +2,9 @@
 #include "CPrsNode.h"
 // CPrsAssign
 
-//static wstring gAssign;
+//see CPrsStatment::factoryParse
 
-CPrsAssign::CPrsAssign(CPrsSymbol& sym) :CPrsNode(sym)
+CPrsAssign::CPrsAssign(CPrsSymbol& sym) :CPrsNode(sym), m_const(false)
 {
 	
 }
@@ -12,6 +12,7 @@ CPrsAssign::CPrsAssign(const CPrsAssign& src) :CPrsNode(src.m_Symbol)
 {
 	m_expression = src.m_expression;
 	m_AssignName = src.m_AssignName;
+	m_const = src.m_const;
 }
 CPrsAssign::~CPrsAssign()
 {
@@ -143,6 +144,10 @@ void CPrsAssign::HGenerate(stackGntInfo& stinfo)
 		m_expression->Generate(stinfo);
 
 		FVariant var = m_expression->getValue();
+
+		if (m_const)
+			var.lock();
+
 
 		if ( var.vt != VT_EMPTY)
 		{

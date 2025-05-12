@@ -80,4 +80,18 @@ public:
 	virtual UINT Keys(VARIANT* ar) = 0;
 };
 
+class IVARIANTClass : public IVARIANTAbstract
+{
+public:
+	IVARIANTClass() {};
+public:
+	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) = 0;
+	virtual int TypeId() = 0;
+	virtual void Clear() = 0;
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
+public:
+	/*virtual void SetObject(LPCWSTR key, VARIANT& v) = 0;
+	virtual bool GetObject(LPCWSTR key, VARIANT* v) = 0;
+	virtual UINT Keys(VARIANT* ar) = 0;*/
+};
 

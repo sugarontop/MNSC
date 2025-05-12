@@ -70,6 +70,10 @@ static FVariant f_rand(const FVariant* v, int cnt);
 static FVariant f_range(const FVariant* v, int cnt);
 static FVariant f_json_parse(const FVariant* v, int cnt);
 static FVariant f_json_stringify(const FVariant* v, int cnt);
+static FVariant f_create_struct(const FVariant* v, int cnt);
+static FVariant f_dir(const FVariant* v, int cnt);
+//static FVariant f_assert(const FVariant* v, int cnt);
+
 
 #define FUNCTIONS \
 {0,L"sin", f_sin}, \
@@ -81,7 +85,10 @@ static FVariant f_json_stringify(const FVariant* v, int cnt);
 {6,L"rand", f_rand}, \
 {7,L"range", f_range}, \
 {8,L"json_parse", f_json_parse}, \
-{9,L"json_stringify", f_json_stringify} \
+{9,L"json_stringify", f_json_stringify}, \
+{10,L"create_struct", f_create_struct}, \
+{11,L"dir", f_dir} \
+
 
 
 
@@ -160,6 +167,67 @@ static FVariant f_range(const FVariant* v, int cnt)
 	ret.setAr(ar);
 	return ret;
 }
+
+static FVariant f_create_struct(const FVariant* v, int cnt)
+{
+	if (cnt != 1)
+		THROW(L"create_struct err");
+
+	FVariant ret;
+	
+	ret.punkVal = new IVARIANTClassImp();
+	ret.vt = VT_UNKNOWN;
+	return ret;
+
+}
+
+static FVariant f_dir(const FVariant* v, int cnt)
+{
+	if (cnt != 1)
+		THROW(L"dir err");
+
+	if (v[0].vt != VT_BSTR)
+		THROW(L"dir err");
+
+	std::wstring s = v[0].bstrVal;
+
+	if (s.length() > 0 && s[s.length() - 1] != L'\\')
+		s += L'\\';
+
+	FVariant ret;
+	ret.bstrVal = ::SysAllocString(s.c_str());
+	ret.vt = VT_BSTR;
+	return ret;
+}
+
+//static FVariant f_assert(const FVariant* v, int cnt)
+//{
+//	if ( cnt == 2)
+//	{
+//		if (v[0] == v[1])
+//			return FVariant(true);
+//		else
+//			throw wstring(L"assert fail, not equal");
+//	}
+//	else if (cnt == 3)
+//	{
+//		if (v[2].vt == VT_BSTR)
+//		{
+//			std::wstring flg = v[2].bstrVal;
+//
+//			if (flg == L"==" && v[0] == v[1])
+//				return FVariant(true);
+//			else if (flg == L"!=" && v[0] != v[1])
+//				return FVariant(true);
+//			else if (flg == L"<" && v[0] < v[1])
+//				return FVariant(true);
+//			else if (flg == L">" && v[0] > v[1])
+//				return FVariant(true);
+//		}
+//	}
+//	throw wstring(L"assert fail");
+//	return FVariant(false);
+//}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 

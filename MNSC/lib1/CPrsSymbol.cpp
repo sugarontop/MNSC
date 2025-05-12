@@ -35,7 +35,8 @@ static keyword_item Method[] =
 	keyword_item::pair(_T("await"),		awaitSym),
 	keyword_item::pair(_T("in"),		inSym),
 	keyword_item::pair(_T("true"),		trueSym),
-	keyword_item::pair(_T("false"),		falseSym)
+	keyword_item::pair(_T("false"),		falseSym),
+	keyword_item::pair(_T("assert"),	AssertSym)
 };
 
 CPrsSymbol::CPrsSymbol(LPCWSTR script_text)

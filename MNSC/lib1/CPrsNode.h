@@ -151,11 +151,12 @@ class CPrsStatment : public CPrsNode
 		void HParse();
 		bool IsNull(){ return (m_node.get() == nullptr); }
 	protected:
-		std::shared_ptr<CPrsNode> factoryParse(int nodetype, CPrsNode* src, int subnodetype);
+		std::shared_ptr<CPrsNode> factoryParse(int nodetype, CPrsNode* src, int subnodetype, bool bconst);
 		std::shared_ptr<CPrsNode> m_node;
 		int			m_Nodetype;
 		int			m_Subndtype;
 		int			m_LineNumber;
+		bool		m_bconst;
 };
 
 class CPrsDeclarVar : public CPrsNode
@@ -266,9 +267,11 @@ class CPrsAssign : public CPrsNode
 
 		void HGenerate(stackGntInfo& stinfo);
 		void HParse();
+		void lock(bool bconst){ m_const=bconst;}
 	protected:
 		std::shared_ptr <CPrsExpression> m_expression;
-		wstring			m_AssignName;
+		wstring	m_AssignName;
+		bool m_const;
 };
 
 
@@ -484,6 +487,22 @@ protected:
 	std::vector<std::shared_ptr<stThen>>	m_conAr;
 	std::shared_ptr<CPrsStatmentList> m_statementlist_else;
 };
+
+class CPrsAssert : public CPrsNode
+{	
+	public :
+		CPrsAssert(CPrsSymbol& sym);
+		CPrsAssert(const CPrsAssert& sym);
+		~CPrsAssert();
+		virtual void Parse();
+		virtual void Generate(stackGntInfo& stinfo);
+		void Flush();
+	protected:
+		std::shared_ptr<CPrsConditionEx> m_condition;
+
+};
+
+
 
 class CPrsFor : public CPrsNode
 {

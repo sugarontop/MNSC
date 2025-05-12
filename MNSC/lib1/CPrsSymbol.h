@@ -17,7 +17,7 @@ enum TokenType
 	ofSym, Float, IdentVarDic, expdataSym, ANDAND, // 60
 	OROR, asyncSym,awaitSym,inSym, Colon,
 	funcPointerSym,MinusEqual,ParameterSym,trueSym,falseSym,//70
-	Semicol
+	AssertSym,Semicol
 };
 
 typedef std::pair<wstring, int> keyword_item;

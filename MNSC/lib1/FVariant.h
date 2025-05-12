@@ -6,10 +6,19 @@
 
 #define VTF_FUNC			(VT_RESERVED+1)
 #define VTF_BUILTIN_FUNC	(VT_RESERVED+2)
+#define VT_CONST	(0x800)
+#define VTCT(vt)	((vt)&~VT_CONST)
 
-enum FVariantType {ARRAY=1,MAP=2, FUNCTIONPOINTER =3};
+enum FVariantType {ARRAY=1,MAP=2, FUNCTIONPOINTER =3, CLASS=4};
 
-class FVariant : private tagVARIANT
+class const_struct
+{
+	public:
+		const_struct() :lock_(false) {}
+		bool lock_;
+};
+
+class FVariant : private tagVARIANT, private const_struct
 {	
 	public :
 		using tagVARIANT::vt;
@@ -67,7 +76,9 @@ class FVariant : private tagVARIANT
 		const BSTR getSS() const { return bstrVal; }
 		ULONG	length() const;
 		void	toStr();
-	
+		void lock(){ lock_ = true; }
+		void unlock() { lock_ = false; }
+		
 	public:
 		const FVariant& operator = (const FVariant& v);
 		const FVariant& operator = (const VARIANT& v);

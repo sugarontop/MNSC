@@ -84,6 +84,11 @@ DLLEXPORT VARIANT MNSCCall(ScriptSt& st, LPCWSTR funcnm, VARIANT* prms, int pmcn
 
 		st.result = true;
 	}
+	catch (std::wstring& er)
+	{
+		st.error_msg = ::SysAllocString(er.c_str());
+		st.result = false;
+	}
 	catch (std::runtime_error& er)
 	{
 		std::string s = er.what();

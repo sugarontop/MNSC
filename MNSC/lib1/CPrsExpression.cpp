@@ -69,7 +69,6 @@ void CPrsExpression::Generate(stackGntInfo& stinfo)
 		{
 			case Plus:
 			case Minus:
-			
 				sm.Token = subterm->token;
 			break;
 			case noToken:
@@ -77,9 +76,11 @@ void CPrsExpression::Generate(stackGntInfo& stinfo)
 				switch (sm.Token)
 				{
 				case Plus:
+					sm.value.unlock();
 					sm.value = sm.value + value;
 					break;
 				case Minus:
+					sm.value.unlock();
 					sm.value = sm.value - value;
 					break;
 				

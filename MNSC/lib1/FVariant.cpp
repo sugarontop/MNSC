@@ -59,6 +59,8 @@ FVariant::FVariant(const FVariant& var)
 {
 	init();
 	InnerCopy((VARIANT *)&var);
+
+	lock_ = var.lock_;
 }
 
 void FVariant::InnerCopy(const VARIANT* src)
@@ -180,19 +182,20 @@ ULONG FVariant::length() const
 }
 const FVariant& FVariant::operator = (const FVariant& v) 
 { 
-	if (this != &v)
+	if (this != &v && !lock_)
 	{
 		clear_init();
 		InnerCopy(&v);
 
 		vt = v.vt;
+		lock_ = v.lock_;
 
 	}
 	return *this; 
 }
 const FVariant& FVariant::operator = (const VARIANT& v)
 {
-	if (this != &v)
+	if (this != &v && !lock_)
 	{
 		clear_init();
 		memcpy(this,&v,sizeof(tagVARIANT));		

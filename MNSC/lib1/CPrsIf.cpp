@@ -105,3 +105,51 @@ void CPrsIf::Generate(stackGntInfo& stinfo)
 	if (i == m_conAr.size() && m_statementlist_else)
 		m_statementlist_else->Generate(stinfo);
 }
+///////////////////////////////////////////////////////////////////////////////////
+CPrsAssert::CPrsAssert(CPrsSymbol& sym) :CPrsNode(sym)
+{
+
+}
+CPrsAssert::CPrsAssert(const CPrsAssert& src) :CPrsNode(src.m_Symbol)
+{
+	m_condition = src.m_condition; 
+}
+CPrsAssert::~CPrsAssert()
+{
+	Flush();
+}
+void CPrsAssert::Parse()
+{
+	SToken st;
+
+	if (getNewSymbol().Token == lParen)
+	{
+		getNewSymbol();
+		m_condition = std::make_shared<CPrsConditionEx>(m_Symbol);
+		m_condition->Parse();
+
+		if ( rParen == getSymbol().Token)
+			st = getNewSymbol();
+		else
+			THROW(L"')' expected");
+	}
+
+	if (st.Token == Semicol)
+		st = getNewSymbol();
+	else
+		THROW(L"';' expected");
+}
+void CPrsAssert::Generate(stackGntInfo& stinfo)
+{
+	m_condition->Generate(stinfo);
+
+	bool bl = m_condition->enableProcess();
+
+	if (!bl)
+		THROW(L"assert error");
+
+}
+void CPrsAssert::Flush()
+{
+	m_condition = nullptr;
+}

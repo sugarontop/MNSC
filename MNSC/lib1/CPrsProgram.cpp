@@ -267,14 +267,16 @@ CPrsStatment::CPrsStatment(CPrsSymbol& sym) :CPrsNode(sym)
 	m_Nodetype = 0;
 	m_Subndtype = 0;
 	m_LineNumber = 0;
+	m_bconst = false;
 }
 CPrsStatment::CPrsStatment(const CPrsStatment& src) :CPrsNode(src.m_Symbol)
 {
 	m_Nodetype = src.m_Nodetype;
 	m_Subndtype = src.m_Subndtype;
 	m_LineNumber = src.m_LineNumber;
+	m_bconst = src.m_bconst;
 
-	m_node = factoryParse(m_Nodetype, src.m_node.get(), m_Subndtype);
+	m_node = factoryParse(m_Nodetype, src.m_node.get(), m_Subndtype, src.m_bconst);
 }
 
 CPrsStatment::~CPrsStatment()
@@ -301,6 +303,7 @@ void CPrsStatment::HGenerate(stackGntInfo& stinfo)
 		err += sm.str();
 		throw err;
 	}
+	
 }
 
 
@@ -313,7 +316,7 @@ if (glinenum_debug++ > 1000)
 {
 	THROW(L"limiter over 1000 lines");
 }
-	const SToken&	st = getSymbol();
+	SToken	st = getSymbol();
 	CPrsNode* node = nullptr;
 
 	if ( st.Token == rParen )
@@ -322,16 +325,24 @@ if (glinenum_debug++ > 1000)
 		return;
 	}
 
-
+	m_bconst = false;
 	m_LineNumber = m_Symbol.getLineNumber();
 	try
 	{
+		if ( st.Token == constSym)
+		{
+			st = getNewSymbol();
+			m_bconst = true;
+		}
+
+
+
 		m_Nodetype = st.Token;
 
 		SToken stahead = m_Symbol.getNewSymbolReal();
 		m_Subndtype = stahead.Token;
 
-		m_node = factoryParse(m_Nodetype, nullptr, m_Subndtype);
+		m_node = factoryParse(m_Nodetype, nullptr, m_Subndtype, m_bconst);
 		if (m_node)
 		{
 			auto& st2 = getSymbol();
@@ -348,7 +359,7 @@ if (glinenum_debug++ > 1000)
 		throw std::runtime_error( w2a(msg));
 	}
 }
-std::shared_ptr<CPrsNode> CPrsStatment::factoryParse(int nodetype, CPrsNode* src, int subnodetype)
+std::shared_ptr<CPrsNode> CPrsStatment::factoryParse(int nodetype, CPrsNode* src, int subnodetype, bool bconst)
 {
 	CPrsNode* node = nullptr;
 
@@ -380,6 +391,8 @@ std::shared_ptr<CPrsNode> CPrsStatment::factoryParse(int nodetype, CPrsNode* src
 				else
 				{
 					CPrsAssign* assign_node = new CPrsAssign(m_Symbol);
+
+					assign_node->lock(bconst);
 
 					assign_node->HParse();
 
@@ -454,7 +467,15 @@ std::shared_ptr<CPrsNode> CPrsStatment::factoryParse(int nodetype, CPrsNode* src
 				node->Parse();
 			}
 		break;
-
+		case AssertSym:
+			if (src)
+				node = new CPrsAssert(*(CPrsAssert*)src);
+			else
+			{
+				node = new CPrsAssert(m_Symbol);
+				node->Parse();
+			}
+		break;
 		default:
 			break;
 	}

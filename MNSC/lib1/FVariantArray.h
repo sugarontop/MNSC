@@ -104,3 +104,36 @@ public:
 		return func_;
 	}
 };
+
+// ‚Ü‚¾‚Ü‚¾ƒeƒXƒg
+/*
+*  var obj;
+*  obj = create_class("my_name");
+*  obj.a = 1;
+* obj.str = "string";
+* 
+* var obj2 = obj;
+* print(obj2.a);
+* print(obj2.str);
+* 
+*/
+class IVARIANTClassImp : public IVARIANTClass
+{
+public:
+	IVARIANTClassImp();
+public:
+	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv);
+	virtual int TypeId() { return FVariantType::CLASS; }
+	virtual ULONG Count() { return (ULONG)map.size(); }
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt);
+	virtual void Clear(){ map.clear(); }
+	
+protected:
+	std::unordered_map<std::wstring, FVariant> map;
+public:
+	
+	/*virtual void SetObject(LPCWSTR key, VARIANT& v) = 0;
+	virtual bool GetObject(LPCWSTR key, VARIANT* v) = 0;
+	virtual UINT Keys(VARIANT* ar) = 0;*/
+};
+

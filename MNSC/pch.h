@@ -19,7 +19,7 @@
 
 std::string w2a(std::wstring ws); // CPrsAssign.cpp
 
-#define THROW(ws)	throw(std::runtime_error(w2a(ws)))
+#define THROW(ws)	throw(std::wstring(ws))
 
 typedef std::wstring wstring;
 

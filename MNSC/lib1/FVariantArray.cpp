@@ -58,6 +58,7 @@ void IVARIANTArrayImp::Set(int idx, VARIANT& v)
 HRESULT __stdcall IVARIANTArrayImp::QueryInterface(REFIID riid, void** ppv) { IUNKNOWN_ITERFACE;}
 HRESULT __stdcall IVARIANTMapImp::QueryInterface(REFIID riid, void** ppv) { IUNKNOWN_ITERFACE;}
 HRESULT __stdcall IVARIANTFunctionImp::QueryInterface(REFIID riid, void** ppv) { IUNKNOWN_ITERFACE;}
+HRESULT __stdcall IVARIANTClassImp::QueryInterface(REFIID riid, void** ppv) { IUNKNOWN_ITERFACE; }
 
 // Array ---------------------------------------------------------------------------------------------------
 
@@ -93,7 +94,7 @@ VARIANT IVARIANTArrayImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 // Map ---------------------------------------------------------------------------------------------------
 IVARIANTMapImp::IVARIANTMapImp()
 {
-	int a = 0;
+
 }
 VARIANT IVARIANTMapImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 {
@@ -139,7 +140,7 @@ VARIANT IVARIANTMapImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 
 IVARIANTFunctionImp::IVARIANTFunctionImp()
 {	
-	int a = 0;
+	
 }
 VARIANT IVARIANTFunctionImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 {
@@ -166,4 +167,47 @@ VARIANT IVARIANTFunctionImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 void IVARIANTFunctionImp::Clear()
 { 
 	func_ = nullptr; 
+}
+
+// Class ---------------------------------------------------------------------------------------------------
+IVARIANTClassImp::IVARIANTClassImp()
+{
+	
+}
+VARIANT IVARIANTClassImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
+{
+	std::wstring funcnm = cfuncnm;
+	VARIANT x;
+	::VariantInit(&x);
+
+	if (funcnm == L"length" || funcnm == L"count")
+	{
+		FVariant cnt((int)Count());
+		x = cnt.ToVARIANT();
+	}
+	/*else if (funcnm == L"get" && vcnt > 0 && v[0].vt == VT_BSTR)
+	{
+		wstring key = v[0].bstrVal;
+		if (!GetItem(key.c_str(), &x))
+		{
+			THROW(L"map err");
+		}
+	}*/
+	else if (funcnm == L"keys")
+	{
+		std::vector<FVariant> ar;
+		for (auto& it : this->map)
+			ar.push_back(FVariant(it.first.c_str()));
+
+		FVariant ret;
+		ret.setAr(ar);
+		x = ret.ToVARIANT();
+	}
+	else
+	{
+		std::wstringstream sm;
+		sm << L"not implemnt: " << funcnm;
+		THROW(sm.str());
+	}
+	return x;
 }
