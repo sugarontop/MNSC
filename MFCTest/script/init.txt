@@ -1,0 +1,22 @@
+
+
+
+func OnInit()
+var a;
+begin
+
+	_ap.create_object("button", 300,100, "push!");
+	
+	
+end
+
+
+
+func OnClick()
+var a;
+begin
+
+	//_ap.create_object("button", 300,100, "push!");
+	
+	return 1;
+end
