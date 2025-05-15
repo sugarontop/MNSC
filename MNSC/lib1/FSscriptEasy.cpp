@@ -34,7 +34,7 @@ bool FScriptEasy::Parse(LPCWSTR script, LPCWSTR appnn, VARIANT app)
 		int line = symbol_->getLineNumber();
 		std::stringstream sm;
 		sm << "line number: " << line << ", " << err.what();
-		
+		Close();
 		throw std::runtime_error(sm.str());
 		
 	}
@@ -52,6 +52,7 @@ VARIANT FScriptEasy::Call(LPCWSTR funcnm, VARIANT* prm, int prmcnt)
 	}
 	catch (const std::runtime_error& err)
 	{
+		Close();
 		throw err;
 	}
 

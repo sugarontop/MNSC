@@ -13,10 +13,22 @@ begin
 	assert(b==2);
 
 	b = 100;
-	assert(b < 2);
+	assert(b < 3);
 
-
+	c = test(1);
+	print(c);
+	assert(c ==5);
 
 end
 
 
+func test(a)
+var b;
+begin
+	if ( a > 4 )
+		return a;
+	endif
+	
+	return test(a+1);
+
+end

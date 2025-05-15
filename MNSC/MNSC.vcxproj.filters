@@ -93,6 +93,9 @@
     <ClCompile Include="lib1\CPrsBuiltinFunction.cpp">
       <Filter>ソース ファイル\lib1</Filter>
     </ClCompile>
+    <ClCompile Include="lib1\CPrsStatement.cpp">
+      <Filter>ソース ファイル\lib1</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

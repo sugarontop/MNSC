@@ -77,8 +77,8 @@ FVariant::FVariant(VARIANT v)
 	if (v.vt >= VT_RESERVED)
 		vt = v.vt;
 	else
-		memcpy(this, &v, sizeof(tagVARIANT));
-	
+		if (S_OK != VariantCopy(this,&v))
+			throw std::wstring(L"FVariant::FVariant err");
 }
 
 VARIANT FVariant::ToVARIANT() const

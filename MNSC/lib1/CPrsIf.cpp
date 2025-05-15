@@ -39,6 +39,7 @@ void CPrsIf::Flush()
 
 void CPrsIf::Parse()
 {
+	DEBUG_PARSE(CPrsIf)
 	SToken st;
 
 	do
@@ -120,6 +121,8 @@ CPrsAssert::~CPrsAssert()
 }
 void CPrsAssert::Parse()
 {
+	DEBUG_PARSE(CPrsAssert)
+
 	SToken st;
 
 	if (getNewSymbol().Token == lParen)

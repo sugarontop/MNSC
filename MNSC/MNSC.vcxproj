@@ -158,6 +158,7 @@
     <ClCompile Include="lib1\CPrsPrint.cpp" />
     <ClCompile Include="lib1\CPrsProgram.cpp" />
     <ClCompile Include="lib1\CPrsReturn.cpp" />
+    <ClCompile Include="lib1\CPrsStatement.cpp" />
     <ClCompile Include="lib1\CPrsVarFunction.cpp" />
     <ClCompile Include="lib1\CPrsWhile.cpp" />
     <ClCompile Include="lib1\CSymbolTable.cpp" />

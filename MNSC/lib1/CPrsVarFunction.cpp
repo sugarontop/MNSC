@@ -124,6 +124,7 @@ void CPrsVarFunction::Flush()
 {
 	m_parameter = nullptr;
 	m_expression = nullptr;
+	Return_.clear();
 
 }
 void CPrsVarFunction::Generate( stackGntInfo& stinfo )

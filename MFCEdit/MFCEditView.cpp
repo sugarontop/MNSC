@@ -17,6 +17,8 @@
 #include <codecvt>
 #include <regex>
 #include <queue>
+#include <algorithm>
+#include <cwctype> 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -485,7 +487,11 @@ class CVARIANTTool : public IVARIANTAbstract
 		virtual VARIANT Invoke(LPCWSTR cfuncnm, VARIANT* prm, int vcnt) override
 		{
 			std::wstring funcnm = cfuncnm;
-			if (vcnt == 1 && funcnm == L"inetGet")
+			std::transform(funcnm.begin(), funcnm.end(), funcnm.begin(),
+				[](wchar_t c) { return std::towlower(c); });
+
+
+			if (vcnt == 1 && funcnm == L"inetget")
 			{				
 				VARIANT url = prm[0];
 
@@ -496,6 +502,10 @@ class CVARIANTTool : public IVARIANTAbstract
 				return Value(prm[0],prm[1]);
 			}
 			else if (vcnt == 1 && funcnm == L"read_file_utf8")
+			{
+				return OpenTextFile(prm[0]);
+			}
+			else if (vcnt == 1 && funcnm == L"loadutf8")
 			{
 				return OpenTextFile(prm[0]);
 			}
@@ -665,6 +675,7 @@ void CMFCEditView::OnBnClickedBtnRun()
 			GetDlgItem(IDC_ED_OUTPUT)->SetWindowText(sm.str().c_str());
 
 		::VariantClear(&v);
+		::VariantClear(&v1);
 	}
 	else
 	{
