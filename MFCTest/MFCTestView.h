@@ -56,29 +56,3 @@ inline CMFCTestDoc* CMFCTestView::GetDocument() const
    { return reinterpret_cast<CMFCTestDoc*>(m_pDocument); }
 #endif
 
-class DrawingObject
-{
-	public :
-		DrawingObject(CRect rc):rc_(rc)
-		{
-
-		}
-		virtual void Draw(CDC* pDC)
-		{
-			pDC->Rectangle(rc_);
-
-			pDC->DrawTextExW(
-				const_cast<LPWSTR>(text_.c_str()), // std::wstring の c_str() を LPWSTR にキャスト  
-				static_cast<int>(text_.length()), // size_t を int にキャスト  
-				&rc_,
-				DT_VCENTER | DT_SINGLELINE|DT_CENTER,
-				reinterpret_cast<LPDRAWTEXTPARAMS>(nullptr) // nullptr を LPDRAWTEXTPARAMS にキャスト  
-			);
-
-
-
-		}
-
-	CRect rc_;
-	std::wstring text_;
-};

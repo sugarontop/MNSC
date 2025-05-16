@@ -99,7 +99,7 @@ void CPrsFunction::SetParameters(VARIANT* pv, int count)
 		// 関数内用のテーブルにパラメータの値（呼出側）をセットする
 		m_InnerTable.setAt(localIdent, val);
 	
-		val.detach(); // 重要!
+		
 
 		++iti;
 	}

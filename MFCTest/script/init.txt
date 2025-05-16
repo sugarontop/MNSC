@@ -5,18 +5,24 @@ func OnInit()
 var a;
 begin
 
-	_ap.create_object("button", 300,100, "push!");
+	_ap.create_object("button", {"x":300, "y": 100, "cx":200, "cy":30, "text": "push0" } );	
+	_ap.create_object("button", {"x":300, "y": 150, "cx":200, "cy":30, "text": "push1" } );
+	_ap.create_object("button", {"x":300, "y": 200, "cx":200, "cy":30, "text": "push2" } );
+	
 	
 	
 end
 
 
 
-func OnClick()
+func OnClick( obj )
 var a;
 begin
+	
+	
+	obj.settext("pushed");
+	
 
-	//_ap.create_object("button", 300,100, "push!");
 	
 	return 1;
 end

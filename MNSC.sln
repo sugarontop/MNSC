@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MNSC", "MNSC\MNSC.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCEdit", "MFCEdit\MFCEdit.vcxproj", "{9B67FC20-5F52-460E-AD57-54E35663C067}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCTest", "MFCTest\MFCTest.vcxproj", "{39D34B56-8167-EEA8-E6BD-D7A154E1AE86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{9B67FC20-5F52-460E-AD57-54E35663C067}.Release|x64.Build.0 = Release|x64
 		{9B67FC20-5F52-460E-AD57-54E35663C067}.Release|x86.ActiveCfg = Release|Win32
 		{9B67FC20-5F52-460E-AD57-54E35663C067}.Release|x86.Build.0 = Release|Win32
+		{39D34B56-8167-EEA8-E6BD-D7A154E1AE86}.Debug|x64.ActiveCfg = Debug|x64
+		{39D34B56-8167-EEA8-E6BD-D7A154E1AE86}.Debug|x64.Build.0 = Debug|x64
+		{39D34B56-8167-EEA8-E6BD-D7A154E1AE86}.Debug|x86.ActiveCfg = Debug|Win32
+		{39D34B56-8167-EEA8-E6BD-D7A154E1AE86}.Debug|x86.Build.0 = Debug|Win32
+		{39D34B56-8167-EEA8-E6BD-D7A154E1AE86}.Release|x64.ActiveCfg = Release|x64
+		{39D34B56-8167-EEA8-E6BD-D7A154E1AE86}.Release|x64.Build.0 = Release|x64
+		{39D34B56-8167-EEA8-E6BD-D7A154E1AE86}.Release|x86.ActiveCfg = Release|Win32
+		{39D34B56-8167-EEA8-E6BD-D7A154E1AE86}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

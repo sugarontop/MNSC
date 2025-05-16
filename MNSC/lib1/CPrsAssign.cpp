@@ -21,6 +21,7 @@ CPrsAssign::~CPrsAssign()
 void CPrsAssign::Flush()
 {
 	m_expression = nullptr;
+	m_AssignName.clear();
 }
 
 void CPrsAssign::HParse()
@@ -55,14 +56,12 @@ void CPrsAssign::HParse()
 			}
 			else if ( st.Token == Plusplus )
 			{
-				//st = getNewSymbol();
 				m_expression = std::make_shared<CPrsExpression>(m_Symbol);
 				m_expression->Parse();
 				bPlusplus = true;
 			}
 			else if (st.Token == Dot)
 			{
-				//st = getNewSymbol();
 				m_expression = std::make_shared<CPrsExpression>(m_Symbol);
 				m_expression->Parse();
 			}
@@ -114,9 +113,11 @@ void CPrsAssign::HParse()
 			}
 			else
 			{
-				// Becomes less formula
+				// void function
 				m_expression = std::make_shared<CPrsExpression>(m_Symbol);
 				m_expression->Parse();
+
+				m_AssignName.clear();
 			}
 		}
 
@@ -149,7 +150,7 @@ void CPrsAssign::HGenerate(stackGntInfo& stinfo)
 			var.lock();
 
 
-		if ( var.vt != VT_EMPTY)
+		if ( var.vt != VT_EMPTY && !m_AssignName.empty())
 		{
 			CSymbolTable& symtbl = m_Symbol.getSymbolTable();
 			if (0 != symtbl.updateAt(m_AssignName, var))

@@ -39,6 +39,7 @@ void FVariant::init()
 { 
 	memset(this,0,sizeof(VARIANT));
 	::VariantInit(this);
+	lock_ = false;
 }
 void FVariant::clear_init()
 {
@@ -68,17 +69,13 @@ void FVariant::InnerCopy(const VARIANT* src)
 	if (src->vt >= VT_RESERVED)
 		vt = src->vt;
 	else if (src->vt > 0 && S_OK != VariantCopy(this, src))
-		throw std::wstring(L"FVariant::FVariant err");
+		throw std::wstring(L"FVariant::InnerCopy err");
 }
 FVariant::FVariant(VARIANT v)
 {
 	init();
 
-	if (v.vt >= VT_RESERVED)
-		vt = v.vt;
-	else
-		if (S_OK != VariantCopy(this,&v))
-			throw std::wstring(L"FVariant::FVariant err");
+	InnerCopy(&v);
 }
 
 VARIANT FVariant::ToVARIANT() const

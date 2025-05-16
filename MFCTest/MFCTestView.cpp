@@ -12,7 +12,7 @@
 
 #include "MFCTestDoc.h"
 #include "MFCTestView.h"
-
+#include "x.h"
 
 #pragma comment(lib,"MNSC.lib")
 
@@ -93,6 +93,22 @@ CMFCTestDoc* CMFCTestView::GetDocument() const // デバッグ以外のバージ
 
 // CMFCTestView メッセージ ハンドラー
 
+VARIANT ScriptCall(ScriptSt & st, LPCWSTR funcnm, VARIANT * prms, int pmcnt)
+{
+	VARIANT v = MNSCCall(st,funcnm,prms,pmcnt);
+
+	if (!st.result)
+	{
+		AfxMessageBox(st.error_msg);
+		
+		
+		
+		MNSCClose(st);
+	}
+
+	return v;
+}
+
 void CMFCTestView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	::SetCapture(m_hWnd);
@@ -120,16 +136,17 @@ void CMFCTestView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	if (::GetCapture() == m_hWnd)
 	{
-		if (target_ != nullptr)
+		if (target_ != nullptr && mst_.result)
 		{
 			target_->rc_.OffsetRect(-2, -2);
 
-			VARIANT v = MNSCCall(mst_, L"OnClick", nullptr, 0); //prms, 1);
-			
-			
+			_variant_t v1(new IVARIANTButton(target_.get()),false);
+
+			VARIANT v = ScriptCall(mst_, L"OnClick", &v1, 1);
 			
 			
 			InvalidateRect(NULL);
+
 		}
 
 		::ReleaseCapture();
@@ -158,32 +175,52 @@ public:
 
 	CMFCTestView* pview_;
 
-	VARIANT create_object(VARIANT typ, VARIANT x, VARIANT y, VARIANT txt)
+	VARIANT create_object(VARIANT typ, VARIANT v)
 	{
-		CRect rc;
-		rc.left = x.intVal;
-		rc.top = y.intVal;
-		rc.right = rc.left + 200;
-		rc.bottom = rc.top + 40;
-
-		if (typ.vt == VT_BSTR)
+		if (v.vt == VT_UNKNOWN && typ.vt == VT_BSTR)
 		{
-			if (wcscmp(typ.bstrVal, L"button") == 0)
+			CComBSTR objtyp = typ.bstrVal;
+			IVARIANTMap* par = (IVARIANTMap*)v.punkVal;
+			auto id = par->TypeId();
+			if (id == 2)
 			{
-				auto obj = std::make_shared<DrawingObject>(rc);
-				pview_->objects_.push_back(obj);
-
-				obj->text_ = txt.bstrVal;
-
-
-
-			}
-			else if (wcscmp(typ.bstrVal, L"listbox") == 0)
-			{
+				_variant_t x,y,cx,cy,text;
+				if (!par->GetItem(L"x", &x))
+					x = 100;
+				if (!par->GetItem(L"y", &y))
+					y = 100;
+				if (!par->GetItem(L"cx", &cx))
+					cx = 30;
+				if (!par->GetItem(L"cy", &cy))
+					cy = 200;
+				if (!par->GetItem(L"text", &text))
+					text = L"notdef";
 				
-			}
-		}
+				if (objtyp == L"button")
+				{
+					// テスト
+					CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
 
+					auto obj = std::make_shared<DrawingObject>(rc);
+					pview_->objects_.push_back(obj);
+
+					obj->text_ = text.bstrVal;
+				}			
+				else if ( objtyp == L"listbox")
+				{
+					// テスト
+
+
+
+				}
+
+
+			}
+
+
+
+
+		}
 		
 
 
@@ -206,9 +243,9 @@ public:
 	virtual VARIANT Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt) override
 	{
 		std::wstring funcnm = cfuncnm;
-		if (funcnm == L"create_object" && vcnt > 3)
+		if (funcnm == L"create_object" && vcnt > 0)
 		{
-			return create_object(v[0], v[1], v[2], v[3]);
+			return create_object(v[0], v[1]);
 		}
 		
 		throw(std::wstring(L"Invoke err"));
@@ -227,20 +264,13 @@ int CMFCTestView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CComBSTR script;
 	auto bl = MNSCReadUtf8(L"script\\init.txt", &script);
 
-
-	VARIANT v1;
-	::VariantInit(&v1);
-	v1.punkVal = new IVARIANTApplication(this);
-	v1.vt = VT_UNKNOWN;
-
-
+	_variant_t v1(new IVARIANTApplication(this), false);
 
 	bl = MNSCParse(mst_, script, L"_ap", v1);
 
-	VARIANT v = MNSCCall(mst_, L"OnInit", nullptr, 0); //prms, 1);
+	VARIANT v = ScriptCall(mst_, L"OnInit", nullptr, 0); //prms, 1);
 
 
-	::VariantClear(&v1);
 
 	return 0;
 }

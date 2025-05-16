@@ -808,6 +808,9 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 			else
 				vSelf = m_Value;
 
+			FVariant vSelf1;
+			bool xxx = 0==symtblG.getAt( L"_ap", vSelf1);
+
 			if (m_node)
 			{
 				CPrsVarFunction* varfunc =  dynamic_cast<CPrsVarFunction*>(m_node.get());
