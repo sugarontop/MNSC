@@ -1,0 +1,31 @@
+// utf8
+
+var lb1,tx1,lb2;
+
+func OnInit()
+var a,coin;
+begin
+
+	
+	
+	
+	
+	//coin=["BTC","ETH","XRP","BNB","ADA","DOGE","SOL","XLM","LINK","TRX"];
+	//lb1 = _ap.create_object("listbox", {"x":1000, "y": 100, "cx":200, "cy":180, "text": coin, "onselect": OnSelect } );
+
+	
+	
+	tx1=_ap.create_object("textbox", {"x":300, "y": 500, "cx":600, "cy":30, "text": "STATIC" } );	
+	
+	
+	
+end
+
+
+
+
+//void CPrsFunction::Generate(stackGntInfo& stinfo)
+// VARIANT IVARIANTFunctionImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
+
+
+

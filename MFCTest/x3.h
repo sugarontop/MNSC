@@ -8,7 +8,6 @@ public:
 	{
 	}
 
-
 private:
 	CRect rc_;
 	std::wstring text_;

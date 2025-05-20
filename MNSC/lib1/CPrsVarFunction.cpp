@@ -156,8 +156,10 @@ void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 			v[i] = ls[i].ToVARIANT();
 		}
 
-		
-		Return_ = p->Invoke(nm.c_str(), v, param_count);
+		VARIANT ret = p->Invoke(nm.c_str(), v, param_count);
+		Return_ = ret;
+		::VariantClear(&ret);
+
 
 		for (int i = 0; i < param_count; i++)
 			::VariantClear(&v[i]);
@@ -180,7 +182,10 @@ void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 			v[i] = ls[i-1].ToVARIANT();
 		}
 		
-		Return_ = VarInvoke(DotFuncName_, &bUpdate, v, param_count + 1);
+		VARIANT ret = VarInvoke(DotFuncName_, &bUpdate, v, param_count + 1);
+		Return_ = ret;
+		::VariantClear(&ret);
+
 
 		VariantClear(&v[0]);
 		for (int i = 1; i < param_count + 1; i++)

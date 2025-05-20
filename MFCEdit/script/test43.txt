@@ -1,0 +1,14 @@
+
+func main()
+var k,a,b,c,d,res;
+begin
+	k = {"a":"1,2,3,4,5"};
+	
+	a = k["a"].split(",");
+	
+	
+	
+
+end
+
+

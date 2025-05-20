@@ -24,7 +24,7 @@ public:
 	void setAt(const wstring& Ident, FVariant& var);
 	int  getAt(const wstring& Ident, FVariant& var);
 	int  updateAt(const wstring& Ident, FVariant& var);
-	bool IsContain(const wstring& Ident);
+	bool isContain(const wstring& Ident);
 	void removeAt(const wstring& ident);
 
 	

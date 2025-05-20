@@ -42,6 +42,7 @@ CPrsExpression::CPrsExpression(const CPrsExpression& src) :CPrsNode(src.m_Symbol
 	m_bMinus = src.m_bMinus;
 	next_ = src.next_;
 }
+
 CPrsExpression::~CPrsExpression()
 {
 	Flush();
@@ -333,7 +334,7 @@ void CPrsFactor::Parse()
 		case Ident:
 		{
 			auto nst = m_Symbol.getNewPeekSymbol();
-			bool IsGlobal = !localtbl.IsContain(st.Value);
+			bool IsGlobal = !localtbl.isContain(st.Value);
 			bfunction_pointer = ((nst.Token == Semicol || nst.Token == rSquare || nst.Token == rParen || nst.Token == Comma) && IsGlobal);
 			if (bfunction_pointer)
 			{
@@ -1154,6 +1155,9 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 
 std::shared_ptr<CPrsNode> CPrsFactor::factory(CPrsNode* src, int type, LPCTSTR funcName)
 {
+	_ASSERT(src==nullptr);
+
+
 	std::shared_ptr<CPrsNode> node;
 	switch (type)
 	{

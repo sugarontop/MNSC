@@ -74,6 +74,9 @@ void CPrsIdentArray::Generate(stackGntInfo& stinfo)
 			else
 				THROW(L"CPrsIdentArray err2");
 		}
+
+		::VariantClear(&v);
+
 	}
 	else if ( Return_.vt == 0)
 		Return_ = expression_->getValue();

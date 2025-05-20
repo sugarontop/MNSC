@@ -77,7 +77,7 @@ int CSymbolTable::updateAt(const wstring& ident, FVariant& var)
 	setAt(ident, var);
 	return 0;
 }
-bool CSymbolTable::IsContain(const wstring& ident)
+bool CSymbolTable::isContain(const wstring& ident)
 {
 	return (map_.find(ident) != map_.end());
 }

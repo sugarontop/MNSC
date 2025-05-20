@@ -290,7 +290,7 @@ public:
 		for (auto& obj : objects_)
 		{
 			auto p = dynamic_cast<IVARIANTAbstract*>(obj);
-			p->Release();
+			//p->Release(); <--VariantClearでエラーになる
 		}
 		MNSCClose(mst_);
 	}
