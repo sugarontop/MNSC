@@ -25,7 +25,10 @@ public:
 	int  getAt(const wstring& Ident, FVariant& var);
 	int  updateAt(const wstring& Ident, FVariant& var);
 	bool IsContain(const wstring& Ident);
+	void removeAt(const wstring& ident);
 
-	void test(){ map_.clear(); }
+	
+	void clear();
+	void clear_exp();
 	
 };

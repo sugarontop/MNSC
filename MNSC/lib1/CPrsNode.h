@@ -313,12 +313,15 @@ class CPrsFunction : public CPrsBlock
 		virtual void Parse();
 		virtual void Generate(stackGntInfo& stinfo);
 		virtual void Flush();
+		
 		const FVariant getValue() { return m_Value; }
 		void	SetParameters(CPrsParameters& param);
 		void	SetParametersImport(std::map<wstring,wstring>& param);
 		void	SetParametersImport(std::map<wstring, FVariant>& param);
 		void	SetGlobalVariant(LPCWSTR prmnm, VARIANT prm);
 		void	SetParameters(VARIANT* pv, int count);
+	
+		void ClearParameters();
 	protected:
 		FVariant		m_Value;
 	public:

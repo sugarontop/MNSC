@@ -195,7 +195,11 @@ const FVariant& FVariant::operator = (const VARIANT& v)
 	if (this != &v && !lock_)
 	{
 		clear_init();
-		memcpy(this,&v,sizeof(tagVARIANT));		
+
+		InnerCopy(&v);
+
+		vt = v.vt;
+		lock_ = false;
 	}
 	return *this;
 }
@@ -286,9 +290,14 @@ void FVariant::setMap(std::map<wstring, FVariant>& map)
 
 	for(auto& it : map)
 	{
-		VARIANT v = it.second.ToVARIANT();
-		pmap->SetItem(it.first.c_str(), v);
+		//VARIANT v = it.second.ToVARIANT();
+		//pmap->SetItem(it.first.c_str(), v);
 
+
+
+		pmap->SetItem2(it.first.c_str(), it.second);
+
+		
 	}
 
 	vt = VT_UNKNOWN;

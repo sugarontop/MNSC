@@ -27,8 +27,19 @@ CSymbolTable::CSymbolTable(const CSymbolTable& src)
 }
 CSymbolTable::~CSymbolTable()
 { 	
-	map_.clear(); 
+	clear();
 }
+void CSymbolTable::clear()
+{
+	map_.clear();
+}
+void CSymbolTable::clear_exp()
+{
+
+}
+
+
+
 bool CSymbolTable::findTable(const wstring& ident, int& type)
 {
 	auto it = map_.find(ident);
@@ -46,6 +57,13 @@ bool CSymbolTable::findTable(const wstring& ident, int& type)
 		return true;
 	}
 	return false;
+}
+void CSymbolTable::removeAt(const wstring& ident)
+{
+	if (map_.find(ident) == map_.end())
+		return;
+
+	map_[ident].clear();
 }
 void CSymbolTable::setAt(const wstring& ident, FVariant& var)
 {

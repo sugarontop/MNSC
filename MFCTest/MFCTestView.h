@@ -6,6 +6,8 @@
 #include "mnsc.h"
 
 class DrawingObject;
+class MessageLayerPlate;
+
 class CMFCTestView : public CView
 {
 protected: // シリアル化からのみ作成します。
@@ -15,10 +17,6 @@ protected: // シリアル化からのみ作成します。
 // 属性
 public:
 	CMFCTestDoc* GetDocument() const;
-
-	std::vector<std::shared_ptr<DrawingObject>> objects_;
-
-	std::shared_ptr<DrawingObject> target_;
 
 // 操作
 public:
@@ -37,18 +35,17 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
-protected:
+public:
 	ScriptSt mst_;
+	std::unique_ptr<MessageLayerPlate> uilayer_;
 
 // 生成された、メッセージ割り当て関数
 protected:
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
 
 #ifndef _DEBUG  // MFCTestView.cpp のデバッグ バージョン

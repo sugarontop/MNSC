@@ -1,0 +1,18 @@
+
+func main()
+var a,b,c;
+begin
+
+	
+	a = [];	
+	a.add({"cd": "cdns", "cnt": 30,"x":100,"y":100, "typ":1 });
+
+	//print( a[0]["cnt"]);
+	
+	//b = test();
+	
+
+end
+
+
+

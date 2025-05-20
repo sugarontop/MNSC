@@ -157,6 +157,10 @@ VARIANT IVARIANTFunctionImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 
 		VARIANT ret = func_->getValue().ToVARIANT();
 		
+		func_->ClearParameters();
+
+		
+
 		return ret;
 	}
 

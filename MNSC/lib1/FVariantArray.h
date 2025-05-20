@@ -9,7 +9,10 @@ class IVARIANTArrayImp : public IVARIANTArray
 {
 public:
 	IVARIANTArrayImp() {};
-
+	~IVARIANTArrayImp()
+	{
+		Clear();
+	}
 public:
 	std::vector<VARIANT> ar;
 public:
@@ -42,6 +45,10 @@ public:
 		// vÇãzé˚Ç∑ÇÈÇÃÇ≈ÅAVariantClearÇÕïsóv
 		map[key] =v;
 
+	}
+	void SetItem2(LPCWSTR key, const FVariant& v)
+	{		
+		map[key] = v;
 	}
 	virtual bool GetItem(LPCWSTR key, VARIANT* v)
 	{
@@ -83,10 +90,14 @@ public:
 	virtual void Clear(){}
 };
 
-class IVARIANTFunctionImp : public IVARIANTAbstract
+class IVARIANTFunctionImp : public IVARIANTFunction
 {
 public:
 	IVARIANTFunctionImp();
+	~IVARIANTFunctionImp()
+	{
+		Clear();
+	}
 private:
 	std::shared_ptr<CPrsFunction> func_;
 public:

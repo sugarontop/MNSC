@@ -125,6 +125,7 @@ void CPrsVarFunction::Flush()
 	m_parameter = nullptr;
 	m_expression = nullptr;
 	Return_.clear();
+	m_value.clear();
 
 }
 void CPrsVarFunction::Generate( stackGntInfo& stinfo )
@@ -134,7 +135,6 @@ void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 		Generate2(stinfo);
 		return;
 	}
-
 
 	m_parameter->Generate( stinfo );
 	
@@ -156,12 +156,13 @@ void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 			v[i] = ls[i].ToVARIANT();
 		}
 
+		
 		Return_ = p->Invoke(nm.c_str(), v, param_count);
 
 		for (int i = 0; i < param_count; i++)
-		{
 			::VariantClear(&v[i]);
-		}
+
+		m_value.clear();
 	}
 	else
 	{

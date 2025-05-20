@@ -1,13 +1,25 @@
+// utf8
 
-
+var lb1,tx1,lb2;
 
 func OnInit()
-var a;
+var a,coin;
 begin
 
 	_ap.create_object("button", {"x":300, "y": 100, "cx":200, "cy":30, "text": "push0" } );	
 	_ap.create_object("button", {"x":300, "y": 150, "cx":200, "cy":30, "text": "push1" } );
 	_ap.create_object("button", {"x":300, "y": 200, "cx":200, "cy":30, "text": "push2" } );
+	
+	
+	
+	coin=["BTC","ETH","XRP","BNB","ADA","DOGE","SOL","XLM","LINK","TRX"];
+	lb1 = _ap.create_object("listbox", {"x":1000, "y": 100, "cx":200, "cy":180, "text": coin, "onselect": OnSelect } );
+
+	coin=["MSFT","GOOG","APPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO"];
+	lb2 = _ap.create_object("listbox", {"x":1300, "y": 100, "cx":200, "cy":180, "text": coin, "onselect": OnSelect } );
+	
+	
+	tx1=_ap.create_object("textbox", {"x":300, "y": 500, "cx":600, "cy":30, "text": "STATIC" } );	
 	
 	
 	
@@ -22,7 +34,20 @@ begin
 	
 	obj.settext("pushed");
 	
+	lb1.select(2);
 
 	
 	return 1;
+end
+
+
+func OnSelect(obj)
+var a,s;
+begin
+	
+	a = obj.selectidx();
+	s = obj.gettext(a);
+	tx1.settext(s);
+	
+	return 0;
 end

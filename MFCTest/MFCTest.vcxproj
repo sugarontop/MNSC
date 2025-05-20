@@ -203,6 +203,8 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ViewTree.h" />
     <ClInclude Include="x.h" />
+    <ClInclude Include="x2.h" />
+    <ClInclude Include="x3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp" />

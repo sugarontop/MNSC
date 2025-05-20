@@ -80,6 +80,23 @@ public:
 	virtual UINT Keys(VARIANT* ar) = 0;
 };
 
+class CPrsFunction;
+
+class IVARIANTFunction : public IVARIANTAbstract
+{
+public:
+	IVARIANTFunction(){};
+	
+public:
+	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv)=0;
+	virtual int TypeId() = 0;
+	virtual void Clear() = 0;
+	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
+public:
+	virtual void SetItem(std::shared_ptr<CPrsFunction> func) = 0;
+	virtual std::shared_ptr<CPrsFunction> GetItem() = 0;
+};
+
 class IVARIANTClass : public IVARIANTAbstract
 {
 public:

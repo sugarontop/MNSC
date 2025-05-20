@@ -1,0 +1,32 @@
+
+func ontest( obj )
+var a;
+begin
+	a = 1;
+	return obj+a;
+end
+
+
+func ontest2( c )
+var a,b;
+begin
+	b = c["typ"];
+	return b(100);
+end
+
+
+func main()
+var a,b,c;
+begin
+
+	
+	c = {"typ":ontest };
+	//b = c["typ"];
+	a = ontest2(c);
+
+	print( a );
+	
+	
+	
+
+end

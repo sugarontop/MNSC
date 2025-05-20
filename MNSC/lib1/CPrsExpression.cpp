@@ -312,6 +312,8 @@ void CPrsFactor::Flush()
 {
 	m_node = nullptr;
 	m_dot_next = nullptr;
+
+	m_Value.clear();
 }
 
 void CPrsFactor::Parse()
@@ -808,8 +810,6 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 			else
 				vSelf = m_Value;
 
-			FVariant vSelf1;
-			bool xxx = 0==symtblG.getAt( L"_ap", vSelf1);
 
 			if (m_node)
 			{
@@ -817,8 +817,8 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 			
 				if ( varfunc )
 				{
-					FVariant temp(vSelf);
-					varfunc->setgetValue(temp);
+					
+					varfunc->setgetValue(vSelf);
 					varfunc->Generate(stinfo); // var‚ÌŠÖ”
 					m_Value = varfunc->Return();
 				}
@@ -856,12 +856,13 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 					auto func = m_Symbol.CreateFunc(funcnm);
 					func->Generate(stinfo);
 					ifunc->SetItem(func);
-
-					//::VariantClear(&m_Value);
+					
 					m_Value.clear_init();
-
+					
+					
 					m_Value.vt = VT_UNKNOWN;
 					m_Value.punkVal = ifunc;
+					
 				}
 				else
 					m_Value = vSelf;
@@ -1066,7 +1067,10 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 						THROW(L"array idx err");
 					
 					if (x->Get((int)idx.getN(), &v))
+					{
 						m_Value = v;
+						::VariantClear(&v);
+					}
 					else
 					{
 						std::wstringstream err;
@@ -1087,7 +1091,11 @@ void CPrsFactor::Generate(stackGntInfo& stinfo)
 					VARIANT v;
 					::VariantInit(&v);
 					if ( m->GetItem(key.c_str(), &v))
+					{
 						m_Value = v;
+
+						::VariantClear(&v);
+					}
 					else
 					{
 						wstring err = L"not found key: " + key;

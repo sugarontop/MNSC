@@ -67,43 +67,73 @@ void CPrsFunction::Generate(stackGntInfo& stinfo)
 	// upperTable	: 関数を呼び出す側の変数テーブル
 	// m_InnerTable:　関数内の変数テーブル
 
-	CSymbolTable& upperTable
-		= m_Symbol.SelectSymbolTable(m_InnerTable); // 関数内用のテーブルにする
-
-	if (m_body)
+	try 
 	{
-		CPrsGntInfo	gntinfo;
-		stinfo.push(gntinfo);
 
-		m_body->Generate(stinfo);
-		m_Value = m_body->getValue();
+		CSymbolTable& upperTable
+			= m_Symbol.SelectSymbolTable(m_InnerTable); // 関数内用のテーブルにする
 
-		stinfo.pop();
+		if (m_body)
+		{
+			CPrsGntInfo	gntinfo;
+			stinfo.push(gntinfo);
+
+			m_body->Generate(stinfo);
+			m_Value = m_body->getValue();
+
+			stinfo.pop();
+		}
+		else
+			m_Value.setN(0);
+
+		m_Symbol.SelectSymbolTable(upperTable);
+		
 	}
-	else
-		m_Value.setN(0);
-
-	m_Symbol.SelectSymbolTable(upperTable);
+	catch (wstring err)
+	{
+		wstring x = err;
+		throw err;
+	}
 }
+
+
+//void CPrsFunction::SetParameters(VARIANT* pv, int count)
+//{
+//	auto& lsIdent = m_declar->m_Ls;
+//	auto iti = lsIdent.begin();
+//
+//	int i = 0;
+//	while (iti != lsIdent.end() && i < count)
+//	{
+//		FVariant val = pv[i++];
+//		wstring& localIdent = *iti;
+//
+//		// 関数内用のテーブルにパラメータの値（呼出側）をセットする
+//		m_InnerTable.setAt(localIdent, val);
+//		++iti;
+//	}
+//}
+
 void CPrsFunction::SetParameters(VARIANT* pv, int count)
 {
-	auto& lsIdent = m_declar->m_Ls;
-	auto iti = lsIdent.begin();
-
 	int i = 0;
-	while (iti != lsIdent.end() && i < count)
+	for (auto& prmnm : m_declar->m_Ls)
 	{
-		FVariant val = pv[i++];
-		wstring& localIdent = *iti;
-
-		// 関数内用のテーブルにパラメータの値（呼出側）をセットする
-		m_InnerTable.setAt(localIdent, val);
-	
-		
-
-		++iti;
+		if ( i < count)
+		{
+			// 関数内用のテーブルにパラメータの値（呼出側）をセットする
+			FVariant val = pv[i++];
+			m_InnerTable.setAt(prmnm, val);		
+		}
 	}
 }
+
+void CPrsFunction::ClearParameters()
+{
+	for(auto& prmnm : m_declar->m_Ls)
+		m_InnerTable.removeAt(prmnm);
+}
+
 void CPrsFunction::SetParameters(CPrsParameters& param)
 {
 	// 関数のパラメータの関所
