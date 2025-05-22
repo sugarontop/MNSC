@@ -36,7 +36,7 @@ public:
 			IVARIANTArray* par = (IVARIANTArray*)txt.punkVal;
 			
 
-			for (int i = 0; i < par->Count(); i++)
+			for (UINT i = 0; i < par->Count(); i++)
 			{
 				VARIANT v;
 				::VariantInit(&v);
@@ -108,7 +108,7 @@ public:
 			CRect rcv(rc_.Width() - vscbar_w, 0, rc_.Width(), rc_.Height());
 			memDC.FillSolidRect(rcv, RGB(240, 240, 240));
 
-			int h = ScrollBarHeight(rc_.Height(), items.size() * (real_item_h)- rc_.Height() );
+			int h = ScrollBarHeight(rc_.Height(), (int)items.size() * (real_item_h)- rc_.Height() );
 			CRect rcsv(rc_.Width() - vscbar_w, max(0, 0+offy_), rc_.Width(), h + offy_);
 			memDC.FillSolidRect(rcsv, RGB(200, 200, 200));
 		}
@@ -206,17 +206,17 @@ public:
 
 		offy_ = max(0, offy_);
 
-		int h = ScrollBarHeight(rc_.Height(), items.size() * (real_item_h) - rc_.Height());
+		int h = ScrollBarHeight(rc_.Height(), (int)items.size() * (real_item_h) - rc_.Height());
 
 		int c = offy_;
-		int nvh = items.size() * real_item_h - rc_.Height();
+		int nvh = (int)items.size() * real_item_h - rc_.Height();
 		int b = rc_.Height() - h;
 
 		float vc = ((float)c*nvh)/b;
 
 		if (vc > nvh)
 		{
-			vc = nvh;
+			vc = (float)nvh;
 			offy_ -= offy;
 		}
 

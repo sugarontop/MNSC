@@ -335,7 +335,7 @@ void CPrsFactor::Parse()
 		{
 			auto nst = m_Symbol.getNewPeekSymbol();
 			bool IsGlobal = !localtbl.isContain(st.Value);
-			bfunction_pointer = ((nst.Token == Semicol || nst.Token == rSquare || nst.Token == rParen || nst.Token == Comma) && IsGlobal);
+			bfunction_pointer = ((nst.Token == Semicol || nst.Token == rSquare || nst.Token == rParen || nst.Token == rBracket || nst.Token == Comma) && IsGlobal);
 			if (bfunction_pointer)
 			{
 				ParseFunctionPointer(st);

@@ -1,6 +1,6 @@
 // utf8
 
-var lb1,tx1,lb2;
+var lb1,tx1,lb2,lb3;
 
 func OnInit()
 var a,coin;
@@ -28,13 +28,14 @@ end
 
 
 func OnClick( obj )
-var a;
+var a,coin;
 begin
 	
 	
 	obj.settext("pushed");
 	
 	lb1.select(2);
+	
 
 	
 	return 1;

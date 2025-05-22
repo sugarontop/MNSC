@@ -137,11 +137,12 @@ public:
 class MessageLayerPlate
 {
 public:
-	MessageLayerPlate() : target_(nullptr){};
+	MessageLayerPlate() : target_(nullptr), capture_lock_(false){ mst_ ={}; }
 
 	std::vector<DrawingObject*> objects_;
 	DrawingObject* target_;
 	ScriptSt mst_;
+	bool capture_lock_;
 
 	LRESULT WindowProc(HWND hWnd,UINT message, WPARAM wParam, LPARAM lParam)
 	{
@@ -151,7 +152,9 @@ public:
 		{
 			case WM_LBUTTONDOWN:
 			{
-				::SetCapture(hWnd);
+				if (!capture_lock_)
+					::SetCapture(hWnd);
+
 				CPoint point(LOWORD(lParam), HIWORD(lParam));
 				point_prv = point;
 				target_ = nullptr;
@@ -228,7 +231,8 @@ public:
 						}*/
 					}
 
-					::ReleaseCapture();
+					if (!capture_lock_)
+						::ReleaseCapture();
 
 					target_ = nullptr;
 					ret = 1;
@@ -258,8 +262,16 @@ public:
 				}
 			}
 			break;
+			case WM_KEYDOWN:
+			{
+				if ( wParam == VK_ESCAPE )
+					capture_lock_ = false;
+
+			}
+			break;
 			
 		}
+		
 
 		return ret;
 	}
@@ -348,9 +360,8 @@ VARIANT IVARIANTApplication::create_object(VARIANT typ, VARIANT v)
 	if (v.vt == VT_UNKNOWN && typ.vt == VT_BSTR)
 	{
 		CComBSTR objtyp = typ.bstrVal;
-		IVARIANTMap* par = (IVARIANTMap*)v.punkVal;
-		auto id = par->TypeId();
-		if (id == 2)
+		IVARIANTMap* par = dynamic_cast<IVARIANTMap*>(v.punkVal);
+		if (par) 
 		{
 			_variant_t x, y, cx, cy, text;
 			if (!par->GetItem(L"x", &x))
@@ -433,8 +444,7 @@ VARIANT IVARIANTApplication::create_object(VARIANT typ, VARIANT v)
 				//v1.punkVal->AddRef();
 				return v1;
 			}
-
-
+			
 		}
 	}
 

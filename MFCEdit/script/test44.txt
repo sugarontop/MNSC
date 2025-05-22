@@ -1,0 +1,29 @@
+
+func main()
+var a,b,c;
+begin
+
+	
+
+	a = {"cd":  OnSelect("hoihoi") };
+
+	print(a["cd"]);
+
+	//b = a["cd"];
+	//c = b("hoihoi");
+	//print(c);
+
+end
+
+
+
+func OnSelect(obj)
+var a1,s;
+begin
+	
+	a1 = obj.length();
+		
+	return a1;
+end
+
+

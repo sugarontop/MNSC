@@ -20,6 +20,7 @@ public:
 
 	VARIANT setText(VARIANT  txt)
 	{
+
 		if (txt.vt == VT_BSTR)
 		{
 			text_ = txt.bstrVal;
@@ -53,7 +54,10 @@ public:
 		pDC->SelectObject(old);
 	}
 
-	virtual void setText(const std::wstring& txt) { text_ = txt; }
+	virtual void setText(const std::wstring& txt) 
+	{ 
+		text_ = txt; 
+	}
 
 	virtual void setRect(const CRect& rc) { rc_ = rc; }
 	virtual CRect getRect() { return rc_; }

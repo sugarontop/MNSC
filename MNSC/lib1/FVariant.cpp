@@ -230,6 +230,67 @@ void FVariant::toStr()
 		StringCbPrintf(cb, _countof(cb), L"%s", (boolVal? L"true":L"false"));
 		setS(cb);
 	}
+	else if (vt == VT_UNKNOWN)
+	{
+		std::wstringstream sm;
+
+		IVARIANTAbstract* par = (IVARIANTAbstract*)punkVal;
+		if (par->TypeId() == FVariantType::ARRAY)
+		{
+			IVARIANTArray* par1 = (IVARIANTArray*)par;
+			StringCbPrintf(cb, _countof(cb), L"array[size=%d]---\r\n", par1->Count());
+			sm << cb;
+			for(UINT i=0; i < min(5,par1->Count()); i++)
+			{
+				VARIANT v;
+				::VariantInit(&v);
+				par1->Get(i, &v);
+				FVariant fvar(v);
+				fvar.toStr();
+				if (fvar.vt == VT_BSTR)
+					sm << L"[" << i << L"]:" << fvar.bstrVal << L"\r\n";
+				else
+					sm << L"[" << i << L"]:" << fvar.getN() << L"\r\n";
+				::VariantClear(&v);
+			}
+			setS(sm.str());
+		}
+		else if (par->TypeId() == FVariantType::FUNCTIONPOINTER)
+		{
+			StringCbPrintf(cb, _countof(cb), L"function");
+			setS(cb);
+		}		
+		else if (par->TypeId() == FVariantType::MAP)
+		{			
+			IVARIANTMap* par1 = (IVARIANTMap*)par;
+			StringCbPrintf(cb, _countof(cb), L"map----\r\n");
+			IVARIANTMap* pmap = (IVARIANTMap*)punkVal;
+
+			VARIANT keys1;
+			::VariantInit(&keys1);
+			pmap->Keys(&keys1);
+
+			sm << cb;
+			auto par2 = (IVARIANTArray*)keys1.punkVal;
+			for (UINT i = 0; i < par2->Count(); i++)
+			{
+				VARIANT v;
+				::VariantInit(&v);
+				par2->Get(i, &v);
+				if (v.vt == VT_BSTR)
+				{
+					StringCbPrintf(cb, _countof(cb), L"key:%s,\r\n",  v.bstrVal);
+					sm << cb;
+				}
+			}
+
+
+
+			setS(sm.str());
+		}
+		else
+			setS(L"UNKNOWN error");
+	}	
 	else
 	{
 		StringCbPrintf(cb, _countof(cb), L"toStr error, VT=%d", vt);

@@ -166,7 +166,7 @@ void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 
 		m_value.clear();
 	}
-	else
+	else if(m_value.vt == VT_BSTR)
 	{
 		// Ident function
 
@@ -240,6 +240,6 @@ VARIANT CPrsVarFunction::VarInvoke(wstring funcnm, bool* bUpdate, VARIANT* v, in
 			return f(v[0], v[1], v[2], v[3]);
 	}
 
-	return FVariant(L"VarInvoke err").ToVARIANT();
+	THROW(L"VarInvoke err");
 }
 

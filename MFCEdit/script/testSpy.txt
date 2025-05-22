@@ -1,0 +1,21 @@
+
+func main()
+var a,b,c,a1,b1,map,s,head;
+begin
+	b =_ap.tool();
+	c = b.read_file_utf8("script\json_spy.txt");
+
+	print( c.left(100));
+	map= json_parse(c);
+
+	
+
+	a = map["chart"]["result"][0]["indicators"]["quote"][0]["close"];
+	
+	print( a );
+
+	
+
+
+end
+
