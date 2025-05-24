@@ -192,6 +192,7 @@
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="FileView.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="lsbox.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MFCTest.h" />
     <ClInclude Include="MFCTestDoc.h" />
@@ -205,6 +206,7 @@
     <ClInclude Include="x.h" />
     <ClInclude Include="x2.h" />
     <ClInclude Include="x3.h" />
+    <ClInclude Include="x4.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp" />

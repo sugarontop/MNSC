@@ -1,39 +1,63 @@
 #pragma once
 #include "x.h"
-#include "mnsc.h"
 #include "lsbox.h"
-
-class IVARIANTListbox : public IVARIANTAbstract, public DrawingObject
+class IVARIANTDropdownList : public IVARIANTAbstract, public DrawingObject
 {
 public:
-	IVARIANTListbox(const CRect& rc) :rc_(rc)
+	IVARIANTDropdownList(const CRect& rc) :rc_(rc), bShowListbox_(false)
 	{
 		CSize sz = rc.Size();
 
-		CSize listbox_size(sz.cx, rc.Height());
-		CSize itemsz(sz.cx, 30);
+		CSize listbox_size( sz.cx, 30*4);
+		CSize itemsz( sz.cx, 30);
 		ls_.SetViewSize(listbox_size, itemsz);
 
+		text_ = L"=====";
 	}
 
 private:
 	CRect rc_;
-	std::wstring text_; 
+	std::wstring text_;
 	ListboxBase ls_;
+	std::vector<std::wstring> items_;
+	bool bShowListbox_;
 public:
 	_variant_t func_onselect_;
 
+	virtual void Clear() {}
+	virtual int TypeId() { return 2003; }
 
-	virtual void Clear() { func_onselect_.Clear(); }
-	virtual int TypeId() { return 2001; }
-
-	std::vector<std::wstring> items;
-	
-	VARIANT setText(VARIANT  txt)
+	virtual void Draw(CDC* pDC)
 	{
+		pDC->SaveDC();
+		pDC->DrawTextExW(
+				const_cast<LPWSTR>(text_.c_str()),
+				static_cast<int>(text_.length()),
+				&rc_,
+				DT_VCENTER | DT_SINGLELINE,
+				nullptr
+			);
+		
+		CRect btn( rc_.right-20,rc_.top, rc_.right, rc_.bottom);
+
+		pDC->FillSolidRect(btn, RGB(170,170,170));
+
+		
+		if (bShowListbox_)
+		{					
+			pDC->OffsetViewportOrg(rc_.left, rc_.bottom);
+			ls_.Draw(pDC);			
+		}
+		pDC->RestoreDC(-1);
+	}
+	virtual void setText(const std::wstring& txt) { text_ = txt; }
+	virtual VARIANT setText(VARIANT  txt)
+	{ 
 		if (txt.vt == VT_UNKNOWN)
 		{
+			
 			IVARIANTArray* par = (IVARIANTArray*)txt.punkVal;
+
 
 			for (UINT i = 0; i < par->Count(); i++)
 			{
@@ -42,42 +66,52 @@ public:
 				if (par->Get(i, &v))
 				{
 					if (v.vt == VT_BSTR)
-					{						
-						items.push_back(v.bstrVal);
+					{
+						items_.push_back(v.bstrVal);
 					}
 				}
 				::VariantClear(&v);
 			}
-			ls_.SetString(items);			
-		}
 
+			ls_.SetString(items_);
+		}
+	
 
 		CComVariant ret(0);
 		return ret;
 	}
 
-	virtual void Draw(CDC* pDC)
+	bool BtnClick(CPoint pt)
 	{
-		pDC->SaveDC();
-		pDC->OffsetViewportOrg(rc_.left, rc_.top);
-		ls_.Draw(pDC);
-		pDC->RestoreDC(-1);
-
+		CRect btn(rc_.right-20, rc_.top, rc_.right, rc_.bottom);
+		return btn.PtInRect(pt);
 	}
+
+	void ShowDlgListbox(bool bShow)
+	{
+		bShowListbox_ = bShow;
+
+		if ( !bShow )
+			text_ = ls_.GetSelectString();
+	}
+
 	int SelectRow(CPoint point, bool bLast=false)
 	{
 		point.x -= rc_.left;
-		point.y -= rc_.top;
+		point.y -= rc_.bottom;
 
 		int a = ls_.GetSelectIdx();
-
+			
 		int md = ls_.SelectRowTest(point, bLast);
+		
+		if (md == 0 && bLast)
+			ShowDlgListbox(false);
 
-		if ( md == 1 && bLast)
+		if (md == 1 && bLast)
 		{
 			int b = ls_.GetSelectIdx();
 
-			if ( a != b )
+			if (a != b)
 			{
 				if (func_onselect_.vt == VT_UNKNOWN)
 				{
@@ -87,31 +121,24 @@ public:
 					::VariantInit(&v1);
 					v1.vt = VT_UNKNOWN;
 					v1.punkVal = this;
-					
-					VARIANT v2 = func->Invoke(L"NONAME",&v1,1);
 
+					VARIANT v2 = func->Invoke(L"NONAME", &v1, 1);
 					::VariantClear(&v2);
-
 				}
-
 			}
 		}
+		
 		return md;
 	}
-	
+
 	void ScrollbarYoff(int off)
 	{
 		ls_.ScrollbarYoff(off);
 	}
 
-
-	virtual void setText(const std::wstring& txt) { text_ = txt; }
-
 	virtual void setRect(const CRect& rc) { rc_ = rc; }
 	virtual CRect getRect() { return rc_; }
 
-
-	
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) override {
 		if (riid == IID_IUnknown) {
@@ -131,19 +158,12 @@ public:
 		{
 			return setText(v[0]);
 		}
-		else if ( funcnm == L"select" && vcnt > 0)
-		{
-			int idx = v[0].intVal;
-			ls_.SetSelect(idx);
-			return v[0];
-
-		}
-		else if (funcnm == L"selectidx" )
+		else if (funcnm == L"selectidx")
 		{
 			VARIANT v;
-			::VariantInit(&v); 
+			::VariantInit(&v);
 			v.vt = VT_I8;
-			v.lVal =ls_.GetSelectIdx();
+			v.lVal = ls_.GetSelectIdx();
 			return v;
 		}
 		else if (funcnm == L"gettext" && vcnt > 0)
@@ -154,10 +174,10 @@ public:
 
 			int idx = v1.intVal;
 
-			if (0 <= idx && idx < items.size())
+			if (0 <= idx && idx < items_.size())
 			{
-				auto s = items[idx];
-			
+				auto s = items_[idx];
+
 				ret.vt = VT_BSTR;
 				ret.bstrVal = ::SysAllocString(s.c_str());
 			}
@@ -166,6 +186,5 @@ public:
 		}
 
 		throw(std::wstring(L"Invoke err"));
-
 	}
-};
+}; 

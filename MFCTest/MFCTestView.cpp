@@ -15,6 +15,7 @@
 #include "x.h"
 #include "x2.h"
 #include "x3.h"
+#include "x4.h"
 
 #pragma comment(lib,"MNSC.lib")
 
@@ -137,141 +138,211 @@ public:
 class MessageLayerPlate
 {
 public:
-	MessageLayerPlate() : target_(nullptr), capture_lock_(false){ mst_ ={}; }
+	MessageLayerPlate() : target_(nullptr){ mst_ ={}; }
 
 	std::vector<DrawingObject*> objects_;
 	DrawingObject* target_;
 	ScriptSt mst_;
-	bool capture_lock_;
 
 	LRESULT WindowProc(HWND hWnd,UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		LRESULT ret = 0;
 		static CPoint point_prv(0,0);
-		switch (message)
+
+		static DrawingObject* captured_obj = nullptr;
+
+		if (captured_obj)
 		{
-			case WM_LBUTTONDOWN:
-			{
-				if (!capture_lock_)
-					::SetCapture(hWnd);
+			auto ls = dynamic_cast<IVARIANTDropdownList*>(captured_obj);
 
-				CPoint point(LOWORD(lParam), HIWORD(lParam));
-				point_prv = point;
-				target_ = nullptr;
-
-				for (auto& obj : objects_)
+			switch(message)
+			{				
+				case WM_LBUTTONDOWN:
 				{
-					if ( dynamic_cast<IVARIANTButton*>(obj))
-					{
-						if ( obj->getRect().PtInRect(point))
-						{
-							target_ = obj;
-							CRect rc = obj->getRect();
-							rc.OffsetRect(2, 2);
-							obj->setRect(rc );
-							InvalidateRect(hWnd, NULL, TRUE);
-							ret = 1;
-							break;
-						}						
-					}
-					else if (dynamic_cast<IVARIANTListbox*>(obj))
-					{
-						CRect rc;
-						auto ls = dynamic_cast<IVARIANTListbox*>(obj);
+					CPoint point(LOWORD(lParam), HIWORD(lParam));
 
-						auto idx = ls->getItem(point, rc);
-						if ( idx > -1 )
-						{
-							ls->select(idx);
-				
-							InvalidateRect(hWnd, NULL, TRUE);
-							ret = 1;
-						}
-						else if ( idx == -2 )
-						{
-							target_ = obj;
-							ls->scrollbar(true);
+					int md = ls->SelectRow(point);
 
-						}
-						
-					}
+					point_prv = point;
 				}
-
-			}
-			break;
-			case WM_LBUTTONUP:
-			{
-				if (::GetCapture() == hWnd)
+				break;
+				case WM_MOUSEMOVE:
 				{
-					if (dynamic_cast<IVARIANTButton*>(target_) && mst_.result)
+					CPoint point(LOWORD(lParam), HIWORD(lParam));
+					int offy = point.y-point_prv.y;
+
+					if (2 == ls->SelectRow(point) && GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 					{
-						CRect rc = target_->getRect();
-						rc.OffsetRect(-2, -2);
-						target_->setRect(rc);
-
-						auto btn = dynamic_cast<IVARIANTAbstract*>(target_);
-
-						_variant_t v1(btn);
-
-						VARIANT v = ScriptCall(mst_, L"OnClick", &v1, 1);
-
-
-						InvalidateRect(hWnd,NULL,TRUE);
-
-					}
-					else if (dynamic_cast<IVARIANTListbox*>(target_))
-					{
-						auto ls = dynamic_cast<IVARIANTListbox*>(target_);
-						/*CRect rc;
-						auto idx = ls->getItem(point, rc);
-						if (idx > -1)
-						{
-							ls->select(idx);
-							InvalidateRect(hWnd, NULL, TRUE);
-						}*/
-					}
-
-					if (!capture_lock_)
-						::ReleaseCapture();
-
-					target_ = nullptr;
-					ret = 1;
-				}
-			}
-			break;
-			case WM_MOUSEMOVE:
-			{
-				int a = 0;
-
-				if (::GetCapture() == hWnd && dynamic_cast<IVARIANTListbox*>(target_))
-				{
-					if (target_ != nullptr)
-					{
-						CPoint point(LOWORD(lParam), HIWORD(lParam));
-						
-
-						auto ls = dynamic_cast<IVARIANTListbox*>(target_);
-						ls->scrollbarMove(point.y-point_prv.y);
-
+						ls->ScrollbarYoff(offy);
 						InvalidateRect(hWnd, NULL, FALSE);
-						
-						point_prv = point;
+					}
 
+					point_prv = point;
+
+				}
+				break;
+				case WM_LBUTTONUP:
+				{
+					CPoint point(LOWORD(lParam), HIWORD(lParam));
+
+					int md = ls->SelectRow(point, true);
+					if (1 == md || 0 == md)
+					{
+						ls->ShowDlgListbox(false);
+						captured_obj = nullptr;
+						InvalidateRect(hWnd, NULL, TRUE);
+						::ReleaseCapture();
+					}
+				}
+				break;
+				case WM_KEYDOWN:
+				{
+					if (wParam == VK_ESCAPE)
+					{	
+						ls->ShowDlgListbox(false);
+						InvalidateRect(hWnd, NULL, TRUE);
+						captured_obj = nullptr;
+					}
+				}
+				break;
+			}
+			ret = 0;
+
+		}
+		else
+		{
+			switch (message)
+			{
+				case WM_LBUTTONDOWN:
+				{
+					if (captured_obj==nullptr)
+						::SetCapture(hWnd);
+
+					CPoint point(LOWORD(lParam), HIWORD(lParam));
+					point_prv = point;
+					target_ = nullptr;
+
+					for (auto& obj : objects_)
+					{
+						if ( dynamic_cast<IVARIANTButton*>(obj))
+						{
+							if ( obj->getRect().PtInRect(point))
+							{
+								target_ = obj;
+								CRect rc = obj->getRect();
+								rc.OffsetRect(2, 2);
+								obj->setRect(rc );
+								InvalidateRect(hWnd, NULL, TRUE);
+								ret = 1;
+								break;
+							}						
+						}
+						else if (dynamic_cast<IVARIANTListbox*>(obj))
+						{
+							CRect rc;
+							auto ls = dynamic_cast<IVARIANTListbox*>(obj);
+
+							int md = ls->SelectRow(point);
+
+							if ( md == 1 )
+							{
+								InvalidateRect(hWnd, NULL, FALSE);
+								ret = 1;
+							}
+							else if ( md == 2 )
+							{
+								target_ = ls;
+								ret = 1;
+							}
+
+							target_ = ls;
+					
+						}
+						else if (dynamic_cast<IVARIANTDropdownList*>(obj))
+						{
+							CRect rc;
+							auto ls = dynamic_cast<IVARIANTDropdownList*>(obj);
+
+							if ( ls->BtnClick(point))
+							{
+								ls->ShowDlgListbox(true);
+								captured_obj = ls;
+
+								InvalidateRect(hWnd, NULL, TRUE);
+							}
+						}
+					}
+
+				}
+				break;
+				case WM_LBUTTONUP:
+				{
+					if (::GetCapture() == hWnd)
+					{
+						if (dynamic_cast<IVARIANTButton*>(target_) && mst_.result)
+						{
+							CRect rc = target_->getRect();
+							rc.OffsetRect(-2, -2);
+							target_->setRect(rc);
+
+							auto btn = dynamic_cast<IVARIANTAbstract*>(target_);
+
+							_variant_t v1(btn);
+
+							VARIANT v = ScriptCall(mst_, L"OnClick", &v1, 1);
+
+
+							InvalidateRect(hWnd,NULL,TRUE);
+
+						}
+						else if (dynamic_cast<IVARIANTListbox*>(target_))
+						{
+							auto ls = dynamic_cast<IVARIANTListbox*>(target_);
+
+							CPoint point(LOWORD(lParam), HIWORD(lParam));
+							if (1 == ls->SelectRow(point, true))
+							{
+								InvalidateRect(hWnd, NULL, FALSE);
+							}
+						}
+
+						if (captured_obj == nullptr)
+							::ReleaseCapture();
+
+						target_ = nullptr;
 						ret = 1;
 					}
 				}
-			}
-			break;
-			case WM_KEYDOWN:
-			{
-				if ( wParam == VK_ESCAPE )
-					capture_lock_ = false;
+				break;
+				case WM_MOUSEMOVE:
+				{
+					int a = 0;
 
-			}
-			break;
+					if (::GetCapture() == hWnd && dynamic_cast<IVARIANTListbox*>(target_))
+					{
+						if (target_ != nullptr)
+						{
+							auto ls = dynamic_cast<IVARIANTListbox*>(target_);
+						
+							CPoint point(LOWORD(lParam), HIWORD(lParam));
+							int offy = point.y - point_prv.y;
+
+							if (2 == ls->SelectRow(point) && GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+							{
+								ls->ScrollbarYoff(offy);
+								InvalidateRect(hWnd, NULL, FALSE);
+							}
+
+							point_prv = point;
+							ret = 1;
+						}
+					}
+				}
+				break;
 			
-		}
-		
+			
+			}
+		}	
 
 		return ret;
 	}
@@ -298,12 +369,7 @@ public:
 		return (bl && mst.result);
 	}
 	void Close()
-	{
-		for (auto& obj : objects_)
-		{
-			auto p = dynamic_cast<IVARIANTAbstract*>(obj);
-			//p->Release(); <--VariantClearでエラーになる
-		}
+	{		
 		MNSCClose(mst_);
 	}
 
@@ -313,12 +379,17 @@ public:
 
 void CMFCTestView::OnDraw(CDC* pDC)
 {
+	CFont cf;
+	cf.CreatePointFont(110, L"Meiryo UI");
+	CFont* old = pDC->SelectObject(&cf);
 
 	for (auto& obj : uilayer_->objects_)
 	{
 		obj->Draw(pDC);
 	}
 
+
+	pDC->SelectObject(old);
 }
 
 BOOL CMFCTestView::PreTranslateMessage(MSG* pMsg)
@@ -379,11 +450,7 @@ VARIANT IVARIANTApplication::create_object(VARIANT typ, VARIANT v)
 			{
 				// テスト
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
-
 				auto obj = dynamic_cast<DrawingObject*>(new IVARIANTButton(rc));
-
-				//obj->setRect(rc);
-
 				pview_->uilayer_->objects_.push_back(obj);
 
 				obj->setText(std::wstring(text.bstrVal));
@@ -429,9 +496,6 @@ VARIANT IVARIANTApplication::create_object(VARIANT typ, VARIANT v)
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
 
 				auto obj = dynamic_cast<DrawingObject*>(new IVARIANTTextbox(rc));
-
-				//obj->setRect(rc);
-
 				pview_->uilayer_->objects_.push_back(obj);
 
 				obj->setText(std::wstring(text.bstrVal));
@@ -443,6 +507,33 @@ VARIANT IVARIANTApplication::create_object(VARIANT typ, VARIANT v)
 				v1.punkVal = dynamic_cast<IVARIANTTextbox*>(obj);
 				//v1.punkVal->AddRef();
 				return v1;
+			}
+			else if (objtyp == L"dropdownlist")
+			{
+
+				// テスト
+				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
+
+				auto p = new IVARIANTDropdownList(rc);
+				auto obj = dynamic_cast<DrawingObject*>(p);
+				pview_->uilayer_->objects_.push_back(obj);
+				
+				p->setText(text);
+				
+				VARIANT vfunc;
+				::VariantInit(&vfunc);
+
+				if (par->GetItem(L"onselect", &vfunc))
+					p->func_onselect_.Attach(vfunc);
+
+				VARIANT v1;
+				::VariantInit(&v1);
+				v1.vt = VT_UNKNOWN;
+				v1.punkVal = dynamic_cast<IVARIANTDropdownList*>(obj);
+				//v1.punkVal->AddRef();
+				return v1;
+
+
 			}
 			
 		}

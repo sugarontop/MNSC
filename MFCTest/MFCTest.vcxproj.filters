@@ -63,6 +63,12 @@
     <ClInclude Include="x3.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="x4.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="lsbox.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCTest.cpp">
