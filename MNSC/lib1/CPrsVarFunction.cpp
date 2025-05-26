@@ -166,7 +166,7 @@ void CPrsVarFunction::Generate( stackGntInfo& stinfo )
 
 		m_value.clear();
 	}
-	else if(m_value.vt == VT_BSTR)
+	else if(m_value.vt) // vt == bstr or int
 	{
 		// Ident function
 

@@ -16,7 +16,15 @@ class IVARIANTButton : public IVARIANTAbstract, public DrawingObject
 {
 public:
 	IVARIANTButton(CRect& rc) :rc_(rc)
-	{}
+	{
+		int a = 0;
+	
+	}
+
+	~IVARIANTButton()
+	{
+		int a = 0;
+	}
 public:
 	
 public:

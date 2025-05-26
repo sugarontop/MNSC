@@ -44,7 +44,7 @@ void FVariant::init()
 void FVariant::clear_init()
 {
 	if ( vt != 0 )
-		::VariantClear(this);
+		clear();
 	::VariantInit(this);
 }
 void FVariant::clear()

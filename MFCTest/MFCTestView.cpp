@@ -154,59 +154,21 @@ public:
 		if (captured_obj)
 		{
 			auto ls = dynamic_cast<IVARIANTDropdownList*>(captured_obj);
-
-			switch(message)
-			{				
-				case WM_LBUTTONDOWN:
+			if ( ls )
+				if ( ListBoxWindowProc(ls, hWnd, message, wParam, lParam, ret))
 				{
-					CPoint point(LOWORD(lParam), HIWORD(lParam));
-
-					int md = ls->SelectRow(point);
-
-					point_prv = point;
+					captured_obj = nullptr;
+					return ret;
 				}
-				break;
-				case WM_MOUSEMOVE:
+
+
+			auto txt = dynamic_cast<IVARIANTTextbox*>(captured_obj);
+			if (txt)
+				if (TextboxWindowProc(txt, hWnd, message, wParam, lParam, ret))
 				{
-					CPoint point(LOWORD(lParam), HIWORD(lParam));
-					int offy = point.y-point_prv.y;
-
-					if (2 == ls->SelectRow(point) && GetAsyncKeyState(VK_LBUTTON) & 0x8000)
-					{
-						ls->ScrollbarYoff(offy);
-						InvalidateRect(hWnd, NULL, FALSE);
-					}
-
-					point_prv = point;
-
+					captured_obj = nullptr;
+					return ret;
 				}
-				break;
-				case WM_LBUTTONUP:
-				{
-					CPoint point(LOWORD(lParam), HIWORD(lParam));
-
-					int md = ls->SelectRow(point, true);
-					if (1 == md || 0 == md)
-					{
-						ls->ShowDlgListbox(false);
-						captured_obj = nullptr;
-						InvalidateRect(hWnd, NULL, TRUE);
-						::ReleaseCapture();
-					}
-				}
-				break;
-				case WM_KEYDOWN:
-				{
-					if (wParam == VK_ESCAPE)
-					{	
-						ls->ShowDlgListbox(false);
-						InvalidateRect(hWnd, NULL, TRUE);
-						captured_obj = nullptr;
-					}
-				}
-				break;
-			}
-			ret = 0;
 
 		}
 		else
@@ -239,36 +201,59 @@ public:
 						}
 						else if (dynamic_cast<IVARIANTListbox*>(obj))
 						{
-							CRect rc;
-							auto ls = dynamic_cast<IVARIANTListbox*>(obj);
-
-							int md = ls->SelectRow(point);
-
-							if ( md == 1 )
+							if (obj->getRect().PtInRect(point))
 							{
-								InvalidateRect(hWnd, NULL, FALSE);
-								ret = 1;
-							}
-							else if ( md == 2 )
-							{
+								auto ls = dynamic_cast<IVARIANTListbox*>(obj);
+
+								int md = ls->SelectRow(point);
+
+								if ( md == 1 )
+								{
+									InvalidateRect(hWnd, NULL, FALSE);
+									ret = 1;
+								}
+								else if ( md == 2 )
+								{
+									target_ = ls;
+									ret = 1;
+								}
+
 								target_ = ls;
-								ret = 1;
+								return ret;
 							}
-
-							target_ = ls;
 					
 						}
 						else if (dynamic_cast<IVARIANTDropdownList*>(obj))
-						{
-							CRect rc;
-							auto ls = dynamic_cast<IVARIANTDropdownList*>(obj);
-
-							if ( ls->BtnClick(point))
+						{							
+							if (obj->getRect().PtInRect(point))
 							{
-								ls->ShowDlgListbox(true);
-								captured_obj = ls;
+								auto ls = dynamic_cast<IVARIANTDropdownList*>(obj);
+
+								if ( ls->BtnClick(point))
+								{
+									ls->ShowDlgListbox(true);
+									captured_obj = ls;
+
+									InvalidateRect(hWnd, NULL, TRUE);
+									ret = 1;
+									return ret;
+								}
+							}
+						}
+						else if (dynamic_cast<IVARIANTTextbox*>(obj))
+						{
+							if (obj->getRect().PtInRect(point))
+							{							
+								auto txt = dynamic_cast<IVARIANTTextbox*>(obj);
+
+								txt->SetFocus(hWnd, point);
+
+
+								captured_obj = txt;
 
 								InvalidateRect(hWnd, NULL, TRUE);
+								ret = 1;
+								return ret;
 							}
 						}
 					}
@@ -370,7 +355,175 @@ public:
 	}
 	void Close()
 	{		
+		for (auto& obj : objects_)
+		{
+			dynamic_cast<IUnknown*>(obj)->Release();
+		}
 		MNSCClose(mst_);
+	}
+
+	bool ListBoxWindowProc(IVARIANTDropdownList* ls, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT& ret)
+	{
+		ret=0;
+		static CPoint point_prv(0, 0);
+		switch (message)
+		{
+			case WM_LBUTTONDOWN:
+			{
+				CPoint point(LOWORD(lParam), HIWORD(lParam));
+
+				int md = ls->SelectRow(point);
+
+				point_prv = point;
+			}
+			break;
+			case WM_MOUSEMOVE:
+			{
+				CPoint point(LOWORD(lParam), HIWORD(lParam));
+				int offy = point.y - point_prv.y;
+
+				if (2 == ls->SelectRow(point) && GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+				{
+					ls->ScrollbarYoff(offy);
+					InvalidateRect(hWnd, NULL, FALSE);
+				}
+
+				point_prv = point;
+
+			}
+			break;
+			case WM_LBUTTONUP:
+			{
+				CPoint point(LOWORD(lParam), HIWORD(lParam));
+
+				int md = ls->SelectRow(point, true);
+				if (1 == md || 0 == md)
+				{
+					ls->ShowDlgListbox(false);
+					//captured_obj = nullptr;
+					InvalidateRect(hWnd, NULL, TRUE);
+					::ReleaseCapture();
+					return true;
+				}
+			}
+			break;
+			case WM_KEYDOWN:
+			{
+				if (wParam == VK_ESCAPE)
+				{
+					ls->ShowDlgListbox(false);
+					InvalidateRect(hWnd, NULL, TRUE);
+					//captured_obj = nullptr;
+					return true;
+				}
+			}
+			break;
+		}
+
+		return false;
+
+	}
+	bool TextboxWindowProc(IVARIANTTextbox* txt, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT& ret)
+	{
+		ret = 0;
+		static CPoint point_prv(0, 0);
+		switch (message)
+		{
+			case WM_LBUTTONDOWN:
+			{
+				CPoint point(LOWORD(lParam), HIWORD(lParam));
+
+				if (!txt->getRect().PtInRect(point))
+				{
+					txt->ReleaseFocus();
+					return true;
+				}
+				else
+					txt->SetCaret(point);
+
+				point_prv = point;
+			}
+			break;
+			case WM_MOUSEMOVE:
+			{
+				CPoint point(LOWORD(lParam), HIWORD(lParam));
+				int offy = point.y - point_prv.y;
+
+			
+
+				point_prv = point;
+
+			}
+			break;
+			case WM_LBUTTONUP:
+			{
+				CPoint point(LOWORD(lParam), HIWORD(lParam));
+
+				if (!txt->getRect().PtInRect(point))
+				{
+					txt->ReleaseFocus();
+					ret = 1;
+					return true;
+				}				
+			}
+			break;
+			case WM_KEYDOWN:
+			{
+				auto rc = txt->getRect();
+				InvalidateRect(hWnd, rc, FALSE);
+
+				if (wParam == VK_ESCAPE)
+				{
+					txt->ReleaseFocus();
+					ret = 1;
+					return true;
+				}
+				else if ( wParam == VK_LEFT)
+				{
+					txt->MoveCaret(-1);
+					ret=1;
+				}
+				else if (wParam == VK_RIGHT)
+				{
+					txt->MoveCaret(1);
+					ret = 1;
+				}
+				else if (wParam == VK_HOME)
+				{
+					txt->MoveCaret2(false);
+					ret = 1;
+				}
+				else if (wParam == VK_END)
+				{
+					txt->MoveCaret2(true);
+					ret = 1;
+				}
+				else if (wParam == VK_DELETE)
+				{
+					txt->DeleteChar(true);
+					ret = 1;
+				}
+				else if (wParam == VK_BACK)
+				{
+					txt->DeleteChar(false);
+					ret = 1;
+				}
+			}
+			break;
+			case WM_CHAR:
+			{
+				WCHAR ch = (WCHAR)wParam;
+				txt->AddChar(ch);
+
+				auto rc = txt->getRect();
+				InvalidateRect(hWnd,rc, FALSE);
+			}
+			break;
+			
+		}
+
+		return false;
+
 	}
 
 };
@@ -460,7 +613,7 @@ VARIANT IVARIANTApplication::create_object(VARIANT typ, VARIANT v)
 				::VariantInit(&v1);
 				v1.vt = VT_UNKNOWN;
 				v1.punkVal = dynamic_cast<IVARIANTButton*>(obj);
-				//v1.punkVal->AddRef();
+				v1.punkVal->AddRef();
 				return v1;
 			}
 			else if (objtyp == L"listbox")
@@ -486,7 +639,7 @@ VARIANT IVARIANTApplication::create_object(VARIANT typ, VARIANT v)
 				::VariantInit(&v1);
 				v1.vt = VT_UNKNOWN;
 				v1.punkVal = p;
-				//v1.punkVal->AddRef();
+				v1.punkVal->AddRef();
 				return v1;
 
 			}
@@ -505,7 +658,7 @@ VARIANT IVARIANTApplication::create_object(VARIANT typ, VARIANT v)
 				::VariantInit(&v1);
 				v1.vt = VT_UNKNOWN;
 				v1.punkVal = dynamic_cast<IVARIANTTextbox*>(obj);
-				//v1.punkVal->AddRef();
+				v1.punkVal->AddRef();
 				return v1;
 			}
 			else if (objtyp == L"dropdownlist")
@@ -530,7 +683,7 @@ VARIANT IVARIANTApplication::create_object(VARIANT typ, VARIANT v)
 				::VariantInit(&v1);
 				v1.vt = VT_UNKNOWN;
 				v1.punkVal = dynamic_cast<IVARIANTDropdownList*>(obj);
-				//v1.punkVal->AddRef();
+				v1.punkVal->AddRef();
 				return v1;
 
 

@@ -3,21 +3,15 @@
 var lb1,tx1,lb2;
 
 func OnInit()
-var a,coin;
+var a,b;
 begin
 
 	
-	
-	
-	
-	//coin=["BTC","ETH","XRP","BNB","ADA","DOGE","SOL","XLM","LINK","TRX"];
-	//lb1 = _ap.create_object("listbox", {"x":1000, "y": 100, "cx":200, "cy":180, "text": coin, "onselect": OnSelect } );
+	for( a=0; a < 5; a++)
+		b = "text:" + a.str();
 
-	
-	
-	tx1=_ap.create_object("textbox", {"x":300, "y": 500, "cx":600, "cy":30, "text": "STATIC" } );	
-	
-	
+		
+	next
 	
 end
 

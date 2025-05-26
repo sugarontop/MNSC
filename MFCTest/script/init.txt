@@ -1,9 +1,9 @@
 // utf8
 
-var lb1,tx1,lb2,lb3,dd1;
+var lb1,tx1,lb2,lb3,dd1,tx2;
 
 func OnInit()
-var a,coin;
+var a,coin,b;
 begin
 
 	_ap.create_object("button", {"x":300, "y": 100, "cx":200, "cy":30, "text": "push0" } );	
@@ -19,7 +19,15 @@ begin
 	dd1 = _ap.create_object("dropdownlist", {"x":1300, "y": 100, "cx":200, "cy":30, "text": coin, "onselect": OnSelect } );
 	
 	
-	tx1=_ap.create_object("textbox", {"x":300, "y": 500, "cx":600, "cy":30, "text": "STATIC" } );	
+	// IME –¢‘Î‰ž
+	tx1=_ap.create_object("textbox", {"x":300, "y": 400, "cx":600, "cy":30, "text": "text" } );	
+	tx2=_ap.create_object("textbox", {"x":300, "y": 450, "cx":600, "cy":30, "text": "text" } );		
+	
+	for( a=0; a < 10; a++)
+		b = "text:" + a.str();
+		_ap.create_object("textbox", {"x":300, "y": 550+a*50, "cx":600, "cy":30, "text": b } );		
+		
+	next
 	
 end
 
