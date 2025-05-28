@@ -25,7 +25,7 @@ public:
 
 
 	virtual void Clear() { func_onselect_.Clear(); }
-	virtual int TypeId() { return 2001; }
+	virtual int TypeId()  const { return 2001; }
 
 	std::vector<std::wstring> items;
 	
@@ -133,8 +133,29 @@ public:
 		}
 		else if ( funcnm == L"select" && vcnt > 0)
 		{
-			int idx = v[0].intVal;
-			ls_.SetSelect(idx);
+			int new_idx = v[0].intVal;
+			int old_idx = ls_.GetSelectIdx();
+			ls_.SetSelect(new_idx);
+
+			if ( new_idx != old_idx )
+			{
+				if (func_onselect_.vt == VT_UNKNOWN)
+				{
+					IVARIANTFunction* func = (IVARIANTFunction*)func_onselect_.punkVal;
+
+					VARIANT v1;
+					::VariantInit(&v1);
+					v1.vt = VT_UNKNOWN;
+					v1.punkVal = this;
+
+					VARIANT v2 = func->Invoke(L"NONAME", &v1, 1);
+
+					::VariantClear(&v2);
+
+				}
+
+			}
+
 			return v[0];
 
 		}

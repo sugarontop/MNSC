@@ -69,6 +69,12 @@
     <ClInclude Include="lsbox.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="x5.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="x6.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCTest.cpp">

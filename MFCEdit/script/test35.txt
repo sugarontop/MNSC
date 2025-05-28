@@ -1,10 +1,9 @@
-
 func main()
 var a,b,c,a1,b1,map,s,head;
 begin
 	
 	b =_ap.tool();
-	b1 = "https://api.github.com/repos/octocat/Hello-World";
+	b1 = "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=1745593200&period2=1748185200&interval=1d";
 	c = b.inetGet(b1);
 
 	if ( c["result"] == 200)	
@@ -13,19 +12,18 @@ begin
 		for s in head
 			print(s);
 		next
-
 	
-	
-		print("★length:" + c["Content-Length"]);
-		print("★type:" + c["Content-Type"]);
+		//print("★length:" + c["Content-Length"]);
+		print("★type:" + c["content-type"]);
 
 		a = c["json"];
 
+		map = json_parse(a);
+		a = map["chart"]["result"][0]["indicators"]["quote"][0]["close"];
+		
+		
 		print(a);
 
-		map = json_parse(a);
-		print(map["id"]);
-		print(map["node_id"]);
 	endif
 
 

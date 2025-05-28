@@ -207,6 +207,8 @@
     <ClInclude Include="x2.h" />
     <ClInclude Include="x3.h" />
     <ClInclude Include="x4.h" />
+    <ClInclude Include="x5.h" />
+    <ClInclude Include="x6.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp" />

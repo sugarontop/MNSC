@@ -25,7 +25,7 @@ public:
 	_variant_t func_onselect_;
 
 	virtual void Clear() {}
-	virtual int TypeId() { return 2003; }
+	virtual int TypeId()  const { return 2003; }
 
 	virtual void Draw(CDC* pDC)
 	{
@@ -81,9 +81,12 @@ public:
 		return ret;
 	}
 
+	
+
+
 	bool BtnClick(CPoint pt)
 	{
-		CRect btn(rc_.right-20, rc_.top, rc_.right, rc_.bottom);
+		CRect btn=rc_; //(rc_.right-20, rc_.top, rc_.right, rc_.bottom);
 		return btn.PtInRect(pt);
 	}
 
@@ -99,6 +102,10 @@ public:
 	{
 		point.x -= rc_.left;
 		point.y -= rc_.bottom;
+
+
+		if (point.y < 0)
+			return 2;
 
 		int a = ls_.GetSelectIdx();
 			

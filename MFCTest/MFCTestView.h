@@ -37,7 +37,10 @@ public:
 
 public:
 	ScriptSt mst_;
-	std::unique_ptr<MessageLayerPlate> uilayer_;
+
+	int active_layer_;
+	std::vector<std::shared_ptr< MessageLayerPlate>> uilayers_;
+	//std::unique_ptr<MessageLayerPlate> uilayer_;
 
 // 生成された、メッセージ割り当て関数
 protected:
@@ -46,6 +49,7 @@ public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
 
 #ifndef _DEBUG  // MFCTestView.cpp のデバッグ バージョン

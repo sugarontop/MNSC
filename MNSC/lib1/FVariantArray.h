@@ -17,7 +17,7 @@ public:
 	std::vector<VARIANT> ar;
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv);
-	virtual int TypeId() { return FVariantType::ARRAY; }
+	virtual int TypeId()  const { return FVariantType::ARRAY; }
 	virtual void Add(VARIANT& v);
 	virtual void Clear();
 	virtual bool Get(int idx, VARIANT*);
@@ -36,7 +36,7 @@ public:
 	std::unordered_map<std::wstring, FVariant> map;
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv);
-	virtual int TypeId() { return FVariantType::MAP; }
+	virtual int TypeId()  const { return FVariantType::MAP; }
 	
 	virtual ULONG Count() { return (ULONG)map.size(); }	
 	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt);
@@ -102,7 +102,7 @@ private:
 	std::shared_ptr<CPrsFunction> func_;
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv);
-	virtual int TypeId() { return FVariantType::FUNCTIONPOINTER; }
+	virtual int TypeId()  const { return FVariantType::FUNCTIONPOINTER; }
 	virtual void Clear();
 	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt);
 public:
@@ -134,7 +134,7 @@ public:
 	IVARIANTClassImp();
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv);
-	virtual int TypeId() { return FVariantType::CLASS; }
+	virtual int TypeId()  const { return FVariantType::CLASS; }
 	virtual ULONG Count() { return (ULONG)map.size(); }
 	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt);
 	virtual void Clear(){ map.clear(); }

@@ -1,33 +1,29 @@
-// utf8
+﻿// utf8
 
-var lb1,tx1,lb2,lb3,dd1,tx2;
+// Global variable
+var lb1,tx1,lb2,lb3,dd1,tx2,tx3,b1,b2,b3,canvas;
 
-func OnInit()
+func OnInit( view_id )
 var a,coin,b;
 begin
 
-	_ap.create_object("button", {"x":300, "y": 100, "cx":200, "cy":30, "text": "push0" } );	
-	_ap.create_object("button", {"x":300, "y": 150, "cx":200, "cy":30, "text": "push1" } );
-	_ap.create_object("button", {"x":300, "y": 200, "cx":200, "cy":30, "text": "push2" } );
+	_ap.create_object(view_id,"static", {"x":10, "y": 10, "cx":1000, "cy":30, "text": "### controlのdemo ###" } );
+	_ap.create_object(view_id,"static", {"x":10, "y": 40, "cx":1000, "cy":30, "text": "設定はinit.txtに記述、すべてのcontrolはIUnknownを継承" } );
+		
+	b1 = _ap.create_object(view_id,"button", {"x":300, "y": 100, "cx":200, "cy":30, "text": "push0" } );	
+	b2 = _ap.create_object(view_id,"button", {"x":300, "y": 150, "cx":200, "cy":30, "text": "push1" } );
+	b3 = _ap.create_object(view_id,"button", {"x":300, "y": 200, "cx":200, "cy":30, "text": "push2" } );
 	
 	
 	
 	coin=["BTC","ETH","XRP","BNB","ADA","DOGE","SOL","XLM","LINK","TRX"];
-	lb1 = _ap.create_object("listbox", {"x":1000, "y": 100, "cx":200, "cy":180, "text": coin, "onselect": OnSelect } );
+	lb1 = _ap.create_object(view_id,"listbox", {"x":1000, "y": 100, "cx":200, "cy":180, "text": coin, "onselect": OnSelect } );
 
-	coin=["MSFT","GOOG","APPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO"];
-	dd1 = _ap.create_object("dropdownlist", {"x":1300, "y": 100, "cx":200, "cy":30, "text": coin, "onselect": OnSelect } );
 	
 	
-	// IME ���Ή�
-	tx1=_ap.create_object("textbox", {"x":300, "y": 400, "cx":600, "cy":30, "text": "text" } );	
-	tx2=_ap.create_object("textbox", {"x":300, "y": 450, "cx":600, "cy":30, "text": "text" } );		
-	
-	for( a=0; a < 10; a++)
-		b = "text:" + a.str();
-		_ap.create_object("textbox", {"x":300, "y": 550+a*50, "cx":600, "cy":30, "text": b } );		
-		
-	next
+	// IME 未対応
+	tx1=_ap.create_object(view_id,"textbox", {"x":300, "y": 400, "cx":600, "cy":30, "text": "F1キーで画面切り替え", "border":1 } );	
+	tx2=_ap.create_object(view_id,"textbox", {"x":300, "y": 450, "cx":600, "cy":30, "text": "readoly text box", "readonly":true } );		
 	
 end
 
@@ -37,10 +33,15 @@ func OnClick( obj )
 var a,coin;
 begin
 	
-	
 	obj.settext("pushed");
 	
-	lb1.select(2);
+	if ( b1 == obj )
+		lb1.select(0);
+	elsif ( b2 == obj )
+		lb1.select(1);
+	elsif ( b3 == obj )
+		lb1.select(2);
+	endif
 	
 
 	
@@ -55,6 +56,34 @@ begin
 	a = obj.selectidx();
 	s = obj.gettext(a);
 	tx1.settext(s);
+	
+	return 0;
+end
+
+////////////////////////////////////////////////////////////////////////////////////
+func OnInit2( view_id )
+var a,cd,b;
+begin
+
+	tx3 = _ap.create_object(view_id,"textbox", {"x":300, "y": 200, "cx":600, "cy":30, "text": "Here is View2.", "border":0 } );	
+	
+	_ap.create_object(view_id,"static", {"x":50, "y": 100, "cx":200, "cy":30, "text": "Ticker Symbol:" } );
+	cd=["MSFT","GOOG","APPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO"];
+	dd1 = _ap.create_object(view_id,"dropdownlist", {"x":300, "y": 100, "cx":200, "cy":30, "text": cd, "onselect": OnSelect2 } );
+	
+	canvas = _ap.create_object(view_id,"canvas", {"x":300, "y": 300, "cx":1000, "cy":1000 ,"text":"canvas(empty)", "border":1} );
+	
+	
+end
+
+
+func OnSelect2(obj)
+var a,s;
+begin
+	
+	a = obj.selectidx();
+	s = obj.gettext(a);
+	tx3.settext(s);
 	
 	return 0;
 end

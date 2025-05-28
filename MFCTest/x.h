@@ -29,7 +29,7 @@ public:
 	
 public:
 	virtual void Clear() {}
-	virtual int TypeId() { return 2000; }
+	virtual int TypeId() const { return 2000; }
 
 	
 

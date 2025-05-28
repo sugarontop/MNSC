@@ -544,7 +544,9 @@ BOOL FVariant::operator == (const FVariant& var2) const
 		return (getD() == var2.getD());
 	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
 		return (getN() == var2.getN());
-	else 
+	else if (vt == VT_UNKNOWN && var2.vt == VT_UNKNOWN)
+		return (punkVal == var2.punkVal);
+	else
 		THROW(L"FVariant::operator == err" );
 
 	return FALSE;

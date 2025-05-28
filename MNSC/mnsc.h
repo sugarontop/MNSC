@@ -43,7 +43,7 @@ protected:
 	ULONG ref;
 public:
 	
-	virtual int TypeId() = 0;
+	virtual int TypeId() const = 0;
 	virtual void Clear() = 0;
 	virtual VARIANT Invoke( LPCWSTR funcnm, VARIANT* v, int vcnt ) = 0;
 };
@@ -55,7 +55,7 @@ public:
 	IVARIANTArray() {}
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) = 0;
-	virtual int TypeId() = 0;
+	virtual int TypeId() const = 0;
 	virtual void Clear() = 0;
 	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
 public:
@@ -71,7 +71,7 @@ public:
 	IVARIANTMap() {};
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) = 0;
-	virtual int TypeId() = 0;
+	virtual int TypeId() const = 0;
 	virtual void Clear() = 0;
 	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
 public:
@@ -89,7 +89,7 @@ public:
 	
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv)=0;
-	virtual int TypeId() = 0;
+	virtual int TypeId() const = 0;
 	virtual void Clear() = 0;
 	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
 public:
@@ -103,7 +103,7 @@ public:
 	IVARIANTClass() {};
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) = 0;
-	virtual int TypeId() = 0;
+	virtual int TypeId() const = 0;
 	virtual void Clear() = 0;
 	virtual VARIANT Invoke(LPCWSTR funcnm, VARIANT* v, int vcnt) = 0;
 public:

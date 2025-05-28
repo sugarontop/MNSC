@@ -15,7 +15,6 @@ class ListboxBase
 	public :
 		void Draw(CDC* pDC)
 		{
-		
 			CFont* pf = pDC->GetCurrentFont(); 
 
 			CBitmap bmp;
@@ -25,9 +24,8 @@ class ListboxBase
 			CBitmap* oldb = memDC.SelectObject(&bmp);
 			CFont* oldf = memDC.SelectObject(pf);
 
-			CBrush br(BLACK_BRUSH), brc;
-			brc.CreateStockObject(NULL_BRUSH);
-			CBrush* oldbr = memDC.SelectObject(&brc);
+			CBrush br;
+			br.Attach((HBRUSH)::GetStockObject(BLACK_BRUSH));
 
 			CRect rc2,rc;
 			rc2.SetRect(0, 0, sz_.cx, sz_.cy);
@@ -64,7 +62,6 @@ class ListboxBase
 
 			memDC.FillSolidRect(vscbar_rc_, RGB(120, 120, 120));
 
-			memDC.SelectObject(oldbr);
 			memDC.SelectObject(oldf);
 
 			pDC->BitBlt(0, 0, sz_.cx, sz_.cy, &memDC, 0, 0, SRCCOPY);
@@ -74,6 +71,9 @@ class ListboxBase
 		}
 		int SelectRowTest( CPoint point, bool bLast=false)
 		{
+			if (point.y < 0)
+				return 0;
+
 			// æ“ªs‚ªpoint.y=0
 			if ( 0 <point.x && point.x < sz_.cx- SCROLLBAR_WIDTH && 0 < point.y && point.y < sz_.cy)
 			{

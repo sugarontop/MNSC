@@ -279,7 +279,7 @@ class CVARIANTTool : public IVARIANTAbstract
 		CVARIANTTool(){};
 		~CVARIANTTool(){};
 		virtual void Clear(){}
-		virtual int TypeId() { return 1001; }
+		virtual int TypeId()  const { return 1001; }
 	protected:		
 		VARIANT inetGet(const VARIANT url)
 		{			
@@ -319,7 +319,7 @@ class CVARIANTTool : public IVARIANTAbstract
 				{
 					auto xar = Split(it,L":");
 
-					if ( xar.size() == 2 )
+					if ( xar.size() >= 2 )
 					{
 						_variant_t v(xar[1].c_str());
 						map->SetItem(xar[0].c_str(), v.Detach() );
@@ -546,7 +546,7 @@ public:
 	HWND parent_;
 public :
 	virtual void Clear(){} 
-	virtual int TypeId() { return 1000; }
+	virtual int TypeId() const { return 1000; }
 	VARIANT Test(const VARIANT a)
 	{
 		std::wstring a1;

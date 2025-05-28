@@ -4,7 +4,7 @@
 class IVARIANTTextbox : public IVARIANTAbstract, public DrawingObject
 {
 public:
-	IVARIANTTextbox(const CRect& rc) :rc_(rc), caret_xpos_(0)
+	IVARIANTTextbox(const CRect& rc) :rc_(rc), caret_xpos_(0), border_(0), readonly_(FALSE), multiline_(FALSE), line_height_(0)
 	{
 	}
 
@@ -14,11 +14,13 @@ private:
 	HWND hWnd_;
 	int caret_xpos_;
 	std::vector<CRect> char_rects_;
+	int border_;
+	bool readonly_;
+	bool multiline_;
+	int line_height_;
 public:
 	virtual void Clear() {}
-	virtual int TypeId() { return 2002; }
-
-	std::vector<std::wstring> items;
+	virtual int TypeId()  const { return 2002; }
 
 	VARIANT setText(VARIANT  txt)
 	{
@@ -26,34 +28,64 @@ public:
 		if (txt.vt == VT_BSTR)
 		{
 			text_ = txt.bstrVal;
-
+			char_rects_.clear();
 			
 		}
 
 
-		CComVariant ret(0);
+		_variant_t ret(0);
+		return ret;
+	}
+	VARIANT setProperty(VARIANT border, VARIANT readonly, VARIANT multiline)
+	{
+		if (border.vt == VT_I8 || border.vt == VT_INT)
+			border_ = border.intVal;
+
+		if (readonly.vt == VT_BOOL)
+			readonly_ = readonly.boolVal;
+
+		if (multiline.vt == VT_BOOL)
+			multiline_ = multiline.boolVal;
+
+		_variant_t ret(0);
 		return ret;
 	}
 	
-	
 public :
+
+	
+
 	virtual void Draw(CDC* pDC)
 	{
 		if (char_rects_.empty())
 		{
+			TEXTMETRIC tm;
+			pDC->GetTextMetrics(&tm);
+			line_height_ = tm.tmHeight + tm.tmExternalLeading;
+
 			CalcCharRect(pDC);
 			MoveCaret(0);
 		}
-
-		pDC->FillSolidRect(rc_,RGB(255,255,255));
+		
+		
+			
+		pDC->FillSolidRect(rc_,(readonly_ ? RGB(210,210,210): RGB(255, 255, 255)));
 
 		pDC->DrawTextExW(
 				const_cast<LPWSTR>(text_.c_str()),
 				static_cast<int>(text_.length()),
 				&rc_,
-				DT_VCENTER | DT_SINGLELINE,
+				DT_TOP | DT_LEFT,  //DT_VCENTER | DT_SINGLELINE,
 				nullptr
 			);
+
+
+		if (border_)
+		{
+			CBrush br;
+			br.Attach((HBRUSH)GetStockObject(BLACK_BRUSH));
+			pDC->FrameRect(rc_, &br);
+		}
 	}
 	virtual void setText(const std::wstring& txt) 
 	{ 
@@ -67,37 +99,31 @@ public :
 	void SetFocus(HWND hWnd, CPoint pt)
 	{
 		hWnd_ = hWnd;
-		CreateCaret(hWnd,NULL,2,rc_.Height());
+		CreateCaret(hWnd, NULL, 3, line_height_);
 
 		SetCaret(pt);
+		::ShowCaret(hWnd_);
 	}
 	void SetCaret(CPoint pt)
 	{
 		pt.x -= rc_.left;
+		pt.y -= rc_.top;
 
-		int i = (int)char_rects_.size();
-		int off=0;
-		
-		if (char_rects_[i-1].right < pt.x)
+		int new_xpos = (int)char_rects_.size();
+		for (int j = 0; j < char_rects_.size(); j++)
 		{
-			int new_xpos = i+1;
-			off = new_xpos - caret_xpos_;			
-		}
-		else
-		{
-			for(i = 0; i < (int)char_rects_.size(); i++)
+			CRect rc = char_rects_[j];
+			CPoint pt2(pt.x + rc.Width() / 2, pt.y);
+			if (rc.PtInRect(pt2))
 			{
-				if (char_rects_[i].left < pt.x && pt.x < char_rects_[i].right )
-				{
-					int new_xpos = i;
-					off = new_xpos - caret_xpos_;
-					break;
-				}
+				new_xpos = j;
+				break;
 			}
 		}
 
+		int off = new_xpos - caret_xpos_;
+
 		MoveCaret(off);
-		::ShowCaret(hWnd_);
 	}
 	void ReleaseFocus()
 	{
@@ -108,7 +134,8 @@ public :
 
 	void AddChar(WCHAR ch)
 	{
-		if ( ch > 127 || ch < ' ' ) return;
+		if ((ch > 127 || ch < ' ') && ch != '\r' && ch != '\t') return;
+		if (!multiline_ && ch == '\r') return;
 
 		std::wstring a = text_.substr(0, caret_xpos_);
 		std::wstring b = text_.substr(caret_xpos_, text_.length()-caret_xpos_);
@@ -122,33 +149,58 @@ public :
 	}
 	void CalcCharRect(CDC* pDC)
 	{
-		CRect rc(0,0,0,rc_.Height());
-		int i = 0;
+		CRect rc(0, 0, 0, rc_.Height());
 
 		char_rects_.clear();
 		char_rects_.resize(text_.length());
 
-		for(WCHAR ch : text_)
+		LPCWSTR str = text_.c_str();
+		int k = 0;
+		for (int i = 0; i < (int)text_.length(); i++)
 		{
-			int width;
-			pDC->GetCharWidth(ch,ch,&width);
-			rc.right += width;
-			char_rects_[i++]=rc;
-			rc.left += width;
+			CSize sz;
+			GetTextExtentPoint32(pDC->GetSafeHdc(), str + k, (i - k) + 1, &sz);
+
+			rc.right = rc.left + (sz.cx - rc.left);
+			rc.bottom = rc.top + sz.cy;
+
+			if (str[i] == '\r')
+			{
+				rc.left = rc.right;
+				char_rects_[i] = rc;
+
+				rc.left = rc.right = 0;
+				rc.top += (rc.bottom - rc.top);
+				k = i + 1;
+			}
+			else
+			{
+				char_rects_[i] = rc;
+				rc.left = rc.right;
+			}
 		}
 	}
 
 	void MoveCaret(int offx)
 	{
-		caret_xpos_ = max(0,min((int)text_.length(), caret_xpos_+offx));
+		caret_xpos_ = max(0, min((int)text_.length(), caret_xpos_ + offx));
 
 		::HideCaret(hWnd_);
 		if (caret_xpos_ == 0)
 			SetCaretPos(rc_.left, rc_.top);
 		else if (caret_xpos_ == text_.length())
-			SetCaretPos(rc_.left + char_rects_[caret_xpos_-1].right, rc_.top);
+		{
+			auto rc = char_rects_[caret_xpos_ - 1];
+
+			if (rc.Width() == 0)
+				SetCaretPos(rc_.left, rc_.top + rc.top + rc.Height());
+			else
+				SetCaretPos(rc_.left + char_rects_[caret_xpos_ - 1].right, rc_.top + char_rects_[caret_xpos_ - 1].top);
+		}
 		else
-			SetCaretPos(rc_.left+ char_rects_[caret_xpos_].left, rc_.top);
+			SetCaretPos(rc_.left + char_rects_[caret_xpos_].left, rc_.top + char_rects_[caret_xpos_].top);
+
+
 		::ShowCaret(hWnd_);
 	}
 	void MoveCaret2(bool last)
@@ -156,8 +208,8 @@ public :
 		::HideCaret(hWnd_);
 		if (last)
 		{
-			caret_xpos_ = text_.length();
-			SetCaretPos(rc_.left + char_rects_[caret_xpos_ - 1].right, rc_.top);
+			caret_xpos_ = (int)text_.length();
+			SetCaretPos(rc_.left + char_rects_[caret_xpos_ - 1].right, rc_.top + char_rects_[caret_xpos_ - 1].top);
 		}
 		else
 		{
@@ -193,9 +245,9 @@ public :
 				char_rects_.clear();
 			}
 		}
-
-
 	}
+
+	bool ReadOnly() const { return readonly_; }
 
 
 public:

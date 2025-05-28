@@ -1,6 +1,6 @@
  MFCEdit
 
- Timestamp is 682c6bb9 (Tue May 20 20:47:05 2025)
+ Timestamp is 6836a58c (Wed May 28 14:56:28 2025)
 
  Preferred load address is 0000000140000000
 
@@ -226,7 +226,7 @@
  0001:000016a0       ?PreTranslateMessage@CMFCEditView@@MEAAHPEAUtagMSG@@@Z 00000001400026a0 f   MFCEditView.obj
  0001:00001900       ?OnInitialUpdate@CMFCEditView@@MEAAXXZ 0000000140002900 f   MFCEditView.obj
  0001:00001c00       ?SetFont@CMFCEditView@@QEAAXH@Z 0000000140002c00 f   MFCEditView.obj
- 0001:00001da0       ?TypeId@CVARIANTTool@@UEAAHXZ 0000000140002da0 f i MFCEditView.obj
+ 0001:00001da0       ?TypeId@CVARIANTTool@@UEBAHXZ 0000000140002da0 f i MFCEditView.obj
  0001:00001db0       ?inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z 0000000140002db0 f i MFCEditView.obj
  0001:000025f0       ?Value@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@0@Z 00000001400035f0 f i MFCEditView.obj
  0001:00003040       ?OpenTextFile@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z 0000000140004040 f i MFCEditView.obj
@@ -236,7 +236,7 @@
  0001:00003860       ??1?$CComPtr@UIXMLHTTPRequest@@@ATL@@QEAA@XZ 0000000140004860 f i MFCEditView.obj
  0001:00003880       ??1?$queue@V?$shared_ptr@Ust@?1??Value@CVARIANTTool@@IEAA?AUtagVARIANT@@U4@0@Z@@std@@V?$deque@V?$shared_ptr@Ust@?1??Value@CVARIANTTool@@IEAA?AUtagVARIANT@@U4@0@Z@@std@@V?$allocator@V?$shared_ptr@Ust@?1??Value@CVARIANTTool@@IEAA?AUtagVARIANT@@U4@0@Z@@std@@@2@@2@@std@@QEAA@XZ 0000000140004880 f i MFCEditView.obj
  0001:00003890       ??_D?$basic_stringstream@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@QEAAXXZ 0000000140004890 f i MFCEditView.obj
- 0001:000038f0       ?TypeId@IVARIANTApplication@@UEAAHXZ 00000001400048f0 f i MFCEditView.obj
+ 0001:000038f0       ?TypeId@IVARIANTApplication@@UEBAHXZ 00000001400048f0 f i MFCEditView.obj
  0001:00003900       ?Test@IVARIANTApplication@@QEAA?AUtagVARIANT@@U2@@Z 0000000140004900 f i MFCEditView.obj
  0001:00003cf0       ?Invoke@IVARIANTApplication@@UEAA?AUtagVARIANT@@PEB_WPEAU2@H@Z 0000000140004cf0 f i MFCEditView.obj
  0001:00004010       ??_EIVARIANTApplication@@UEAAPEAXI@Z 0000000140005010 f i * CIL library *:* CIL module *
