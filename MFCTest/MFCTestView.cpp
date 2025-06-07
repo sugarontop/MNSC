@@ -12,6 +12,10 @@
 
 #include "MFCTestDoc.h"
 #include "MFCTestView.h"
+
+
+#include "mnsc.h"
+#include "tsf\D2DMisc.h"
 #include "x.h"
 #include "x2.h"
 #include "x3.h"
@@ -20,6 +24,11 @@
 #include "x6.h"
 #pragma comment(lib,"MNSC.lib")
 
+#define LOCK_KEEP false
+#define UNLOCK_KEEP true
+
+
+extern TSFIsland tsf_;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -34,6 +43,7 @@ BEGIN_MESSAGE_MAP(CMFCTestView, CView)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
 	ON_WM_KEYDOWN()
+	ON_MESSAGE(WM_BRADCAST_SET_INIT, &CMFCTestView::OnMyCustomMessage)
 END_MESSAGE_MAP()
 
 // CMFCTestView コンストラクション/デストラクション
@@ -55,7 +65,6 @@ BOOL CMFCTestView::PreCreateWindow(CREATESTRUCT& cs)
 
 	return CView::PreCreateWindow(cs);
 }
-
 
 
 
@@ -131,7 +140,7 @@ public:
 		}
 		else if (funcnm == L"unixtime" && vcnt > 2)
 		{
-			VARIANT ret;
+			VARIANT ret={};
 			ret.llVal = UnixTime(v[0].intVal, v[1].intVal, v[2].intVal);
 			ret.vt = VT_I8;
 
@@ -169,6 +178,7 @@ public:
 				if ( DrowdownListBoxWindowProc(ls, hWnd, message, wParam, lParam, ret))
 				{
 					captured_obj = nullptr;
+					InvalidateRect(hWnd, NULL, FALSE);
 					return ret;
 				}
 
@@ -177,7 +187,10 @@ public:
 			if (txt)
 				if (TextboxWindowProc(txt, hWnd, message, wParam, lParam, ret))
 				{
+					txt->SetFocus(false);
+
 					captured_obj = nullptr;
+					InvalidateRect(hWnd, NULL, FALSE);
 					return ret;
 				}
 
@@ -205,7 +218,7 @@ public:
 								CRect rc = obj->getRect();
 								rc.OffsetRect(2, 2);
 								obj->setRect(rc );
-								InvalidateRect(hWnd, NULL, TRUE);
+								InvalidateRect(hWnd, NULL, FALSE);
 								ret = 1;
 								break;
 							}						
@@ -245,7 +258,7 @@ public:
 									ls->ShowDlgListbox(true);
 									captured_obj = ls;
 
-									InvalidateRect(hWnd, NULL, TRUE);
+									InvalidateRect(hWnd, NULL, FALSE);
 									ret = 1;
 									return ret;
 								}
@@ -257,13 +270,15 @@ public:
 							{							
 								auto txt = dynamic_cast<IVARIANTTextbox*>(obj); 
 								
-								if (txt->ReadOnly() )return ret;
+								//if (txt->ReadOnly() )return ret;
 
-								txt->SetFocus(hWnd, point);
+
+								txt->SetFocus(true);
 
 								captured_obj = txt;
+								target_ = txt;
 
-								InvalidateRect(hWnd, NULL, TRUE);
+								InvalidateRect(hWnd, NULL, FALSE);
 								ret = 1;
 								return ret;
 							}
@@ -293,7 +308,7 @@ public:
 								VARIANT v = ScriptCall(mst_, L"OnClick", &v1, 1);
 							}
 
-							InvalidateRect(hWnd,NULL,TRUE);
+							InvalidateRect(hWnd,NULL, FALSE);
 						}
 						else if (dynamic_cast<IVARIANTListbox*>(target_))
 						{
@@ -335,6 +350,12 @@ public:
 							ret = 1;
 						}
 					}
+				}
+				break;
+				case WM_BRADCAST_SET_INIT:
+				{
+
+					ret = 1;
 				}
 				break;
 			
@@ -445,108 +466,28 @@ public:
 	}
 	bool TextboxWindowProc(IVARIANTTextbox* txt, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam, LRESULT& ret)
 	{
-		ret = 0;
-		static CPoint point_prv(0, 0);
-		switch (message)
-		{
-			case WM_LBUTTONDOWN:
-			{
-				CPoint point(LOWORD(lParam), HIWORD(lParam));
+		TSF::CTextEditorCtrl* ctrl = (TSF::CTextEditorCtrl*)tsf_.ctrl;
 
-				if (!txt->getRect().PtInRect(point))
-				{
-					txt->ReleaseFocus();
-					return true;
-				}
-				else
-					txt->SetCaret(point);
+		CRect rc = txt->GetClientRect();
+		TSF::TSFApp app(hWnd, rc);
 
-				point_prv = point;
-			}
-			break;
-			case WM_MOUSEMOVE:
-			{
-				CPoint point(LOWORD(lParam), HIWORD(lParam));
-				int offy = point.y - point_prv.y;
+		CPoint pt(LOWORD(lParam), HIWORD(lParam));
 
-			
-
-				point_prv = point;
-
-			}
-			break;
-			case WM_LBUTTONUP:
-			{
-				CPoint point(LOWORD(lParam), HIWORD(lParam));
-
-				if (!txt->getRect().PtInRect(point))
-				{
-					txt->ReleaseFocus();
-					ret = 1;
-					return true;
-				}				
-			}
-			break;
-			case WM_KEYDOWN:
-			{
-				if (txt->ReadOnly()) return false;
-
-				auto rc = txt->getRect();
-				InvalidateRect(hWnd, rc, FALSE);
-
-				if (wParam == VK_ESCAPE)
-				{
-					txt->ReleaseFocus();
-					ret = 1;
-					return true;
-				}
-				else if ( wParam == VK_LEFT)
-				{
-					txt->MoveCaret(-1);
-					ret=1;
-				}
-				else if (wParam == VK_RIGHT)
-				{
-					txt->MoveCaret(1);
-					ret = 1;
-				}
-				else if (wParam == VK_HOME)
-				{
-					txt->MoveCaret2(false);
-					ret = 1;
-				}
-				else if (wParam == VK_END)
-				{
-					txt->MoveCaret2(true);
-					ret = 1;
-				}
-				else if (wParam == VK_DELETE)
-				{
-					txt->DeleteChar(true);
-					ret = 1;
-				}
-				else if (wParam == VK_BACK)
-				{
-					txt->DeleteChar(false);
-					ret = 1;
-				}
-			}
-			break;
-			case WM_CHAR:
-			{
-				if ( txt->ReadOnly()) return false;
-
-				WCHAR ch = (WCHAR)wParam;
-				txt->AddChar(ch);
-
-				auto rc = txt->getRect();
-				InvalidateRect(hWnd,rc, FALSE);
-			}
-			break;
-			
+		if ( !rc.PtInRect(pt) && message == WM_LBUTTONDOWN)
+		{			
+			return UNLOCK_KEEP;
 		}
 
-		return false;
+		if (message == WM_BRADCAST_SET_INIT)
+		{			
+			return UNLOCK_KEEP;
+		}
+
+		if (1 != ctrl->WndProc(&app, message, wParam, lParam))
+			return UNLOCK_KEEP;
+		
+
+		return LOCK_KEEP;
 
 	}
 
@@ -571,8 +512,15 @@ void CMFCTestView::OnDraw(CDC* pDC)
 
 BOOL CMFCTestView::PreTranslateMessage(MSG* pMsg)
 {	
+	if (pMsg->message == WM_BRADCAST_SET_INIT)
+	{
+		int a = 0;
+	}
+
+
 	if ((WM_MOUSEFIRST <= pMsg->message && pMsg->message <= WM_MOUSELAST)
-		|| (WM_KEYFIRST <= pMsg->message && pMsg->message <= WM_KEYLAST))
+		|| (WM_KEYFIRST <= pMsg->message && pMsg->message <= WM_KEYLAST)
+		|| pMsg->message == WM_BRADCAST_SET_INIT)
 		return (0 != uilayers_[active_layer_]->WindowProc(pMsg->hwnd, pMsg->message, pMsg->wParam, pMsg->lParam));
 
 	return CView::PreTranslateMessage(pMsg);
@@ -585,6 +533,7 @@ void CMFCTestView::OnDestroy()
 	for(auto& ui : uilayers_ )
 		ui->Close();
 
+	TSFClose(m_hWnd);
 
 }
 
@@ -595,6 +544,8 @@ int CMFCTestView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
+
+	TSFInit(m_hWnd);
 
 	auto ui = std::make_shared<MessageLayerPlate>();// view_id==0
 
@@ -622,7 +573,7 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 		IVARIANTMap* par = dynamic_cast<IVARIANTMap*>(v.punkVal);
 		if (par) 
 		{
-			_variant_t x, y, cx, cy, text,brd,readonly;
+			_variant_t x, y, cx, cy, text,brd,readonly, bmultiline;
 			if (!par->GetItem(L"x", &x))
 				x = 100;
 			if (!par->GetItem(L"y", &y))
@@ -637,6 +588,8 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 				brd = 0;
 			if (!par->GetItem(L"readonly", &readonly))
 				readonly = FALSE;
+			if (!par->GetItem(L"multiline", &bmultiline))
+				bmultiline = FALSE;
 
 			if (objtyp == L"button")
 			{
@@ -687,15 +640,15 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 				// テスト
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
 
-				auto txt = new IVARIANTTextbox(rc);
-				auto obj = dynamic_cast<DrawingObject*>(txt);
-				_variant_t multiline = false;
+				_variant_t multiline = bmultiline;
 
-				pview_->uilayers_[layer_idx]->objects_.push_back(obj);
+				auto txt = new IVARIANTTextbox(rc, !multiline.boolVal);
 
-				obj->setText(std::wstring(text.bstrVal));
+				pview_->uilayers_[layer_idx]->objects_.push_back(txt);
 
-				txt->setProperty(brd, readonly, multiline);
+				txt->setText(std::wstring(text.bstrVal));
+
+				txt->setProperty(brd, readonly);
 
 				VARIANT v1;
 				::VariantInit(&v1);
@@ -779,6 +732,9 @@ void CMFCTestView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == VK_F1)
 	{
+		SendMessage( WM_BRADCAST_SET_INIT,0,0);
+		
+		
 		// 画面の切り替え
 		active_layer_ = (active_layer_ == 0 ? 1 : 0);
 		Invalidate();
@@ -786,4 +742,10 @@ void CMFCTestView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	}
 
 	CView::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+LRESULT CMFCTestView::OnMyCustomMessage(WPARAM wParam, LPARAM lParam)
+{
+	uilayers_[active_layer_]->WindowProc(m_hWnd, WM_BRADCAST_SET_INIT, 0,0);
+	return 0;
 }

@@ -3,16 +3,20 @@ func main()
 var a,b,c,a1,b1,map,s,head;
 begin
 	b =_ap.tool();
-	c = b.read_file_utf8("script\json_spy.txt");
+	c = b.read_file_utf8("script\json_spy.txt"); // spy: sp500
 
 	print( c.left(100));
 	map= json_parse(c);
 
-	
-
-	a = map["chart"]["result"][0]["indicators"]["quote"][0]["close"];
-	
+	a = map["chart"]["result"][0]["timestamp"]; // unix time
 	print( a );
+
+	a = map["chart"]["result"][0]["indicators"]["quote"][0]["open"];	
+	print( a );
+
+	a = map["chart"]["result"][0]["indicators"]["quote"][0]["close"];	
+	print( a );
+
 
 	
 

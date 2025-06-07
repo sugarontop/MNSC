@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\tsf">
+      <UniqueIdentifier>{16713e44-541b-41ae-913f-094cee08b346}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MFCTest.h">
@@ -90,6 +93,30 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="tsf\DisplayAttribute.cpp">
+      <Filter>ソース ファイル\tsf</Filter>
+    </ClCompile>
+    <ClCompile Include="tsf\MFCCharRect.cpp">
+      <Filter>ソース ファイル\tsf</Filter>
+    </ClCompile>
+    <ClCompile Include="tsf\TextContainer.cpp">
+      <Filter>ソース ファイル\tsf</Filter>
+    </ClCompile>
+    <ClCompile Include="tsf\TextEditor.cpp">
+      <Filter>ソース ファイル\tsf</Filter>
+    </ClCompile>
+    <ClCompile Include="tsf\TextLayout.cpp">
+      <Filter>ソース ファイル\tsf</Filter>
+    </ClCompile>
+    <ClCompile Include="tsf\TextStoreACP.cpp">
+      <Filter>ソース ファイル\tsf</Filter>
+    </ClCompile>
+    <ClCompile Include="tsf\undo.cpp">
+      <Filter>ソース ファイル\tsf</Filter>
+    </ClCompile>
+    <ClCompile Include="s1.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

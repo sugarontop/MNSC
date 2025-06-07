@@ -72,7 +72,7 @@ static FVariant f_json_parse(const FVariant* v, int cnt);
 static FVariant f_json_stringify(const FVariant* v, int cnt);
 static FVariant f_create_struct(const FVariant* v, int cnt);
 static FVariant f_dir(const FVariant* v, int cnt);
-//static FVariant f_assert(const FVariant* v, int cnt);
+static FVariant f_str(const FVariant* v, int cnt);
 
 
 #define FUNCTIONS \
@@ -87,7 +87,8 @@ static FVariant f_dir(const FVariant* v, int cnt);
 {8,L"json_parse", f_json_parse}, \
 {9,L"json_stringify", f_json_stringify}, \
 {10,L"create_struct", f_create_struct}, \
-{11,L"dir", f_dir} \
+{11,L"dir", f_dir}, \
+{12,L"str", f_str} \
 
 
 
@@ -157,7 +158,7 @@ static FVariant f_range(const FVariant* v, int cnt)
 		e = v[0].getN();
 	}
 	else
-		THROW(L"range err");
+		THROW(L"range() err");
 
 	std::vector<FVariant> ar;
 	for(auto i=s; i<e; i+= step)
@@ -171,7 +172,7 @@ static FVariant f_range(const FVariant* v, int cnt)
 static FVariant f_create_struct(const FVariant* v, int cnt)
 {
 	if (cnt != 1)
-		THROW(L"create_struct err");
+		THROW(L"create_struct() err");
 
 	FVariant ret;
 	
@@ -184,10 +185,10 @@ static FVariant f_create_struct(const FVariant* v, int cnt)
 static FVariant f_dir(const FVariant* v, int cnt)
 {
 	if (cnt != 1)
-		THROW(L"dir err");
+		THROW(L"dir() err");
 
 	if (v[0].vt != VT_BSTR)
-		THROW(L"dir err");
+		THROW(L"dir() err");
 
 	std::wstring s = v[0].bstrVal;
 
@@ -198,6 +199,18 @@ static FVariant f_dir(const FVariant* v, int cnt)
 	ret.bstrVal = ::SysAllocString(s.c_str());
 	ret.vt = VT_BSTR;
 	return ret;
+}
+static FVariant f_str(const FVariant* v, int cnt)
+{
+	if (cnt != 1)
+		THROW(L"str() err");
+
+	FVariant ret;	
+	ret = v[0];
+
+	ret.toStr();
+	return ret;
+
 }
 
 //static FVariant f_assert(const FVariant* v, int cnt)

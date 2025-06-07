@@ -14,7 +14,9 @@
 #include <map>
 #include <algorithm>
 #include <memory>
-
+#include <stack>
+#include <functional>
+#include <strsafe.h>
 
 
 

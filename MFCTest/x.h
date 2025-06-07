@@ -1,5 +1,11 @@
 #pragma once
 
+#include "mnsc.h"
+
+
+#define WM_BRADCAST_SET_INIT (WM_APP+10)
+
+
 class DrawingObject
 {
 	public:
@@ -18,13 +24,9 @@ public:
 	IVARIANTButton(CRect& rc) :rc_(rc)
 	{
 		int a = 0;
-	
 	}
 
-	~IVARIANTButton()
-	{
-		int a = 0;
-	}
+	~IVARIANTButton(){}
 public:
 	
 public:
@@ -50,8 +52,8 @@ public:
 		pDC->Rectangle(rc_);
 
 		pDC->DrawTextExW(
-			const_cast<LPWSTR>(text_.c_str()), // std::wstring の c_str() を LPWSTR にキャスト  
-			static_cast<int>(text_.length()), // size_t を int にキャスト  
+			const_cast<LPWSTR>(text_.c_str()),
+			static_cast<int>(text_.length()),
 			&rc_,
 			DT_VCENTER | DT_SINGLELINE | DT_CENTER,
 			nullptr

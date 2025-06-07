@@ -3,7 +3,11 @@ var a,b,c,a1,b1,map,s,head;
 begin
 	
 	b =_ap.tool();
-	b1 = "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=1745593200&period2=1748185200&interval=1d";
+
+	a1 = "period2=" + b.unixtime(0).str();
+	b1 = "period1=" + b.unixtime(-20).str();
+
+	b1 = "https://query1.finance.yahoo.com/v8/finance/chart/SPY?&interval=1d&" + a1 +"&"+ b1; //period1=1745593200&period2=1748185200&interval=1d";
 	c = b.inetGet(b1);
 
 	if ( c["result"] == 200)	

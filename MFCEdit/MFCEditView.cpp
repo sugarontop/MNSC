@@ -271,7 +271,7 @@ void CMFCEditView::SetFont(int type)
 	for(auto& i : id)
 		GetDlgItem(i)->SetFont(&cfn);
 }
-
+int64_t getUnixTime(int daysAgo);
 
 class CVARIANTTool : public IVARIANTAbstract
 {
@@ -508,6 +508,18 @@ class CVARIANTTool : public IVARIANTAbstract
 			else if (vcnt == 1 && funcnm == L"loadutf8")
 			{
 				return OpenTextFile(prm[0]);
+			}
+			else if (vcnt == 1 && funcnm == L"unixtime")
+			{
+				int off = prm[0].intVal;
+				
+				auto t = getUnixTime( off );
+				VARIANT r;
+				VariantInit(&r);
+				r.llVal = t;
+				r.vt = VT_I8;
+				return r;
+
 			}
 
 			_variant_t ret;

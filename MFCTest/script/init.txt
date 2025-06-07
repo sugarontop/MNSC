@@ -21,9 +21,8 @@ begin
 
 	
 	
-	// IME 未対応
-	tx1=_ap.create_object(view_id,"textbox", {"x":300, "y": 400, "cx":600, "cy":30, "text": "F1キーで画面切り替え", "border":1 } );	
-	tx2=_ap.create_object(view_id,"textbox", {"x":300, "y": 450, "cx":600, "cy":30, "text": "readoly text box", "readonly":true } );		
+	tx1=_ap.create_object(view_id,"textbox", {"x":300, "y": 400, "cx":600, "cy":60, "text": "F1キーで画面切り替え", "border":1 } );	
+	tx2=_ap.create_object(view_id,"textbox", {"x":300, "y": 500, "cx":600, "cy":400, "text": "複数行", "multiline":true, "border":1 } );		
 	
 end
 
@@ -33,15 +32,17 @@ func OnClick( obj )
 var a,coin;
 begin
 	
-	obj.settext("pushed");
+	return 1;
 	
-	if ( b1 == obj )
-		lb1.select(0);
-	elsif ( b2 == obj )
-		lb1.select(1);
-	elsif ( b3 == obj )
-		lb1.select(2);
-	endif
+//	obj.settext("pushed");
+	
+//	if ( b1 == obj )
+//		lb1.select(0);
+//	elsif ( b2 == obj )
+//		lb1.select(1);
+//	elsif ( b3 == obj )
+//		lb1.select(2);
+//	endif
 	
 
 	
@@ -65,7 +66,7 @@ func OnInit2( view_id )
 var a,cd,b;
 begin
 
-	tx3 = _ap.create_object(view_id,"textbox", {"x":300, "y": 200, "cx":600, "cy":30, "text": "Here is View2.", "border":0 } );	
+	tx3 = _ap.create_object(view_id,"textbox", {"x":300, "y": 200, "cx":600, "cy":60, "text": "Here is View2.", "border":0 } );	
 	
 	_ap.create_object(view_id,"static", {"x":50, "y": 100, "cx":200, "cy":30, "text": "Ticker Symbol:" } );
 	cd=["MSFT","GOOG","APPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO"];
