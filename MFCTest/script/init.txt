@@ -32,17 +32,16 @@ func OnClick( obj )
 var a,coin;
 begin
 	
-	return 1;
 	
-//	obj.settext("pushed");
+	obj.settext("pushed");
 	
-//	if ( b1 == obj )
-//		lb1.select(0);
-//	elsif ( b2 == obj )
-//		lb1.select(1);
-//	elsif ( b3 == obj )
-//		lb1.select(2);
-//	endif
+	if ( b1 == obj )
+		lb1.select(0);
+	elsif ( b2 == obj )
+		lb1.select(1);
+	elsif ( b3 == obj )
+		lb1.select(2);
+	endif
 	
 
 	

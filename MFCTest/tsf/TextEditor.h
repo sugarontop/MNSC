@@ -53,6 +53,7 @@ class CTextEditor
 		void Draw(CDC& cDC );
 		void CalcRender(CDC& cDC);
 
+		
 
 		int GetSelectionStart() const {return ct_->SelStart();}
 		int GetSelectionEnd() const {return ct_->SelEnd();}

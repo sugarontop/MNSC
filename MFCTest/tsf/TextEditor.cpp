@@ -556,8 +556,6 @@ void CTextEditor::Draw(CDC& cDC)
 
     BitBlt(cDC, ct_->rc_.left, ct_->rc_.top, cx, cy, bDC, 0, 0, SRCCOPY);
 
-    //BitBlt(cDC, 0, 1000, cx, cy, bDC, 0, 0, SRCCOPY);
-
     bDC.SelectObject(oldb);
     bDC.SelectObject(oldf);
 

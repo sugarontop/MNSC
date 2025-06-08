@@ -8,6 +8,9 @@
 class DrawingObject;
 class MessageLayerPlate;
 
+
+
+
 class CMFCTestView : public CView
 {
 protected: // シリアル化からのみ作成します。

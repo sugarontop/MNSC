@@ -78,6 +78,12 @@
     <ClInclude Include="x6.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="IVARIANTApplication.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageLayerPlate.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCTest.cpp">
@@ -117,6 +123,9 @@
       <Filter>ソース ファイル\tsf</Filter>
     </ClCompile>
     <ClCompile Include="s1.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="IVARIANTApplication.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

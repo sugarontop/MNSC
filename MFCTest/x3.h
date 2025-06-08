@@ -27,6 +27,11 @@ public:
 		{
 			ctrl()->Draw(*pDC);
 		}
+		else if ((HBITMAP)bmpText_ == nullptr && (int)ct_.GetTextLength() > -1 )
+		{
+			pDC->FillSolidRect(rc_, RGB(255,255,255));
+			pDC->DrawTextW(ct_.GetTextBuffer(), ct_.GetTextLength(), &rc_, (int)DT_TOP | DT_LEFT);
+		}
 		else
 		{
 			CDC cDC;
@@ -61,8 +66,14 @@ public:
 
 		if (txt.vt == VT_BSTR)
 		{
-			ctrl()->Clear();
-			ctrl()->InsertAtSelection(txt.bstrVal);
+			LPCWSTR str = txt.bstrVal;
+			UINT cnt = lstrlen(str);
+			UINT result = 0;
+			ct_.Reset();
+			ct_.InsertText(0, str, cnt, result, false );
+
+			bmpText_.DeleteObject();
+
 		}
 
 		_variant_t ret(0);

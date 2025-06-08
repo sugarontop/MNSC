@@ -192,8 +192,10 @@
     <ClInclude Include="ClassView.h" />
     <ClInclude Include="FileView.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="IVARIANTApplication.h" />
     <ClInclude Include="lsbox.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MessageLayerPlate.h" />
     <ClInclude Include="MFCTest.h" />
     <ClInclude Include="MFCTestDoc.h" />
     <ClInclude Include="MFCTestView.h" />
@@ -211,6 +213,7 @@
     <ClInclude Include="x6.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="IVARIANTApplication.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MFCTest.cpp" />
     <ClCompile Include="MFCTestDoc.cpp" />
