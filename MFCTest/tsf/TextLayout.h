@@ -51,7 +51,7 @@ class CTextLayout
 		CTextLayout();
 		virtual ~CTextLayout();
 				
-
+		void DrawSelectRange(CDC& cDC, const FRectF& rcText, int nSelStart, int nSelEnd);
 		BOOL Draw(CDC& cDC, const FRectF& rcText, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos);
 		BOOL CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
 	public :
@@ -71,6 +71,9 @@ class CTextLayout
 
 		D2D1_COLOR_F selected_halftone_color_;
 		void Clear();
+
+		void test(){nLineHeight_ = 0;}
+
 	private:
 		std::vector<CHPOS> CharPosMap_;
 		bool bRecalc_;

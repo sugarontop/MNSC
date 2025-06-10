@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "TextLayout.h"
-
+#include <gdiplus.h>
+using namespace Gdiplus;
 using namespace TSF;
 
 CTextLayout::CTextLayout()
@@ -121,12 +122,15 @@ BOOL CTextLayout::CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE&
 		int slen = nCnt;
 		int len = 0;
 
+
+		
 		//=============================================
 		// 文字文のRECT作成、取得
 		//
-		const RECT* prcs = char_rects_.Create(cDC, psz, sz, slen, &len);
+		int lineheight;
+		const RECT* prcs = char_rects_.Create(cDC, psz, sz, slen, &len, &lineheight);
 
-		nLineHeight_ = char_rects_.LineHeight();
+		nLineHeight_ = lineheight;
 
 		for (int rcidx = 0; rcidx < len; rcidx++)
 		{
@@ -148,32 +152,33 @@ float CTextLayout::GetLineHeight() const
 	return nLineHeight_;
 }
 
-
-BOOL CTextLayout::Draw(CDC& cDC, const FRectF& rcText, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos)
+void CTextLayout::DrawSelectRange(CDC& cDC, const FRectF& rcText, int nSelStart, int nSelEnd)
 {
+	// 仕方なくGDI+を使う
 	cDC.OffsetViewportOrg(rcText.left, rcText.top);
-	cDC.SetBkMode(TRANSPARENT);
-
-
 	if (!CharPosMap_.empty() && nSelEnd != 0)
 	{
-		CBrush br2(RGB(200, 200, 200));
+		Graphics graphics(cDC.m_hDC);
+		graphics.SetSmoothingMode(SmoothingModeAntiAlias);
+
+		// 透過四角形の描画
+		SolidBrush brush(Color(60, 200, 100, 200)); // α:64
+
 		for (int j = nSelStart; j < nSelEnd; j++)
 		{
 			CRect rc3 = CharPosMap_[j].rc;
-			cDC.FillRect(&rc3, &br2);
+			graphics.FillRectangle(&brush, rc3.left, rc3.top, rc3.Width(), rc3.Height());
 		}
 	}
-	
+	cDC.OffsetViewportOrg(-rcText.left, -rcText.top);
+}
+BOOL CTextLayout::Draw(CDC& cDC, const FRectF& rcText, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos)
+{
+	cDC.OffsetViewportOrg(rcText.left, rcText.top);
 	
 	CRect rc(0, 0, rcText.Width(), rcText.Height());
 
 	cDC.DrawTextW(const_cast<LPWSTR>(psz), nCnt, &rc, (int)DT_TOP|DT_LEFT); //| DT_NOPREFIX | DT_SINGLELINE | DT_NOCLIP
-
-
-
-	
-
 
 	//for (int j = 0; j < nCnt; j++)	
 	//{
@@ -181,13 +186,6 @@ BOOL CTextLayout::Draw(CDC& cDC, const FRectF& rcText, LPCWSTR psz, int nCnt, in
 	//	
 	//	cDC.FrameRect(rck, &br);
 	//}
-	
-	
-	
-
-	
-
-
 	cDC.OffsetViewportOrg(-rcText.left, -rcText.top);
 	return TRUE;
 }
@@ -420,5 +418,6 @@ void CTextLayout::Clear()
 
 
 	CharPosMap_.clear();
+	char_rects_.Clear();
 }
 

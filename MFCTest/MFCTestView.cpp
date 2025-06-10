@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CMFCTestView, CView)
 	ON_WM_DESTROY()
 	ON_WM_KEYDOWN()
 	ON_MESSAGE(WM_BRADCAST_SET_INIT, &CMFCTestView::OnMyCustomMessage)
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 // CMFCTestView コンストラクション/デストラクション
@@ -118,6 +119,9 @@ BOOL CMFCTestView::PreTranslateMessage(MSG* pMsg)
 		|| (WM_KEYFIRST <= pMsg->message && pMsg->message <= WM_KEYLAST))
 		return (0 != uilayers_[active_layer_]->WindowProc(pMsg->hwnd, pMsg->message, pMsg->wParam, pMsg->lParam));
 
+	// TRUE: not dispatch
+	// FALSE: dispatch
+
 	return CView::PreTranslateMessage(pMsg);
 }
 
@@ -136,6 +140,10 @@ int CMFCTestView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
+
+	
+
+
 
 	TSFInit(m_hWnd);
 
@@ -175,4 +183,10 @@ LRESULT CMFCTestView::OnMyCustomMessage(WPARAM wParam, LPARAM lParam)
 {
 	uilayers_[active_layer_]->WindowProc(m_hWnd, WM_BRADCAST_SET_INIT, 0,0);
 	return 0;
+}
+void CMFCTestView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。
+
+	CView::OnLButtonDown(nFlags, point);
 }

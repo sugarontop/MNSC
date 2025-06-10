@@ -89,6 +89,8 @@ public:
 			bActive_ = true;
 			ctrl()->SetContainer(&ct_, this);
 			ctrl()->SetFocus(&mat_);
+
+			// caret‚Í‰‰ñ‚ÌCTextEditor::CalcRender‚Åì¬
 		}
 		else
 		{
@@ -96,6 +98,8 @@ public:
 
 			ctrl()->CopyBitmap(&bmpText_);
 			ctrl()->layout_.Clear();
+		
+			::DestroyCaret();
 		}
 
 	}

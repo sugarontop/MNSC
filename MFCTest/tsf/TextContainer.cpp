@@ -57,7 +57,8 @@ BOOL CTextContainer::InsertText(UINT nPos, const WCHAR *psz, UINT nCnt, UINT& nR
 	_ASSERT(nTextSize_ + nCnt < nBufferCharCount_);
 
 	// move target area text to last.
-	_ASSERT( 0<=nPos && nTextSize_ >= (UINT)nPos );
+	_ASSERT( 0<=nPos );
+	_ASSERT(nPos <= nTextSize_ );
 	
 	memmove(psz_ + nPos + nCnt, psz_ + nPos, (nTextSize_ - (UINT)nPos) * sizeof(WCHAR));
 	

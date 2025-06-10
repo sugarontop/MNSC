@@ -136,7 +136,7 @@ namespace V6 {
 		CharsRect(bool bSingle);
 		~CharsRect() { Clear(); }
 
-		const RECT* Create(CDC& cDC,LPCWSTR str, const SIZE& sz, int slen, int* plen);
+		const RECT* Create(CDC& cDC,LPCWSTR str, const SIZE& sz, int slen, int* plen, int* lineHeight);
 
 		void Clear();
 		float LineHeight() const { return line_height_; }

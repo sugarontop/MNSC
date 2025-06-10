@@ -529,8 +529,8 @@ int CTextEditor::CurrentCaretPos()
 
 void CTextEditor::Draw(CDC& cDC)
 {
-    int selstart = (int)ct_->SelStart() - ct_->nStartCharPos_;
-    int selend = (int)ct_->SelEnd() - ct_->nStartCharPos_;
+    int selstart = (int)ct_->SelStart(); // - ct_->nStartCharPos_;
+    int selend = (int)ct_->SelEnd(); // - ct_->nStartCharPos_;
 
     CalcRender(cDC);
 
@@ -540,7 +540,6 @@ void CTextEditor::Draw(CDC& cDC)
 
     int cx = ct_->rc_.Width();
     int cy = ct_->rc_.Height();
-
 
     bmpText_.DeleteObject();
     CDC bDC;
@@ -559,9 +558,13 @@ void CTextEditor::Draw(CDC& cDC)
     bDC.SelectObject(oldb);
     bDC.SelectObject(oldf);
 
+    
+    // 選択範囲の表示 (bitmapから外す)
+    layout_.DrawSelectRange(cDC, ct_->rc_, selstart, selend);
+
 
     // caretの表示
-
+    RECT caretRect = { 0,0,0,0 }; // ct_->rc_.left, ct_->rc_.top, 0,0};
     if (!layout_.CharPosMap_.empty())
     {      
         cDC.OffsetViewportOrg(ct_->rc_.left, ct_->rc_.top);
@@ -569,22 +572,30 @@ void CTextEditor::Draw(CDC& cDC)
         CRect rcStart;
         bool blf1 = false;
         layout_.RectFromCharPosEx(pos - 1, -1, &rcStart, &blf1);
-        RECT caretRect = rcStart;
+        caretRect = rcStart;
 
         caretRect.left = caretRect.right - 4;
 
-        CBrush br1(RGB(0, 150, 0));
-        cDC.FillRect(&caretRect, &br1);
-
+        //CBrush br1(RGB(0, 150, 0));
+        //cDC.FillRect(&caretRect, &br1);
+       
         cDC.OffsetViewportOrg(-ct_->rc_.left, -ct_->rc_.top);
     }
+    if (!caret_stat_)
+        ::HideCaret(hWnd_);
+
+    ::SetCaretPos(ct_->rc_.left+caretRect.left, ct_->rc_.top+caretRect.top);
+    ::ShowCaret(hWnd_);
+    caret_stat_ = false; 
+
 }
 
 void CTextEditor::CalcRender(CDC& cDC)
 {
 	if (layout_.Recalc() == false ) return;
     
-    
+    int h = (int)layout_.GetLineHeight();
+
     int zCaretPos = CurrentCaretPos();
 	if (ct_->bSingleLine_)
 	{
@@ -595,6 +606,18 @@ void CTextEditor::CalcRender(CDC& cDC)
 		layout_.CreateLayout(cDC, ct_->GetTextBuffer(), ct_->GetTextLength(), ct_->view_size_, ct_->bSingleLine_, zCaretPos, ct_->nStartCharPos_);
 	}
     layout_.SetRecalc(false);
+
+
+
+    if ( h <= 0)
+    {
+        h = layout_.GetLineHeight();
+        ::CreateCaret(hWnd_, 0, 4, (int)h);
+        ::HideCaret(hWnd_);
+        caret_stat_ = true;
+    }
+
+    
 }
 
 
@@ -662,6 +685,8 @@ void CTextEditor::SetFocus(D2DMat* pmat)
 			pmat_ = pmat;
 
         weak_tmgr_->SetFocus(pDocumentMgr_);
+
+        layout_.test();
     }
 }
 

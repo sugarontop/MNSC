@@ -12,10 +12,15 @@
 #include "MFCTestDoc.h"
 #include "MFCTestView.h"
 
+#include <gdiplus.h>
+using namespace Gdiplus;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
+GdiplusStartupInput gdiplusStartupInput;
+ULONG_PTR gdiplusToken;
 
 // CMFCTestApp
 
@@ -84,6 +89,8 @@ BOOL CMFCTestApp::InitInstance()
 
 	EnableTaskbarInteraction(FALSE);
 
+	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, nullptr);
+
 	// RichEdit コントロールを使用するには AfxInitRichEdit2() が必要です
 	// AfxInitRichEdit2();
 
@@ -132,7 +139,7 @@ int CMFCTestApp::ExitInstance()
 {
 	//TODO: 追加したリソースがある場合にはそれらも処理してください
 	AfxOleTerm(FALSE);
-
+	GdiplusShutdown(gdiplusToken);
 	return CWinApp::ExitInstance();
 }
 

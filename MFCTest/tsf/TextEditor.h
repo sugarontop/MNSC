@@ -106,6 +106,7 @@ class CTextEditor
 		TfEditCookie ecTextStore_;
 		ITfDocumentMgr* pDocumentMgr_;
 		ITfContext* pInputContext_;
+		bool caret_stat_;
 		
 };
 

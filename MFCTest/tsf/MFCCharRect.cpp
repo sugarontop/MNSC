@@ -23,7 +23,7 @@ CharsRect::CharsRect(bool bSingle)
 
 }
 
-const RECT* CharsRect::Create(CDC& cDC, LPCWSTR str, const SIZE& sz, int slen, int* plen)
+const RECT* CharsRect::Create(CDC& cDC, LPCWSTR str, const SIZE& sz, int slen, int* plen, int* lineHeight)
 {
 	int mkcnt_ = ((str == nullptr || slen == 0) ? 1 : slen);
 	cnt_ = slen;
@@ -32,16 +32,15 @@ const RECT* CharsRect::Create(CDC& cDC, LPCWSTR str, const SIZE& sz, int slen, i
 
 	CRect rc(0, 0, 0, sz.cy );
 	
-
+	CSize sz1;
 	int k = 0;
 	WORD ch_x = 0, ch_y = 0;
 	for (int i = 0; i < slen; i++)
-	{
-		CSize sz;
-		GetTextExtentPoint32(cDC.GetSafeHdc(), str + k, (i - k) + 1, &sz);
+	{		
+		GetTextExtentPoint32(cDC.GetSafeHdc(), str + k, (i - k) + 1, &sz1);
 
-		rc.right = rc.left + (sz.cx - rc.left);
-		rc.bottom = rc.top + sz.cy;
+		rc.right = rc.left + (sz1.cx - rc.left);
+		rc.bottom = rc.top + sz1.cy;
 
 		if (str[i] == L'\n')
 		{
@@ -65,8 +64,17 @@ const RECT* CharsRect::Create(CDC& cDC, LPCWSTR str, const SIZE& sz, int slen, i
 			ch_x++;
 		}
 	}
-
+	*lineHeight = line_height_;
 	*plen = slen;
+
+
+	if (*lineHeight == 0)
+	{
+		GetTextExtentPoint32(cDC.GetSafeHdc(), L"T", 1, &sz1);
+		*lineHeight = sz1.cy;
+	}
+
+
 	return rects_.get();
 }
 
