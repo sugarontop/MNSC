@@ -16,6 +16,9 @@
     <Filter Include="ソース ファイル\tsf">
       <UniqueIdentifier>{16713e44-541b-41ae-913f-094cee08b346}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\lib">
+      <UniqueIdentifier>{f2b4b10d-dc05-4f98-9a8d-69c292b2ec36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MFCTest.h">
@@ -84,6 +87,9 @@
     <ClInclude Include="MessageLayerPlate.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="lib\CVariantTool.h">
+      <Filter>ソース ファイル\lib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCTest.cpp">
@@ -126,6 +132,15 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="IVARIANTApplication.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\CVariantTool.cpp">
+      <Filter>ソース ファイル\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\chart_simple.cpp">
+      <Filter>ソース ファイル\lib</Filter>
+    </ClCompile>
+    <ClCompile Include="x6.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

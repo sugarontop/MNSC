@@ -3,7 +3,7 @@
 #include "MFCTest.h"
 #include "MFCTestDoc.h"
 #include "MFCTestView.h"
-
+#include <msxml6.h>
 #include "mnsc.h"
 #include "tsf\D2DMisc.h"
 #include "x.h"
@@ -14,6 +14,9 @@
 #include "x6.h"
 #include "IVARIANTApplication.h"
 #include "MessageLayerPlate.h"
+
+
+#pragma comment( lib, "msxml6")
 
 VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 {
@@ -46,10 +49,18 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 			{
 				// ƒeƒXƒg
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
-				auto obj = dynamic_cast<DrawingObject*>(new IVARIANTButton(rc));
+				auto p = new IVARIANTButton(rc);
+				auto obj = dynamic_cast<DrawingObject*>(p);
 				pview_->uilayers_[layer_idx]->objects_.push_back(obj);
 
 				obj->setText(std::wstring(text.bstrVal));
+
+				VARIANT vfunc;
+				::VariantInit(&vfunc);
+
+				if (par->GetItem(L"onclick", &vfunc))
+					p->func_onclick_.Attach(vfunc);
+
 
 
 				VARIANT v1;

@@ -18,6 +18,8 @@
 #include <functional>
 #include <strsafe.h>
 
+#include <queue>
+#include <sstream>
 
 
 

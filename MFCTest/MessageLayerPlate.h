@@ -89,7 +89,7 @@ block1:
 				{
 					if (dynamic_cast<IVARIANTButton*>(obj))
 					{
-						if (obj->getRect().PtInRect(point))
+						if (obj->getRect().PtInRect(point) && dynamic_cast<IVARIANTButton*>(obj)->enable_ == VARIANT_TRUE)
 						{
 							target_ = obj;
 							captured_obj = obj;
@@ -300,7 +300,7 @@ block1:
 
 	bool ButtonWindowProc(IVARIANTButton* btn, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{		
-		if ( message == WM_LBUTTONUP)
+		if ( message == WM_LBUTTONUP && btn->enable_ == VARIANT_TRUE)
 		{
 			CPoint point(LOWORD(lParam), HIWORD(lParam));
 			CRect rc = target_->getRect();
@@ -309,14 +309,30 @@ block1:
 
 			if (target_->getRect().PtInRect(point))
 			{
-				auto btn = dynamic_cast<IVARIANTAbstract*>(target_);
+				if (btn->func_onclick_.vt == VT_UNKNOWN) 
+				{
+					IVARIANTFunction* func = (IVARIANTFunction*)btn->func_onclick_.punkVal;
 
-				_variant_t v1(btn);
+					VARIANT v1;
+					::VariantInit(&v1);
+					v1.vt = VT_UNKNOWN;
+					v1.punkVal = btn;
 
-				VARIANT v = ScriptCall(mst_, L"OnClick", &v1, 1);
+					VARIANT v2 = func->Invoke(L"NONAME", &v1, 1);
 
-				::VariantClear(&v);
+					::VariantClear(&v2);
 
+				}
+				else
+				{
+					auto btn = dynamic_cast<IVARIANTAbstract*>(target_);
+
+					_variant_t v1(btn);
+
+					VARIANT v = ScriptCall(mst_, L"OnClick", &v1, 1);
+
+					::VariantClear(&v);
+				}
 			}
 
 			rc.InflateRect(2,2);

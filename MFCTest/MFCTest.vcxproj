@@ -193,6 +193,7 @@
     <ClInclude Include="FileView.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IVARIANTApplication.h" />
+    <ClInclude Include="lib\CVariantTool.h" />
     <ClInclude Include="lsbox.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="MessageLayerPlate.h" />
@@ -214,6 +215,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IVARIANTApplication.cpp" />
+    <ClCompile Include="lib\chart_simple.cpp" />
+    <ClCompile Include="lib\CVariantTool.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="MFCTest.cpp" />
     <ClCompile Include="MFCTestDoc.cpp" />
@@ -232,6 +235,7 @@
     <ClCompile Include="tsf\TextLayout.cpp" />
     <ClCompile Include="tsf\TextStoreACP.cpp" />
     <ClCompile Include="tsf\undo.cpp" />
+    <ClCompile Include="x6.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MFCTest.rc" />

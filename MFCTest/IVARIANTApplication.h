@@ -1,5 +1,6 @@
 #pragma once
 
+#include "lib/CVariantTool.h"
 
 class CMFCTestView;
 
@@ -46,8 +47,24 @@ public:
 
 			return ret;
 		}
+		else if (funcnm == L"tool")
+		{
+			
+			return Tool();
 
+		}
 		throw(std::wstring(L"Invoke err"));
 
+	}
+
+	VARIANT Tool()
+	{
+		VARIANT v;
+		::VariantInit(&v);
+
+		v.punkVal = new CVARIANTTool();
+		v.vt = VT_UNKNOWN;
+
+		return v;
 	}
 };

@@ -1,10 +1,21 @@
 #pragma once
 #include "x.h"
 
+void DrawStockChart(CDC& cDC, const std::vector<VARIANT>& days, const std::vector<VARIANT>& open, const std::vector<VARIANT>& high, const std::vector<VARIANT>& low, const std::vector<VARIANT>& close, CSize viewSize);
+
+
+
+std::vector<VARIANT> Convert(IVARIANTArray& sar);
+std::vector<VARIANT> ConvertUnixDate(IVARIANTArray& sar);
+
+BOOL PushAxisAlignedClip(CDC* pDC, const CRect& clipRect);
+BOOL PopAxisAlignedClip(CDC* pDC);
+
+
 class IVARIANTCanvas : public IVARIANTAbstract, public DrawingObject
 {
 public:
-	IVARIANTCanvas(const CRect& rc) :rc_(rc),border_(1)
+	IVARIANTCanvas(const CRect& rc) :rc_(rc),border_(1), data_stat_(0)
 	{
 	}
 
@@ -43,16 +54,45 @@ public :
 
 	virtual void Draw(CDC* pDC)
 	{
-		//pDC->FillSolidRect(rc_,(readonly_ ? RGB(210,210,210): RGB(255, 255, 255)));
+		pDC->SaveDC();
 
-		pDC->DrawTextExW(
-				const_cast<LPWSTR>(text_.c_str()),
-				static_cast<int>(text_.length()),
-				&rc_,
-				DT_LEFT | DT_SINGLELINE|DT_TOP,
-				nullptr
-			);
+		if (data_stat_ == 0)
+		{
+			pDC->DrawTextExW(
+					const_cast<LPWSTR>(text_.c_str()),
+					static_cast<int>(text_.length()),
+					&rc_,
+					DT_LEFT | DT_SINGLELINE|DT_TOP,
+					nullptr
+				);
+		}
+		else
+		{
+		
+			auto& date = *(IVARIANTArray*)(IUnknown*)data_[0];
+			auto& ls2 = *(IVARIANTArray*)(IUnknown*)data_[1];
+			auto& ls3 = *(IVARIANTArray*)(IUnknown*)data_[2];
+			auto& ls4 = *(IVARIANTArray*)(IUnknown*)data_[3];
+			auto& ls5 = *(IVARIANTArray*)(IUnknown*)data_[4];
+		
+			
+			PushAxisAlignedClip(pDC, rc_);
 
+			pDC->OffsetViewportOrg(rc_.left, rc_.top);
+			DrawStockChart(*pDC, ConvertUnixDate(date), Convert(ls2), Convert (ls3), Convert (ls4), Convert(ls5),CSize(rc_.Width(),rc_.Height()));
+
+
+			pDC->OffsetViewportOrg(-rc_.left, -rc_.top);
+
+			PopAxisAlignedClip(pDC);
+
+
+			date.Release();
+			ls2.Release();
+			ls3.Release();
+			ls4.Release();
+			ls5.Release();
+		}
 
 		if (border_)
 		{
@@ -60,6 +100,8 @@ public :
 			br.Attach((HBRUSH)GetStockObject(BLACK_BRUSH));
 			pDC->FrameRect(rc_, &br);
 		}
+
+		pDC->RestoreDC(-1);
 	}
 	virtual void setText(const std::wstring& txt) 
 	{ 
@@ -70,7 +112,8 @@ public :
 	virtual CRect getRect() { return rc_; }
 
 	
-
+	int data_stat_;
+	_variant_t data_[5];
 
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) override {
@@ -91,6 +134,19 @@ public:
 		{
 			return setText(v[0]);
 		}
+		else if ( funcnm == L"setdata" && vcnt == 5 )
+		{
+			for(int i=0; i < 5;i++)
+			{
+				data_[i] = v[i];
+				::VariantClear(&v[i]);
+			}
+
+			data_stat_ = 1;
+
+			return _variant_t(0).Detach();
+		}
+
 
 		throw(std::wstring(L"Invoke err"));
 

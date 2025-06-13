@@ -46,3 +46,4 @@ TSF::CTextEditorCtrl* IVARIANTTextbox::ctrl() const
 {
 	return (TSF::CTextEditorCtrl*)tsf_.ctrl;
 }
+

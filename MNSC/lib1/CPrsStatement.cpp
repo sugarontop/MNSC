@@ -128,8 +128,11 @@ void CPrsStatment::HGenerate(stackGntInfo& stinfo)
 		std::wstringstream sm;
 		sm << L"\r\nruntime error linenumber:" << m_LineNumber;
 		err += sm.str();
-		throw err;
+
+		std::runtime_error err1(w2a(err));
+		throw err1;
 	}
+	
 
 }
 
@@ -139,10 +142,10 @@ void CPrsStatment::HParse()
 	DEBUG_PARSE(CPrsStatment)
 
 
-		if (glinenum_debug++ > 1000)
-		{
-			THROW(L"limiter over 1000 lines");
-		}
+if (glinenum_debug++ > 1000)
+{
+	THROW(L"limiter over 1000 lines");
+}
 	SToken	st = getSymbol();
 
 	if (st.Token == rParen)

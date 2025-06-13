@@ -89,9 +89,9 @@ void CPrsFunction::Generate(stackGntInfo& stinfo)
 		m_Symbol.SelectSymbolTable(upperTable);
 		
 	}
-	catch (wstring err)
+	catch (std::runtime_error& err)
 	{
-		wstring x = err;
+		
 		throw err;
 	}
 }

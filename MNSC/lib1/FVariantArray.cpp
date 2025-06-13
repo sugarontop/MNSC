@@ -144,29 +144,45 @@ IVARIANTFunctionImp::IVARIANTFunctionImp()
 }
 VARIANT IVARIANTFunctionImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
 {
-	std::wstring funcnm = cfuncnm;
-	if ( funcnm == L"NONAME")
+	try 
 	{
-		stackGntInfo temp;
+		std::wstring funcnm = cfuncnm;
+		if ( funcnm == L"NONAME")
+		{
+			stackGntInfo temp;
 
-		_ASSERT(func_);
+			_ASSERT(func_);
 
-		func_->SetParameters(v,vcnt);		
-		func_->Generate(temp);
+			func_->SetParameters(v,vcnt);		
+			func_->Generate(temp);
 
 
-		VARIANT ret = func_->getValue().ToVARIANT();
+			VARIANT ret = func_->getValue().ToVARIANT();
 		
-		func_->ClearParameters();
+			func_->ClearParameters();
 
 		
 
-		return ret;
+			return ret;
+		}
+
+		VARIANT x;
+		::VariantInit(&x);
+		return x;
 	}
+	catch(std::runtime_error err)
+	{
+		
+		VARIANT vx;
+	
+		::VariantInit(&vx);
+		vx.vt = VT_BSTR;
+		vx.bstrVal = ::SysAllocString(L"error‚Å‚·");// err.what());
+		func_->ClearParameters();
+		return vx;
 
-	VARIANT x;
-	::VariantInit(&x);
-	return x;
+		
+	}
 }
 void IVARIANTFunctionImp::Clear()
 { 
