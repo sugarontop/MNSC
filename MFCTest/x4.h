@@ -169,8 +169,8 @@ public:
 		{
 			VARIANT v;
 			::VariantInit(&v);
-			v.vt = VT_I8;
-			v.lVal = ls_.GetSelectIdx();
+			v.vt = VT_INT;
+			v.intVal = (int)ls_.GetSelectIdx();
 			return v;
 		}
 		else if (funcnm == L"gettext" && vcnt > 0)

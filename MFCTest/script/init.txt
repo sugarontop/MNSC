@@ -1,7 +1,7 @@
 ﻿// utf8
 
 // Global variable
-var lb1,tx1,lb2,lb3,dd1,tx2,tx3,b1,b2,b3,bcanvas1,picker_dd;
+var lb1,tx1,lb2,lb3,dd1,tx2,tx3,b1,b2,b3,bcanvas1,picker_dd,btn_seek;
 
 func OnInit( view_id )
 var a,coin,b;
@@ -64,7 +64,7 @@ end
 
 ////////////////////////////////////////////////////////////////////////////////////
 func OnInit2( view_id )
-var a,cd,b,bb1,dd1;
+var a,cds,b,bb1,dd1;
 begin
 	
 	_ap.create_object(view_id,"static", {"x":10, "y": 10, "cx":1000, "cy":30, "text": "Stock画面" } );
@@ -72,18 +72,17 @@ begin
 	tx3 = _ap.create_object(view_id,"textbox", {"x":300, "y": 200, "cx":600, "cy":60, "text": "Here is View2.", "border":0 } );	
 	
 	_ap.create_object(view_id,"static", {"x":50, "y": 100, "cx":200, "cy":30, "text": "Ticker Symbol:" } );
-	cd=["MSFT","GOOG","AAPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO","PLTR"];
+	
+	cds=["MSFT","GOOG","AAPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO","PLTR"];
 	
 	
-	picker_dd = _ap.create_object(view_id,"dropdownlist", {"x":300, "y": 100, "cx":200, "cy":30, "text": cd, "onselect": OnSelect2 } );
+	picker_dd = _ap.create_object(view_id,"dropdownlist", {"x":300, "y": 100, "cx":200, "cy":30, "text": cds, "onselect": OnSelect2 } );
 	
-	bcanvas1 = _ap.create_object(view_id,"canvas", {"x":300, "y": 300, "cx":1900, "cy":1000 ,"text":"canvas(empty)", "border":1} );
+	bcanvas1 = _ap.create_object(view_id,"canvas", {"x":100, "y": 300, "cx":1680, "cy":1000 ,"text":"canvas(empty)", "border":1} );
 	
-	bb1 = _ap.create_object(view_id,"button", {"x":1050, "y": 200, "cx":100, "cy":60, "text": "seeek", "onclick": OnSeek } );	
+	btn_seek = _ap.create_object(view_id,"button", {"x":1050, "y": 200, "cx":100, "cy":60, "text": "seeek", "onclick": OnSeek } );	
 	
-	a = false;
-	
-	//bb1.enable(0);
+	btn_seek.enable(false);
 end
 
 
@@ -100,7 +99,7 @@ end
 
 
 func OnSeek(obj)
-var tool, a1,b1,cd,c,a,map, tma,xa;
+var tool, a1,b1,cd,c,a,map, tma,xa,json_str;
 begin
 
 
@@ -121,11 +120,11 @@ begin
 
 		if ( c["result"] == 200)	
 			
-			a = c["json"];
+			json_str = c["json"];
 			
-			//a = tool.read_file_utf8("data.txt");
+			//json_str = tool.read_file_utf8("data.txt");
 		
-			map = json_parse(a);
+			map = json_parse(json_str);
 			xa = map["chart"]["result"][0]["indicators"]["quote"][0];
 			tma = map["chart"]["result"][0];
 			
@@ -138,8 +137,16 @@ begin
 end
 
 func OnFlush(index)
+var x;
 begin
-
-
+	
+	x = picker_dd.selectidx();
+	if ( x > -1 )
+		btn_seek.enable(true);
+	else
+		btn_seek.enable(false);
+	endif
+	
+	
 	return 0;
 end

@@ -1,0 +1,15 @@
+func test(bl)
+begin
+	if ( bl == true )
+		print("ok");
+	endif
+
+	print ("-----");
+end
+
+func main()
+begin
+
+	test(true);
+
+end

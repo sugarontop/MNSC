@@ -3,8 +3,6 @@
 #include "mnsc.h"
 
 
-#define WM_BRADCAST_SET_INIT (WM_APP+10)
-
 
 class DrawingObject
 {

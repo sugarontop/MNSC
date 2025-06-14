@@ -23,6 +23,7 @@ private:
 	CRect rc_;
 	std::wstring text_;
 	int border_;
+	_variant_t onFulsh_;
 public:
 	virtual void Clear() {}
 	virtual int TypeId()  const { return 2007; }
@@ -36,13 +37,15 @@ public:
 		_variant_t ret(0);
 		return ret;
 	}
-	VARIANT setProperty(VARIANT border, VARIANT readonly)
+	VARIANT setProperty(VARIANT border, VARIANT readonly, VARIANT onfulsh_func)
 	{
 		if ( border.vt == VT_INT)
 			border_ = border.intVal;
 		else if (border.vt == VT_I8 )
 			border_ = (int)border.llVal;
 
+		if (onfulsh_func.vt == VT_UNKNOWN)
+			onFulsh_ = onfulsh_func;
 		
 		_variant_t ret(0);
 		return ret;

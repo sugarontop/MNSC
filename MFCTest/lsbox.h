@@ -132,7 +132,7 @@ class ListboxBase
 			float vc = (c * nvh) / b;
 
 			offy = (int)(vc + 0.5);
-			top_idx_ = (int)max(0, min((int)(vc / item_sz_.cy), (int)ar_.size()));
+			top_idx_ = (int)max(0, min((int)(vc / item_sz_.cy)+1, (int)ar_.size()));
 		}
 		int GetSelectIdx() const 
 		{ 

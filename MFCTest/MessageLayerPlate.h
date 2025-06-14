@@ -21,12 +21,32 @@ extern TSFIsland tsf_;
 class MessageLayerPlate
 {
 public:
-	MessageLayerPlate() : target_(nullptr) { mst_ = {}; }
+	MessageLayerPlate(int idx) : target_(nullptr) 
+	{ 
+		mst_ = {}; 
+
+		plate_idx_ = idx;
+
+		OnFlush_ = std::bind(&MessageLayerPlate::OnFlush, this );
+	}
 
 	std::vector<DrawingObject*> objects_;
 	DrawingObject* target_;
 	ScriptSt mst_;
 	CPoint point_prv_;
+	int plate_idx_;
+	std::function<void(void)> OnFlush_;
+
+
+	// in changing status
+	void OnFlush()
+	{		
+		VARIANT id;
+		id.vt= VT_INT;
+		id.intVal= plate_idx_;
+		VARIANT v = ScriptCall(mst_, L"OnFlush", &id, 1);
+		::VariantClear(&v);
+	}
 
 	LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
@@ -43,7 +63,7 @@ public:
 
 
 			if (ddls)
-				ret = DrowdownListBoxWindowProc(ddls, hWnd, message, wParam, lParam);
+				ret = DrowdownListBoxWindowProc(this,ddls, hWnd, message, wParam, lParam);
 			else if (txt)
 			{
 				ret = TextboxWindowProc(txt, hWnd, message, wParam, lParam);
@@ -55,9 +75,9 @@ public:
 				}
 			}
 			else if (btn)
-				ret = ButtonWindowProc(btn, hWnd, message, wParam, lParam);
+				ret = ButtonWindowProc(this, btn, hWnd, message, wParam, lParam);
 			else if (ls)
-				ret = ListboxWindowProc(ls, hWnd, message, wParam, lParam);
+				ret = ListboxWindowProc(this,ls, hWnd, message, wParam, lParam);
 
 			if (ret == UNLOCK_KEEP)
 			{
@@ -208,10 +228,12 @@ block1:
 		{
 			dynamic_cast<IUnknown*>(obj)->Release();
 		}
-		MNSCClose(mst_);
+
+		if (plate_idx_ == 0)
+			MNSCClose(mst_);
 	}
 
-	bool DrowdownListBoxWindowProc(IVARIANTDropdownList* ls, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	bool DrowdownListBoxWindowProc(MessageLayerPlate* mlp,IVARIANTDropdownList* ls, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		
 		static CPoint point_prv_(0, 0);
@@ -251,6 +273,10 @@ block1:
 			{
 				ls->ShowDlgListbox(false);
 				InvalidateRect(hWnd, NULL, TRUE);
+
+				if (mlp->OnFlush_)
+					mlp->OnFlush_();
+
 				return UNLOCK_KEEP;
 			}
 		}
@@ -285,10 +311,7 @@ block1:
 			return UNLOCK_KEEP;
 		}
 
-		if (message == WM_BRADCAST_SET_INIT)
-		{
-			return UNLOCK_KEEP;
-		}
+
 
 		if (1 != ctrl->WndProc(&app, message, wParam, lParam))
 			return UNLOCK_KEEP;
@@ -298,7 +321,7 @@ block1:
 
 	}
 
-	bool ButtonWindowProc(IVARIANTButton* btn, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	bool ButtonWindowProc(MessageLayerPlate* mlp, IVARIANTButton* btn, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{		
 		if ( message == WM_LBUTTONUP && btn->enable_ == VARIANT_TRUE)
 		{
@@ -333,6 +356,10 @@ block1:
 
 					::VariantClear(&v);
 				}
+
+
+				if (mlp->OnFlush_)
+					mlp->OnFlush_();
 			}
 
 			rc.InflateRect(2,2);
@@ -344,7 +371,7 @@ block1:
 		return LOCK_KEEP;
 	}
 
-	bool ListboxWindowProc(IVARIANTListbox* ls, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+	bool ListboxWindowProc(MessageLayerPlate* mlp, IVARIANTListbox* ls, HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		switch(message)
 		{
@@ -362,6 +389,9 @@ block1:
 					{
 						//InvalidateRect(hWnd, NULL, FALSE);
 					}
+
+					if (mlp->OnFlush_)
+						mlp->OnFlush_();
 
 					return UNLOCK_KEEP;
 

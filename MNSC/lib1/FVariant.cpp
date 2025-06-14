@@ -150,6 +150,8 @@ __int64	FVariant::getN() const
 		return (__int64)fltVal;
 	else if (vt == VT_I2)
 		return (__int64)iVal;
+	else if (vt == VT_INT)
+		return (__int64)intVal;
 	else
 		return 0;
 }
@@ -433,7 +435,7 @@ FVariant operator + (const FVariant& var1, const FVariant& var2)
 
 	if (var1.vt == VT_R8 || var1.vt == VT_R4 || var2.vt == VT_R8 || var2.vt == VT_R4)
 		var.setD(var1.getD() + var2.getD());
-	else if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	else if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 		var.setN(var1.getN() + var2.getN());
 	else if (var1.vt == VT_BSTR && var1.vt == var2.vt)
 	{
@@ -451,7 +453,7 @@ FVariant operator - (const FVariant& var1, const FVariant& var2)
 	FVariant var;
 	if (var1.vt == VT_R8 || var1.vt == VT_R4 || var2.vt == VT_R8 || var2.vt == VT_R4)
 		var.setD(var1.getD() - var2.getD());
-	else if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	else if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 		var.setN(var1.getN() - var2.getN());
 	else
 		THROW(L"FVariant::operator minus err");
@@ -465,7 +467,7 @@ FVariant operator * (const FVariant& var1, const FVariant& var2)
 
 	if (var1.vt == VT_R8 || var1.vt == VT_R4 || var2.vt == VT_R8 || var2.vt == VT_R4)
 		var.setD(var1.getD() * var2.getD());
-	else if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	else if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 		var.setN(var1.getN() * var2.getN());
 	else
 		THROW(L"FVariant::operator * err");
@@ -484,7 +486,7 @@ FVariant operator / (const FVariant& var1, const FVariant& var2)
 			THROW(L"FVariant::operator / zero err");
 		var.setD(var1.getD() / var2.getD());
 	}
-	else if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	else if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 	{
 		if ( var2.getN() == 0 )
 			THROW(L"FVariant::operator / zero err");
@@ -498,7 +500,7 @@ FVariant operator / (const FVariant& var1, const FVariant& var2)
 FVariant operator % (const FVariant& var1, const FVariant& var2)
 {
 	FVariant var;
-	if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	if (var1.vt == VT_I8 || var1.vt == VT_I4 || var1.vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 		var.setN(var1.getN() % var2.getN());
 	else
 		THROW(L"FVariant::operator % err");
@@ -509,7 +511,7 @@ BOOL FVariant::operator > (const FVariant& var2) const
 {
 	if (vt == VT_R8 || vt == VT_R4 || var2.vt == VT_R8 || var2.vt == VT_R4)
 		return (getD() > var2.getD());
-	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 		return (getN() > var2.getN());
 	else
 		THROW(L"FVariant::operator > err");
@@ -520,7 +522,7 @@ BOOL FVariant::operator < (const FVariant& var2) const
 {
 	if (vt == VT_R8 || vt == VT_R4 || var2.vt == VT_R8 || var2.vt == VT_R4)
 		return (getD() < var2.getD());
-	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 		return (getN() < var2.getN());
 	else
 		THROW(L"FVariant::operator < err");
@@ -542,7 +544,7 @@ BOOL FVariant::operator == (const FVariant& var2) const
 	}
 	else if (vt == VT_R8 || vt == VT_R4 || var2.vt == VT_R8 || var2.vt == VT_R4)
 		return (getD() == var2.getD());
-	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 		return (getN() == var2.getN());
 	else if (vt == VT_UNKNOWN && var2.vt == VT_UNKNOWN)
 		return (punkVal == var2.punkVal);
@@ -556,7 +558,7 @@ BOOL FVariant::operator <= (const FVariant& var2) const
 {
 	if (vt == VT_R8 || vt == VT_R4 || var2.vt == VT_R8 || var2.vt == VT_R4)
 		return (getD() <= var2.getD());
-	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 		return (getN() <= var2.getN());
 	else
 		THROW(L"FVariant::operator <= err");
@@ -568,7 +570,7 @@ BOOL FVariant::operator >= (const FVariant& var2) const
 {
 	if (vt == VT_R8 || vt == VT_R4 || var2.vt == VT_R8 || var2.vt == VT_R4)
 		return (getD() >= var2.getD());
-	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2)
+	else if (vt == VT_I8 || vt == VT_I4 || vt == VT_I2 || var2.vt == VT_I8 || var2.vt == VT_I4 || var2.vt == VT_I2 || var2.vt == VT_INT)
 		return (getN() >= var2.getN());
 	else
 		THROW(L"FVariant::operator >= err");

@@ -33,7 +33,6 @@ BEGIN_MESSAGE_MAP(CMFCTestView, CView)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
 	ON_WM_KEYDOWN()
-	ON_MESSAGE(WM_BRADCAST_SET_INIT, &CMFCTestView::OnMyCustomMessage)
 	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
@@ -141,23 +140,21 @@ int CMFCTestView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CView::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	
-
-
-
 	TSFInit(m_hWnd);
 
-	auto ui = std::make_shared<MessageLayerPlate>();// view_id==0
+	auto ui = std::make_shared<MessageLayerPlate>(0);// view_id==0
 
 	active_layer_ = 0;
 	uilayers_.push_back(ui);
 
 
-	auto ui2 = std::make_shared<MessageLayerPlate>(); // view_id==1
+	auto ui2 = std::make_shared<MessageLayerPlate>(1); // view_id==1
 	uilayers_.push_back(ui2);
 
 	if ( !ui->Open(this, L"script\\init.txt"))
 		return -1;
+
+	ui2->mst_ = ui->mst_;
 
 	return 0;
 }
@@ -167,9 +164,6 @@ void CMFCTestView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	if (nChar == VK_F1)
 	{
-		SendMessage( WM_BRADCAST_SET_INIT,0,0);
-		
-		
 		// 画面の切り替え
 		active_layer_ = (active_layer_ == 0 ? 1 : 0);
 		Invalidate();
@@ -179,11 +173,7 @@ void CMFCTestView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	CView::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
-LRESULT CMFCTestView::OnMyCustomMessage(WPARAM wParam, LPARAM lParam)
-{
-	uilayers_[active_layer_]->WindowProc(m_hWnd, WM_BRADCAST_SET_INIT, 0,0);
-	return 0;
-}
+
 void CMFCTestView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。

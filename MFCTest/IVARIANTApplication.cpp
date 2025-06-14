@@ -169,8 +169,8 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 				// ƒeƒXƒg
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
 
-				auto txt = new IVARIANTCanvas(rc);
-				auto obj = dynamic_cast<DrawingObject*>(txt);
+				auto cav = new IVARIANTCanvas(rc);
+				auto obj = dynamic_cast<DrawingObject*>(cav);
 				pview_->uilayers_[layer_idx]->objects_.push_back(obj);
 
 				obj->setText(std::wstring(text.bstrVal));
@@ -178,7 +178,7 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 				VARIANT v1;
 				::VariantInit(&v1);
 				v1.vt = VT_UNKNOWN;
-				v1.punkVal = txt;
+				v1.punkVal = cav;
 				v1.punkVal->AddRef();
 				return v1;
 			}
