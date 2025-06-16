@@ -1,25 +1,28 @@
-// utf8
+﻿// utf8
 
-var lb1,tx1,lb2;
+// Global variable
+var tx3,gtid;
 
-func OnInit()
-var a,b;
+func OnInit( view_id )
+var a,coin,b,gtid2;
 begin
 
+	tx3 = _ap.create_object(view_id,"textbox", {"x":300, "y": 200, "cx":600, "cy":60, "border":false, "fontheight":19, "readonly":true  } );	
 	
-	for( a=0; a < 5; a++)
-		b = "text:" + a.str();
-
-		
-	next
+	b = [0,1,2];
+	
+	gtid = 1;
+	gtid2 = 2;
+	
+	a = b[gtid2];
+	
+	tx3.settext(a);
+	
 	
 end
 
+func OnInit2( view_id )
+begin
 
-
-
-//void CPrsFunction::Generate(stackGntInfo& stinfo)
-// VARIANT IVARIANTFunctionImp::Invoke(LPCWSTR cfuncnm, VARIANT* v, int vcnt)
-
-
-
+	return 0;
+end

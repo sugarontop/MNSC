@@ -168,7 +168,7 @@ block1:
 						{
 							auto txt = dynamic_cast<IVARIANTTextbox*>(obj);
 
-							//if (txt->ReadOnly() )return ret;
+							if (txt->ReadOnly() )return ret;
 
 
 							txt->SetFocus(true);
@@ -311,6 +311,8 @@ block1:
 			return UNLOCK_KEEP;
 		}
 
+		if (txt->ReadOnly() )
+			return UNLOCK_KEEP;
 
 
 		if (1 != ctrl->WndProc(&app, message, wParam, lParam))

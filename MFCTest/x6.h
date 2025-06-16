@@ -84,6 +84,8 @@ public :
 			pDC->OffsetViewportOrg(rc_.left, rc_.top);
 			DrawStockChart(*pDC, ConvertUnixDate(date), Convert(ls2), Convert (ls3), Convert (ls4), Convert(ls5),CSize(rc_.Width(),rc_.Height()));
 
+			CRect rctext(220,20,400,60);
+			pDC->DrawTextExW(const_cast<LPWSTR>(ticker_cd_.c_str()), static_cast<int>(ticker_cd_.length()), &rctext, DT_LEFT, nullptr);
 
 			pDC->OffsetViewportOrg(-rc_.left, -rc_.top);
 
@@ -117,6 +119,7 @@ public :
 	
 	int data_stat_;
 	_variant_t data_[5];
+	std::wstring ticker_cd_;
 
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) override {
@@ -137,11 +140,14 @@ public:
 		{
 			return setText(v[0]);
 		}
-		else if ( funcnm == L"setdata" && vcnt == 5 )
+		else if ( funcnm == L"setdata" && vcnt == 6 )
 		{
+			if ( v[0].vt == VT_BSTR)
+				ticker_cd_ = v[0].bstrVal;
+
 			for(int i=0; i < 5;i++)
 			{
-				data_[i] = v[i];
+				data_[i] = v[i+1];
 				::VariantClear(&v[i]);
 			}
 

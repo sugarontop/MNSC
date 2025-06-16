@@ -468,6 +468,10 @@ void CPrsFactor::Parse()
 			m_Token = IdentVarDic;
 			ParseVarFunction(st);
 		}
+		else if (st.Token == rParen || st.Token == rSquare)
+		{
+			int a = 0; // why global variable
+		}
 
 		else if (bfunction_pointer)
 		{

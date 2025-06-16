@@ -9,7 +9,7 @@ IDispatchを使用しない、簡易なInvoke機構を使用する。
 C++ 20。  
 /MSSC, script dll  
 /MFCEdit, simple script editor  
-
+/MFCTest, input controls
 ////////////////////////////////////////////////////////////////////  
 // sample1.  
 func main()  

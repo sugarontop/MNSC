@@ -2,7 +2,8 @@
 
 #include "mnsc.h"
 
-
+#define READONLY_COLOR	RGB(200,200,200)
+#define DISABLE_COLOR	RGB(200,200,200)
 
 class DrawingObject
 {

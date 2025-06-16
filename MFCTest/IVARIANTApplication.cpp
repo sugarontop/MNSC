@@ -20,34 +20,32 @@
 
 VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 {
-	if (v.vt == VT_UNKNOWN && typ.vt == VT_BSTR)
+	if (v.vt == VT_UNKNOWN && typ.vt == VT_BSTR && vid.vt == VT_INT)
 	{
 		int layer_idx = vid.intVal;
 		CComBSTR objtyp = typ.bstrVal;
 		IVARIANTMap* par = dynamic_cast<IVARIANTMap*>(v.punkVal);
 		if (par)
 		{
-			_variant_t x, y, cx, cy, text, brd, readonly, bmultiline;
+			_variant_t x, y, cx, cy, text, brd, readonly, bmultiline,fontheight;
 			if (!par->GetItem(L"x", &x))
-				x = 100;
+				x = 0;
 			if (!par->GetItem(L"y", &y))
-				y = 100;
+				y = 0;
 			if (!par->GetItem(L"cx", &cx))
-				cx = 30;
+				cx = 200;
 			if (!par->GetItem(L"cy", &cy))
-				cy = 200;
+				cy = 30;
 			if (!par->GetItem(L"text", &text))
-				text = L"notdef";
+				text = L"";
 			if (!par->GetItem(L"border", &brd))
-				brd = 0;
-			if (!par->GetItem(L"readonly", &readonly))
-				readonly = FALSE;
+				brd = FALSE;
 			if (!par->GetItem(L"multiline", &bmultiline))
 				bmultiline = FALSE;
+			
 
 			if (objtyp == L"button")
 			{
-				// テスト
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
 				auto p = new IVARIANTButton(rc);
 				auto obj = dynamic_cast<DrawingObject*>(p);
@@ -72,7 +70,6 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 			}
 			else if (objtyp == L"listbox")
 			{
-				// テスト
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
 
 				auto p = new IVARIANTListbox(rc);
@@ -99,18 +96,15 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 			}
 			else if (objtyp == L"textbox")
 			{
-				// テスト
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
 
-				_variant_t multiline = bmultiline;
-
-				auto txt = new IVARIANTTextbox(rc, !multiline.boolVal);
+				auto txt = new IVARIANTTextbox(rc, bmultiline.boolVal);
 
 				pview_->uilayers_[layer_idx]->objects_.push_back(txt);
 
 				txt->setText(std::wstring(text.bstrVal));
 
-				txt->setProperty(brd, readonly);
+				txt->setProperty(par);
 
 				VARIANT v1;
 				::VariantInit(&v1);
@@ -121,8 +115,6 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 			}
 			else if (objtyp == L"dropdownlist")
 			{
-
-				// テスト
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
 
 				auto p = new IVARIANTDropdownList(rc);
@@ -148,7 +140,6 @@ VARIANT IVARIANTApplication::create_object(VARIANT vid, VARIANT typ, VARIANT v)
 			}
 			else if (objtyp == L"static")
 			{
-				// テスト
 				CRect rc(x.intVal, y.intVal, x.intVal + cx.intVal, y.intVal + cy.intVal);
 
 				auto txt = new IVARIANTStatic(rc);

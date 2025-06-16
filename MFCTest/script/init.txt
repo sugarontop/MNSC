@@ -1,7 +1,7 @@
 ﻿// utf8
 
 // Global variable
-var lb1,tx1,lb2,lb3,dd1,tx2,tx3,b1,b2,b3,bcanvas1,picker_dd,btn_seek;
+var lb1,tx1,lb2,lb3,dd1,tx2,tx3,b1,b2,b3,bcanvas1,picker_dd,btn_seek,bcanvas2,gtid;
 
 func OnInit( view_id )
 var a,coin,b;
@@ -24,6 +24,7 @@ begin
 	
 	tx1=_ap.create_object(view_id,"textbox", {"x":300, "y": 400, "cx":600, "cy":60,"border":1 } );	
 	tx2=_ap.create_object(view_id,"textbox", {"x":300, "y": 500, "cx":600, "cy":400,"multiline":true, "border":1 } );		
+	
 	
 end
 
@@ -69,7 +70,7 @@ begin
 	
 	_ap.create_object(view_id,"static", {"x":10, "y": 10, "cx":1000, "cy":30, "text": "Stock画面" } );
 	
-	tx3 = _ap.create_object(view_id,"textbox", {"x":300, "y": 200, "cx":600, "cy":60, "text": "Here is View2.", "border":0 } );	
+tx3 = _ap.create_object(view_id,"textbox", {"x":300, "y": 200, "cx":600, "cy":60, "border":false, "fontheight":19, "readonly":true  } );	
 	
 	_ap.create_object(view_id,"static", {"x":50, "y": 100, "cx":200, "cy":30, "text": "Ticker Symbol:" } );
 	
@@ -78,11 +79,25 @@ begin
 	
 	picker_dd = _ap.create_object(view_id,"dropdownlist", {"x":300, "y": 100, "cx":200, "cy":30, "text": cds, "onselect": OnSelect2 } );
 	
-	bcanvas1 = _ap.create_object(view_id,"canvas", {"x":100, "y": 300, "cx":1680, "cy":1000 ,"text":"canvas(empty)", "border":1} );
+	bcanvas1 = []; 
+	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":100, "y": 300, "cx":1000, "cy":500 ,"text":"canvas(empty)", "border":1} ));
+	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":1200, "y": 300, "cx":1000, "cy":500 ,"text":"canvas(empty)", "border":1} ));
+	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":100, "y": 900, "cx":1000, "cy":500 ,"text":"canvas(empty)", "border":1} ));
+	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":1200, "y": 900, "cx":1000, "cy":500 ,"text":"canvas(empty)", "border":1} ));
 	
 	btn_seek = _ap.create_object(view_id,"button", {"x":1050, "y": 200, "cx":100, "cy":60, "text": "seeek", "onclick": OnSeek } );	
 	
 	btn_seek.enable(false);
+	
+	
+	
+	
+	
+	
+	gtid = 0;
+	
+	
+	
 end
 
 
@@ -103,7 +118,9 @@ var tool, a1,b1,cd,c,a,map, tma,xa,json_str;
 begin
 
 
+
 	if ( picker_dd.selectidx() > -1 )
+
 		
 
 		tool =_ap.tool();
@@ -114,7 +131,6 @@ begin
 		b1 = "period1=" + tool.unixtime(-365).str();
 		b1 = "https://query1.finance.yahoo.com/v8/finance/chart/" + cd +"?&interval=1d&" + a1 +"&"+ b1; 
 
-		bcanvas1.settext(b1);
 		
 		c = tool.inetGet(b1);
 
@@ -128,10 +144,26 @@ begin
 			xa = map["chart"]["result"][0]["indicators"]["quote"][0];
 			tma = map["chart"]["result"][0];
 			
-			bcanvas1.setdata(tma["timestamp"],xa["open"],xa["high"],xa["low"],xa["close"]);
+			
+			if ( gtid < bcanvas1.count())
+			
+				
+				
+				a1 = bcanvas1[gtid];
+				a1.setdata(cd,tma["timestamp"],xa["open"],xa["high"],xa["low"],xa["close"]);
+				
+				
+				
+				
+				
+			endif
+
+			gtid = gtid+1;
+			
 		endif
 
 	endif
+
 		
 	return 0;
 end
