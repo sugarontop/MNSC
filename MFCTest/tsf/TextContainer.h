@@ -28,6 +28,7 @@ class UndoTextEditor
 		void UndoAdjust();
 };
 
+#define IME_STAT_FIRST 99
 
 class CTextContainer
 {

@@ -558,36 +558,37 @@ void CTextEditor::Draw(CDC& cDC)
     bDC.SelectObject(oldb);
     bDC.SelectObject(oldf);
 
+    if ( ct_->ime_stat_ != IME_STAT_FIRST )
+    {
+        // 選択範囲の表示 (bitmapから外す)
+        layout_.DrawSelectRange(cDC, ct_->rc_, selstart, selend);
     
-    // 選択範囲の表示 (bitmapから外す)
-    layout_.DrawSelectRange(cDC, ct_->rc_, selstart, selend);
-
-
-    // caretの表示
-    RECT caretRect = { 0,0,0,0 }; // ct_->rc_.left, ct_->rc_.top, 0,0};
-    if (!layout_.CharPosMap_.empty())
-    {      
-        cDC.OffsetViewportOrg(ct_->rc_.left, ct_->rc_.top);
+        // caretの表示
+        RECT caretRect = { 0,0,0,0 }; // ct_->rc_.left, ct_->rc_.top, 0,0};
+        if (!layout_.CharPosMap_.empty())
+        {      
+            cDC.OffsetViewportOrg(ct_->rc_.left, ct_->rc_.top);
         
-        CRect rcStart;
-        bool blf1 = false;
-        layout_.RectFromCharPosEx(pos - 1, -1, &rcStart, &blf1);
-        caretRect = rcStart;
+            CRect rcStart;
+            bool blf1 = false;
+            layout_.RectFromCharPosEx(pos - 1, -1, &rcStart, &blf1);
+            caretRect = rcStart;
 
-        caretRect.left = caretRect.right - 4;
+            caretRect.left = caretRect.right;
+            caretRect.right = caretRect.right + 4;
 
-        //CBrush br1(RGB(0, 150, 0));
-        //cDC.FillRect(&caretRect, &br1);
+            //CBrush br1(RGB(0, 150, 0));
+            //cDC.FillRect(&caretRect, &br1);
        
-        cDC.OffsetViewportOrg(-ct_->rc_.left, -ct_->rc_.top);
+            cDC.OffsetViewportOrg(-ct_->rc_.left, -ct_->rc_.top);
+        }
+        if (!caret_stat_)
+            ::HideCaret(hWnd_);
+
+        ::SetCaretPos(ct_->rc_.left+caretRect.left, ct_->rc_.top+caretRect.top);
+        ::ShowCaret(hWnd_);
+        caret_stat_ = false; 
     }
-    if (!caret_stat_)
-        ::HideCaret(hWnd_);
-
-    ::SetCaretPos(ct_->rc_.left+caretRect.left, ct_->rc_.top+caretRect.top);
-    ::ShowCaret(hWnd_);
-    caret_stat_ = false; 
-
 }
 
 void CTextEditor::CalcRender(CDC& cDC)
@@ -859,6 +860,8 @@ void CTextEditorCtrl::SetContainer( CTextContainer* ct, IBridgeTSFInterface* brt
     {
         ct->SetSelStart(0);
         ct->SetSelEnd(0);
+
+        ct->ime_stat_ = IME_STAT_FIRST;
     }
 
 }
@@ -949,6 +952,8 @@ LRESULT CTextEditorCtrl::WndProc(TSFApp* d, UINT message, WPARAM wParam, LPARAM 
 
                 MFCMatrix m(pm->mat);
                 FPointF pt = m.DPtoLP(pm->pt);*/
+
+               
 
                 CPoint pt(LOWORD(lParam) - rc.left, HIWORD(lParam) - rc.top);
                 this->OnLButtonUp(pt.x, pt.y);
@@ -1298,6 +1303,9 @@ void CTextEditorCtrl::OnLButtonDown(float x, float y)
 
 void CTextEditorCtrl::OnLButtonUp(float x, float y)
 {
+
+    bool bl = (ct_->ime_stat_ == IME_STAT_FIRST);
+
     int nSelStart = GetSelectionStart();
     int nSelEnd = GetSelectionEnd();
     CPoint pt;
@@ -1312,6 +1320,13 @@ void CTextEditorCtrl::OnLButtonUp(float x, float y)
 		auto bl = true;
 			if ( nNewSelStart < SelDragStart_)
 				bl = false;
+
+        if ( bl )
+        {
+            nSelStart = nNewSelStart;
+            nSelEnd = nNewSelStart;
+            ct_->ime_stat_ = 0;
+        }
 
         MoveSelection(min(nSelStart, nNewSelStart), max(nSelEnd, nNewSelEnd),bl); 
         InvalidateRect();

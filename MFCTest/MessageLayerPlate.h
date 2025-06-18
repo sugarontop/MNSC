@@ -101,7 +101,7 @@ block1:
 		{
 			case WM_LBUTTONDOWN:
 			{
-				CPoint point(LOWORD(lParam), HIWORD(lParam));
+				CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 				point_prv_ = point;
 				target_ = nullptr;
 
@@ -136,7 +136,6 @@ block1:
 							}
 							else if (md == 2)
 							{
-								target_ = ls;
 								ret = 1;
 							}
 							captured_obj = ls;
@@ -176,7 +175,7 @@ block1:
 							captured_obj = txt;
 							target_ = txt;
 
-							InvalidateRect(hWnd, NULL, FALSE);
+							//InvalidateRect(hWnd, NULL, FALSE);
 							ret = 1;
 							break;
 						}
@@ -241,7 +240,7 @@ block1:
 		{
 		case WM_LBUTTONDOWN:
 		{
-			CPoint point(LOWORD(lParam), HIWORD(lParam));
+			CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
 			int md = ls->SelectRow(point);
 
@@ -250,13 +249,15 @@ block1:
 		break;
 		case WM_MOUSEMOVE:
 		{
-			CPoint point(LOWORD(lParam), HIWORD(lParam));
+			CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			int offy = point.y - point_prv_.y;
 
 			if (2 == ls->SelectRow(point) && GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 			{
 				ls->ScrollbarYoff(offy);
-				InvalidateRect(hWnd, NULL, FALSE);
+				auto rc = ls->RectAll();
+
+				InvalidateRect(hWnd, &rc, FALSE);
 			}
 
 			point_prv_ = point;
@@ -265,7 +266,7 @@ block1:
 		break;
 		case WM_LBUTTONUP:
 		{
-			CPoint point(LOWORD(lParam), HIWORD(lParam));
+			CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
 			int md = ls->SelectRow(point, true);
 
@@ -278,6 +279,17 @@ block1:
 					mlp->OnFlush_();
 
 				return UNLOCK_KEEP;
+			}
+		}
+		break;
+		case WM_MOUSEWHEEL:
+		{
+			bool down = GET_WHEEL_DELTA_WPARAM(wParam) > 0;
+
+			if (ls->ScrollByMoude(down))
+			{
+				auto rc = ls->RectAll();
+				InvalidateRect(hWnd, &rc, FALSE);
 			}
 		}
 		break;
@@ -304,9 +316,9 @@ block1:
 		CRect rc = txt->GetClientRect();
 		TSF::TSFApp app(hWnd, rc);
 
-		CPoint pt(LOWORD(lParam), HIWORD(lParam));
+		CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
-		if (!rc.PtInRect(pt) && message == WM_LBUTTONDOWN)
+		if (!rc.PtInRect(point) && message == WM_LBUTTONDOWN)
 		{
 			return UNLOCK_KEEP;
 		}
@@ -327,7 +339,7 @@ block1:
 	{		
 		if ( message == WM_LBUTTONUP && btn->enable_ == VARIANT_TRUE)
 		{
-			CPoint point(LOWORD(lParam), HIWORD(lParam));
+			CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 			CRect rc = target_->getRect();
 			rc.OffsetRect(-2, -2);
 			target_->setRect(rc);
@@ -377,9 +389,30 @@ block1:
 	{
 		switch(message)
 		{
+			case WM_LBUTTONDOWN:
+			{	
+				CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+				CRect rc = target_->getRect();
+				if (rc.PtInRect(point))
+				{
+					int md = ls->SelectRow(point);
+
+					if (md == 1)
+					{
+						InvalidateRect(hWnd, &rc, FALSE);
+					}
+					else if (md == 2)
+					{
+						target_ = ls;
+					}
+					target_ = ls;
+					return LOCK_KEEP;
+				}
+			}
+			break;
 			case WM_LBUTTONUP:
 			{	
-				CPoint point(LOWORD(lParam), HIWORD(lParam));				
+				CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 				CRect rc = target_->getRect();
 
 				if ( rc.PtInRect(point))
@@ -389,14 +422,14 @@ block1:
 					CPoint point(LOWORD(lParam), HIWORD(lParam));
 					if (1 == ls->SelectRow(point, true))
 					{
-						//InvalidateRect(hWnd, NULL, FALSE);
+						InvalidateRect(hWnd, NULL, FALSE);
 					}
 
 					if (mlp->OnFlush_)
 						mlp->OnFlush_();
 
-					return UNLOCK_KEEP;
-
+					
+					return LOCK_KEEP;
 				}
 			}
 			break;
@@ -404,7 +437,7 @@ block1:
 			{
 				auto ls = dynamic_cast<IVARIANTListbox*>(target_);
 
-				CPoint point(LOWORD(lParam), HIWORD(lParam));
+				CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 				int offy = point.y - point_prv_.y;
 				CRect rc = target_->getRect();
 
@@ -419,6 +452,28 @@ block1:
 				return LOCK_KEEP;
 				
 				
+			}
+			break;
+			case WM_MOUSEWHEEL:
+			{
+				CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+				CRect rc = target_->getRect();
+				::ScreenToClient(hWnd, &point);
+
+				if (rc.PtInRect(point))
+				{
+					bool down = GET_WHEEL_DELTA_WPARAM(wParam) > 0;
+
+					if (ls->ScrollByMoude(down))
+					{
+						CRect rc = target_->getRect();
+						InvalidateRect(hWnd, &rc, FALSE);
+					}
+
+					return LOCK_KEEP;
+				}
+				
+
 			}
 			break;
 		}

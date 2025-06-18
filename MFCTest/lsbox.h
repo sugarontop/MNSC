@@ -119,10 +119,19 @@ class ListboxBase
 			if ( offy == 0 ) return;
 
 			CRect rc = vscbar_rc_;
-			rc.OffsetRect(0, offy);
 
-			if (rc.top > 0 && rc.bottom < sz_.cy)
+			rc.OffsetRect(0, offy);
+			bool bl = true;
+			if (rc.top < 0)
+				bl = false;
+			if (rc.bottom > sz_.cy)
+				bl = false;
+
+			if (bl)
 				vscbar_rc_ = rc;
+
+
+
 
 			float vh = (float)sz_.cy;
 			float nvh = item_sz_.cy * ar_.size() - vh;
@@ -132,7 +141,7 @@ class ListboxBase
 			float vc = (c * nvh) / b;
 
 			offy = (int)(vc + 0.5);
-			top_idx_ = (int)max(0, min((int)(vc / item_sz_.cy)+1, (int)ar_.size()));
+			top_idx_ = (int)max(0, min((int)(vc / item_sz_.cy), (int)ar_.size()));
 		}
 		int GetSelectIdx() const 
 		{ 
@@ -149,7 +158,33 @@ class ListboxBase
 		{ 
 			select_idx_= max( -1, idx); 
 		}
+		CSize Size() const
+		{			
+			return sz_;
+		}
+		bool ScrollByMoude(bool bdown)
+		{			
+			int cnt = (int)ar_.size();
+			int total_h = item_sz_.cy * cnt;
+			int af = total_h - sz_.cy;
+			int afr = af / item_sz_.cy;
+			int off = (bdown ? -1 : 1);
+			top_idx_ = max(0, min(top_idx_+off, afr));
 
+			// set Scrollbar position
+			int vc = top_idx_* item_sz_.cy;
+			float vh = (float)sz_.cy;
+			float nvh = item_sz_.cy * ar_.size() - vh;
+
+			float b = vh - vscbar_rc_.Height();
+			float c = (float)vscbar_rc_.top;
+
+			int h = vscbar_rc_.Height();
+			vscbar_rc_.top = (int)(vc*b/nvh);
+			vscbar_rc_.bottom = vscbar_rc_.top + h;
+
+			return true;
+		}
 
 
 };

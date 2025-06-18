@@ -3,7 +3,7 @@
 // Global variable
 var lb1,tx1,lb2,lb3,dd1,tx2,tx3,b1,b2,b3,bcanvas1,picker_dd,btn_seek,bcanvas2,gtid;
 
-func OnInit( view_id )
+func OnInit2( view_id )
 var a,coin,b;
 begin
 
@@ -17,13 +17,13 @@ begin
 	
 	
 	
-	coin=["BTC","ETH","XRP","BNB","ADA","DOGE","SOL","XLM","LINK","TRX"];
+	coin=["BTC","ETH","XRP","BNB","ADA","DOGE","SOL","XLM","LINK","GBTC"];
 	lb1 = _ap.create_object(view_id,"listbox", {"x":1000, "y": 100, "cx":200, "cy":180, "text": coin, "onselect": OnSelect } );
 
 	
 	
 	tx1=_ap.create_object(view_id,"textbox", {"x":300, "y": 400, "cx":600, "cy":60,"border":1 } );	
-	tx2=_ap.create_object(view_id,"textbox", {"x":300, "y": 500, "cx":600, "cy":400,"multiline":true, "border":1 } );		
+	tx2=_ap.create_object(view_id,"textbox", {"x":300, "y": 500, "cx":600, "cy":400,"multiline":true, "border":1, "fontheight":11 } );		
 	
 	
 end
@@ -64,7 +64,7 @@ begin
 end
 
 ////////////////////////////////////////////////////////////////////////////////////
-func OnInit2( view_id )
+func OnInit( view_id )
 var a,cds,b,bb1,dd1;
 begin
 	
@@ -74,7 +74,7 @@ tx3 = _ap.create_object(view_id,"textbox", {"x":300, "y": 200, "cx":600, "cy":60
 	
 	_ap.create_object(view_id,"static", {"x":50, "y": 100, "cx":200, "cy":30, "text": "Ticker Symbol:" } );
 	
-	cds=["MSFT","GOOG","AAPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO","PLTR"];
+	cds=["MSFT","GOOG","AAPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO","GBTC","SPY","QQQ","NVDA"];
 	
 	
 	picker_dd = _ap.create_object(view_id,"dropdownlist", {"x":300, "y": 100, "cx":200, "cy":30, "text": cds, "onselect": OnSelect2 } );

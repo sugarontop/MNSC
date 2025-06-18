@@ -104,6 +104,12 @@ public:
 		ls_.ScrollbarYoff(off);
 	}
 
+	bool ScrollByMoude(bool bdown)
+	{
+		return ls_.ScrollByMoude(bdown);
+	}
+
+
 
 	virtual void setText(const std::wstring& txt) { text_ = txt; }
 

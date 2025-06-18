@@ -137,10 +137,19 @@ public:
 		
 		return md;
 	}
-
+	bool ScrollByMoude(bool bdown)
+	{
+		return ls_.ScrollByMoude(bdown);
+	}
 	void ScrollbarYoff(int off)
 	{
 		ls_.ScrollbarYoff(off);
+	}
+	CRect RectAll() const
+	{
+		CRect rc = rc_;
+		rc.bottom = rc.bottom + ls_.Size().cy;
+		return rc;
 	}
 
 	virtual void setRect(const CRect& rc) { rc_ = rc; }
