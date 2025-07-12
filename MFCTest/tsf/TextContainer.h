@@ -72,7 +72,7 @@ class CTextContainer
 		int nStartCharPos_;
 
 		byte ime_stat_;
-
+		int top_row_idx_;
 	private:
 		BOOL EnsureBuffer(UINT nNewTextSize);
 		const UINT LimitCharCnt_ = 65000;

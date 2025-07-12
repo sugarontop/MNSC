@@ -129,27 +129,71 @@ namespace V6 {
 
 	};
 
+	struct LEFTRIGHT
+	{
+		LEFTRIGHT():left(0),right(0){}
+		LEFTRIGHT(int l,int r):left(l),right(r){}
+		int left;
+		int right;
+	};
+
+	struct RowString
+	{
+		RowString():len(0),y(0),cx(0),cy(0){}
+
+		std::wstring str;
+		int len; // 行の長さ LF含まず
+		int y;  // 行のy
+		int cy; // 行の高さ
+		int cx;	 // 行の全文字幅
+		std::shared_ptr<LEFTRIGHT[]> rects;
+		
+	};
+
 	class CharsRect
 	{
-	public:
-		CharsRect();
-		CharsRect(bool bSingle);
-		~CharsRect() { Clear(); }
+		public:
+			CharsRect() :line_height_(0) {};
+			~CharsRect() { Clear(); }
 
-		const RECT* Create(CDC& cDC,LPCWSTR str, const SIZE& sz, int slen, int* plen, int* lineHeight);
+			const std::vector <RowString>& Create(CDC& cDC, LPCWSTR str, int slen,int* tabwidth, int* lineHeight);
 
-		void Clear();
-		float LineHeight() const { return line_height_; }
+			bool CreateRow(CDC& cDC, int row, LPCWSTR str, int slen, int* lineHeight, int tabwidth, RowString& out);
 
-		const RECT* GetTextRects() const { return rects_.get(); }
-	private:
-		std::shared_ptr<RECT[]> rects_;
+			void Clear() { row_rects_.clear(); line_height_ = 0; }
+			float LineHeight() const { return line_height_; }
+			int RowCount() const { return (int)row_rects_.size(); }
+			std::vector<RECT> GetTextRects(int row, int* cnt) const;
 
-		bool bSingleLine_;
-		int cnt_;
-		float line_height_;
+			const std::vector <RowString>& Get() const { return row_rects_; }
+
+			void Update(int row, RowString& rowstr);
+			bool empty() const { return row_rects_.empty(); }
+
+			
+			int Row(int zPos, int* HeadzPos) const;
+			std::vector<RECT> SerialRects(int zPos1, int zPos2) const;
+			RECT RowRect(int row, int col, bool last) const;
+			
+
+
+		private:
+			std::vector<RowString> row_rects_;
+			float line_height_;
+
 	};
 
 
+/*
+ 
+RowString it = ...;
+
+CRect krc(0,it.y ,it.cx ,it.y+it.cy);
+
+int xx = it.len;
+
+dc.DrawText(it.str.c_str(), it.len, &krc, DT_LEFT);
+
+*/
 
 };

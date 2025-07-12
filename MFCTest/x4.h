@@ -137,9 +137,9 @@ public:
 		
 		return md;
 	}
-	bool ScrollByMoude(bool bdown)
+	bool ScrollByWheel(bool bdown)
 	{
-		return ls_.ScrollByMoude(bdown);
+		return ls_.ScrollByWheel(bdown);
 	}
 	void ScrollbarYoff(int off)
 	{

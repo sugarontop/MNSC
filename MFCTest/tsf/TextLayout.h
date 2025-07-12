@@ -14,28 +14,13 @@ struct COMPOSITIONRENDERINFO
     int nEnd;
     TF_DISPLAYATTRIBUTE da;
 };
-//----------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------
 
-
-struct CHPOS
+struct RC
 {
-	CHPOS():pos(0),row(0),col(0),lf(false){};
-
-	int pos;
 	int row;
 	int col;
-	bool lf;
-	//V6::FRectF rc;
-	CRect rc;
 
 };
-
-CHPOS Real(const CHPOS& s) ;
-
 
 //----------------------------------------------------------------
 //
@@ -52,8 +37,9 @@ class CTextLayout
 		virtual ~CTextLayout();
 				
 		void DrawSelectRange(CDC& cDC, const FRectF& rcText, int nSelStart, int nSelEnd);
-		BOOL Draw(CDC& cDC, const FRectF& rcText, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos);
+		BOOL Draw(CDC& cDC, int start_row, const FRectF& rcText, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos);
 		BOOL CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
+		BOOL ReCreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
 	public :
 		int CharPosFromPoint(const CPoint& pt);
 		BOOL RectFromCharPos(UINT nPos, CRect *prc);
@@ -67,18 +53,24 @@ class CTextLayout
 		void Password( bool bl ){ bPassword_ = bl; }
 
 		bool Recalc() const { return bRecalc_; }
-		void SetRecalc(bool bRecalc) { bRecalc_ = bRecalc; }
+		void SetRecalc(bool bRecalc);
 
 		D2D1_COLOR_F selected_halftone_color_;
 		void Clear();
+		int Row(int zPos);
 
-		void test(){nLineHeight_ = 0;}
+		RC RowCol(int zPos) const;
+		int ZPos( RC rc) const;
 
+		//void test(){nLineHeight_ = 0;}
+		CPoint Offset() const { return offsetPt_; }
+		int RowCount() const { return (int)char_rects_.RowCount(); }
+
+		float TabWidth() const;
 	private:
-		std::vector<CHPOS> CharPosMap_;
 		bool bRecalc_;
-		
-		
+		int TabWidth_;
+
 		UINT nLineCnt_;
 		float nLineHeight_;
 		LPCWSTR str_;
@@ -86,6 +78,8 @@ class CTextLayout
 		bool bSingleLine_;
 		bool bPassword_;
 		int StarCharPos_;
+
+		CPoint offsetPt_;
 
 		CharsRect char_rects_;
 		

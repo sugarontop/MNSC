@@ -1,9 +1,9 @@
 ﻿// utf8
 
 // Global variable
-var lb1,tx1,lb2,lb3,dd1,tx2,tx3,b1,b2,b3,bcanvas1,picker_dd,btn_seek,bcanvas2,gtid;
+var lb1,tx1,lb2,lb3,dd1,tx2,tx3,b1,b2,b3,bcanvas1,picker_dd,btn_seek,bcanvas2,gtid,gtx3;
 
-func OnInit2( view_id )
+func OnInit( view_id )
 var a,coin,b;
 begin
 
@@ -64,7 +64,7 @@ begin
 end
 
 ////////////////////////////////////////////////////////////////////////////////////
-func OnInit( view_id )
+func OnInit2( view_id )
 var a,cds,b,bb1,dd1;
 begin
 	
@@ -74,16 +74,14 @@ tx3 = _ap.create_object(view_id,"textbox", {"x":300, "y": 200, "cx":600, "cy":60
 	
 	_ap.create_object(view_id,"static", {"x":50, "y": 100, "cx":200, "cy":30, "text": "Ticker Symbol:" } );
 	
-	cds=["MSFT","GOOG","AAPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO","GBTC","SPY","QQQ","NVDA"];
+	cds=["MSFT","GOOG","AAPL","ORCL","TSLA","AVGO","MU","INTC","AMD","CSCO","GBTC","SPY","QQQ","NVDA","IONQ","QBTS","RGTI","QUBT"];
 	
 	
 	picker_dd = _ap.create_object(view_id,"dropdownlist", {"x":300, "y": 100, "cx":200, "cy":30, "text": cds, "onselect": OnSelect2 } );
 	
 	bcanvas1 = []; 
-	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":100, "y": 300, "cx":1000, "cy":500 ,"text":"canvas(empty)", "border":1} ));
-	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":1200, "y": 300, "cx":1000, "cy":500 ,"text":"canvas(empty)", "border":1} ));
-	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":100, "y": 900, "cx":1000, "cy":500 ,"text":"canvas(empty)", "border":1} ));
-	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":1200, "y": 900, "cx":1000, "cy":500 ,"text":"canvas(empty)", "border":1} ));
+	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":100, "y": 300, "cx":800, "cy":500 ,"text":"canvas(empty)", "border":1} ));
+	bcanvas1.add( _ap.create_object(view_id,"canvas", {"x":1000, "y": 300, "cx":800, "cy":500 ,"text":"canvas(empty)", "border":1} ));
 	
 	btn_seek = _ap.create_object(view_id,"button", {"x":1050, "y": 200, "cx":100, "cy":60, "text": "seeek", "onclick": OnSeek } );	
 	
@@ -180,5 +178,50 @@ begin
 	endif
 	
 	
+	return 0;
+end
+
+
+////////////////////////////////////////////////////////////////////////////////////
+
+func OnInit3( view_id )
+var a,coin,b1,cds,font;
+begin
+
+	_ap.create_object(view_id,"static", {"x":10, "y": 70, "cx":1000, "cy":30, "text": "F1キーで次画面へ" } );
+		
+	b1 = _ap.create_object(view_id,"button", {"x":100, "y": 150, "cx":200, "cy":30, "text": "load", "onclick": OnLoad } );	
+	gtx3=_ap.create_object(view_id,"textbox", {"x":100, "y": 200, "cx":1800, "cy":800,"multiline":true, "border":1, "fontheight":19 } );		
+	
+	
+	_ap.create_object(view_id,"static", {"x":550, "y": 100, "cx":300, "cy":20, "text": "font_height:" } );
+	cds = ["11","13","20"];
+	font = _ap.create_object(view_id,"dropdownlist", {"x":700, "y": 100, "cx":120, "cy":20, "text": cds , "onselect": OnSelectFont } );
+	
+	
+	
+	return 0;
+end
+
+func OnLoad(obj)
+var a,tool;
+begin
+	tool =_ap.tool();
+	a = tool.loadutf8("script\test.txt");
+	gtx3.settext(a);
+	return 0;
+end
+
+func OnSelectFont(obj)
+var a,s,m;
+begin
+	a = obj.selectidx();
+	s = obj.gettext(a);
+	
+	m = {};
+	m["fontheight"] = int(s);
+	
+	gtx3.setprop(m); 
+
 	return 0;
 end

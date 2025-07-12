@@ -48,6 +48,22 @@ public:
 		::VariantClear(&v);
 	}
 
+	void Active(bool active)
+	{
+		if (active == false)
+		{
+			for (auto& obj : objects_)
+			{
+				auto txt = dynamic_cast<IVARIANTTextbox*>(obj);
+				if ( txt )
+				{
+					if (txt->bActive_)
+						txt->SetFocus(false);
+				}
+			}
+		}
+	}
+
 	LRESULT WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		LRESULT ret = 0;
@@ -166,6 +182,7 @@ block1:
 						if (obj->getRect().PtInRect(point))
 						{
 							auto txt = dynamic_cast<IVARIANTTextbox*>(obj);
+												
 
 							if (txt->ReadOnly() )return ret;
 
@@ -175,7 +192,7 @@ block1:
 							captured_obj = txt;
 							target_ = txt;
 
-							//InvalidateRect(hWnd, NULL, FALSE);
+							
 							ret = 1;
 							break;
 						}
@@ -214,8 +231,13 @@ block1:
 				::VariantClear(&v);
 
 				id = 1;
-				v = ScriptCall(mst, L"OnInit2", &id, 1);
+				v = ScriptCall(mst, L"OnInit2", &id, 2);
 				::VariantClear(&v);
+
+				id = 2;
+				v = ScriptCall(mst, L"OnInit3", &id, 3);
+				::VariantClear(&v);
+				
 			}
 		}
 
@@ -286,7 +308,7 @@ block1:
 		{
 			bool down = GET_WHEEL_DELTA_WPARAM(wParam) > 0;
 
-			if (ls->ScrollByMoude(down))
+			if (ls->ScrollByWheel(down))
 			{
 				auto rc = ls->RectAll();
 				InvalidateRect(hWnd, &rc, FALSE);
@@ -318,6 +340,11 @@ block1:
 
 		CPoint point(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
+		if (txt->bActive_ == false)
+			return UNLOCK_KEEP;
+
+
+
 		if (!rc.PtInRect(point) && message == WM_LBUTTONDOWN)
 		{
 			return UNLOCK_KEEP;
@@ -326,10 +353,33 @@ block1:
 		if (txt->ReadOnly() )
 			return UNLOCK_KEEP;
 
+		switch(message)
+		{
+			case WM_MOUSEWHEEL:
+			{
+				::ScreenToClient(hWnd, &point);
+
+				if (rc.PtInRect(point))
+				{
+					bool down = GET_WHEEL_DELTA_WPARAM(wParam) > 0;
+
+					if (txt->ScrollByWheel(down))
+					{
+						CRect rc = target_->getRect();
+						InvalidateRect(hWnd, &rc, FALSE);
+					}
+
+					return LOCK_KEEP;
+				}
+			}
+			break;
+		}
 
 		if (1 != ctrl->WndProc(&app, message, wParam, lParam))
 			return UNLOCK_KEEP;
 
+
+		
 
 		return LOCK_KEEP;
 
@@ -464,7 +514,7 @@ block1:
 				{
 					bool down = GET_WHEEL_DELTA_WPARAM(wParam) > 0;
 
-					if (ls->ScrollByMoude(down))
+					if (ls->ScrollByWheel(down))
 					{
 						CRect rc = target_->getRect();
 						InvalidateRect(hWnd, &rc, FALSE);

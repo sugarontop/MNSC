@@ -162,7 +162,7 @@ class ListboxBase
 		{			
 			return sz_;
 		}
-		bool ScrollByMoude(bool bdown)
+		bool ScrollByWheel(bool bdown)
 		{			
 			int cnt = (int)ar_.size();
 			int total_h = item_sz_.cy * cnt;

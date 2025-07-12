@@ -73,6 +73,7 @@ static FVariant f_json_stringify(const FVariant* v, int cnt);
 static FVariant f_create_struct(const FVariant* v, int cnt);
 static FVariant f_dir(const FVariant* v, int cnt);
 static FVariant f_str(const FVariant* v, int cnt);
+static FVariant f_int(const FVariant* v, int cnt);
 
 
 #define FUNCTIONS \
@@ -88,7 +89,8 @@ static FVariant f_str(const FVariant* v, int cnt);
 {9,L"json_stringify", f_json_stringify}, \
 {10,L"create_struct", f_create_struct}, \
 {11,L"dir", f_dir}, \
-{12,L"str", f_str} \
+{12,L"str", f_str}, \
+{13,L"int", f_int} \
 
 
 
@@ -212,7 +214,21 @@ static FVariant f_str(const FVariant* v, int cnt)
 	return ret;
 
 }
+static FVariant f_int(const FVariant* v, int cnt)
+{
+	if (cnt != 1)
+		THROW(L"int() err");
 
+	FVariant ret((int)0);
+
+	if ( v[0].vt == VT_BSTR)
+	{
+		ret.intVal = _wtoi(v[0].bstrVal);
+		ret.vt = VT_INT;
+	}
+	return ret;
+
+}
 //static FVariant f_assert(const FVariant* v, int cnt)
 //{
 //	if ( cnt == 2)

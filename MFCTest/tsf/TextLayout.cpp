@@ -4,6 +4,8 @@
 using namespace Gdiplus;
 using namespace TSF;
 
+//#define __DRAW_ROW_RECT
+
 CTextLayout::CTextLayout()
 {
 	nLineCnt_ = 0;
@@ -12,7 +14,6 @@ CTextLayout::CTextLayout()
 	bPassword_ = false;
 	bRecalc_ = true;
 	
-	//selected_halftone_color_ = D2RGBA(0,140,255,100);
 }
 CTextLayout::~CTextLayout()
 {
@@ -27,6 +28,8 @@ CTextLayout::~CTextLayout()
 BOOL CTextLayout::CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos)
 {
 	Clear();
+	char_rects_.Clear();
+
 	bSingleLine_ = bSingleLine;
 
 	str_ = psz;
@@ -58,7 +61,6 @@ BOOL CTextLayout::CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE&
 
 	int nCurrentLine = 0;
 
-	CHPOS c;
 	UINT crlf = 0;
 	int col = 0;
 	{
@@ -72,12 +74,6 @@ BOOL CTextLayout::CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE&
 			case 0x0d:
 			case 0x0a:
 			{
-				c.pos = i;
-				c.col = col;
-				c.row = nCurrentLine;				
-				c.lf = true;
-				CharPosMap_.push_back(c);
-
 				nNewLine = 0;
 				nCurrentLine++;
 				col = -1;
@@ -87,19 +83,7 @@ BOOL CTextLayout::CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE&
 			}
 			break;
 			default:
-				/*if (nNewLine)
-				{
-					nCurrentLine++;
-					col=0;
-				}*/
-
-				c.pos = i;
-				c.col = col;
-				c.row = nCurrentLine;
-				c.lf = false;
-
-				CharPosMap_.push_back(c);
-
+				
 				nNewLine = 0;
 				crlf = 0;
 				break;
@@ -109,43 +93,137 @@ BOOL CTextLayout::CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE&
 	}
 
 	{
-		//		CreateTextLayout ct(cxt.tsf_wfactory_, psz, nCnt, fmt, sz, bSingleLine_);
-
-		//		StarCharPos = ct.CreateDWriteTextLayout( StarCharPos, zCaret, &DWTextLayout_ ); //★TextLayout_
-
-		//		_ASSERT(DWTextLayout_);
-
 		StarCharPos_ = StarCharPos;
-
-		//char_rectf_.Set(DWTextLayout_, false);
 
 		int slen = nCnt;
 		int len = 0;
-
-
 		
 		//=============================================
 		// 文字文のRECT作成、取得
 		//
 		int lineheight;
-		const RECT* prcs = char_rects_.Create(cDC, psz, sz, slen, &len, &lineheight);
+		TabWidth_ = 0;
+		const std::vector <RowString>& prcs = char_rects_.Create(cDC, psz, slen, &TabWidth_ , &lineheight);
 
 		nLineHeight_ = lineheight;
 
-		for (int rcidx = 0; rcidx < len; rcidx++)
+		int rcidx = 0;
+		for(auto& r : prcs)
 		{
-			RECT rc = prcs[rcidx];
-			CharPosMap_[rcidx].rc = rc;
+			CRect krc;
+			for(int i= 0; i < r.len; i++)
+			{
+				LEFTRIGHT lr = r.rects[i];
+				CRect rc(lr.left, r.y, lr.right, r.y + r.cy);
+
+				krc = rc;
+			}
 		}
 
-
-		//DWTextLayout_->GetMetrics(&tm_);
 		return TRUE;
 	}
 
 
 	return FALSE;
 }
+
+int CTextLayout::Row(int zPos)
+{
+	int r = 0;
+	auto& ar = char_rects_.Get();
+
+	int zpos = 0;
+	for (auto& it : ar)
+	{
+		zpos += (it.len+1);
+
+		if ( zPos < zpos )
+			break;
+		r++;
+	}
+	return r; // 0start
+}
+RC CTextLayout::RowCol(int zPos) const
+{
+	RC ret;
+	int hp;
+	ret.row = char_rects_.Row(zPos, &hp);
+	ret.col = zPos - hp ;
+	return ret;
+}
+int CTextLayout::ZPos(RC rc) const
+{
+	auto& ar = char_rects_.Get();
+
+	int zpos = 0;
+	int r = 0;
+	for (auto& it : ar)
+	{
+		if ( r == rc.row )
+		{
+			const std::vector<RowString>& ar = char_rects_.Get();
+			zpos += min (rc.col, ar[r].len);
+			break;
+		}
+
+		zpos += (it.len + 1);
+		r++;
+	}
+	return zpos;
+}
+
+
+
+BOOL CTextLayout::ReCreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos)
+{
+	if ( zCaret == 0 && nCnt == 0)
+		return FALSE;
+
+	if (zCaret == 0)
+		return FALSE;
+
+	int row = Row(zCaret-1);
+
+	int nLineCnt = 0;
+	const WCHAR* row_str = nullptr;
+	int row_len = 0;
+	{
+		for (int i = 0; i < nCnt; i++)
+		{
+			row_len++;
+			if ( row == nLineCnt && row_str == nullptr)
+			{
+				row_str = &psz[i];
+				row_len = 1;
+			}
+			else if (row+1 == nLineCnt)
+			{
+				break;
+			}
+
+			switch (psz[i])
+			{
+				case 0x0d:
+				case 0x0a:
+					nLineCnt++;
+				break;
+			}
+		}
+	}
+
+	if (row_str!=nullptr)
+	{
+		int lh;
+		RowString rs;
+		if ( char_rects_.CreateRow(cDC,row, row_str, row_len, &lh, TabWidth_, rs ))
+		{
+			char_rects_.Update(row, rs);
+			return TRUE;
+		}	
+	}
+	return TRUE;
+}
+
 
 float CTextLayout::GetLineHeight() const
 {
@@ -156,37 +234,79 @@ void CTextLayout::DrawSelectRange(CDC& cDC, const FRectF& rcText, int nSelStart,
 {
 	// 仕方なくGDI+を使う
 	cDC.OffsetViewportOrg(rcText.left, rcText.top);
-	if (!CharPosMap_.empty() && nSelEnd != 0)
-	{
-		Graphics graphics(cDC.m_hDC);
+
+	if (!char_rects_.Get().empty() && nSelEnd != 0 && nSelEnd - nSelStart!=0)
+	{		
+		auto selarea = char_rects_.SerialRects(nSelStart, nSelEnd);
+		
+		
+		Gdiplus::Graphics graphics(cDC.m_hDC);
 		graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 
 		// 透過四角形の描画
-		SolidBrush brush(Color(60, 200, 100, 200)); // α:64
+		Gdiplus::SolidBrush brush(Color(100, 200, 100, 200)); 
 
-		for (int j = nSelStart; j < nSelEnd; j++)
+		
+
+		for(auto& rc3 : selarea )
 		{
-			CRect rc3 = CharPosMap_[j].rc;
-			graphics.FillRectangle(&brush, rc3.left, rc3.top, rc3.Width(), rc3.Height());
+			//TRACE(L"%d, %d  %d-%d\n", rc3.left, rc3.right, nSelStart, nSelEnd);
+			graphics.FillRectangle(&brush, (INT)rc3.left, (INT)rc3.top, (INT)(rc3.right-rc3.left), (INT)(rc3.bottom-rc3.top));
 		}
 	}
+
 	cDC.OffsetViewportOrg(-rcText.left, -rcText.top);
 }
-BOOL CTextLayout::Draw(CDC& cDC, const FRectF& rcText, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos)
+
+
+float CTextLayout::TabWidth() const
 {
-	cDC.OffsetViewportOrg(rcText.left, rcText.top);
+	return TabWidth_;
+}
+
+
+BOOL CTextLayout::Draw(CDC& cDC, int start_row, const FRectF& rcText, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos)
+{
+	_ASSERT(rcText.left==0 && rcText.top == 0);
 	
-	CRect rc(0, 0, rcText.Width(), rcText.Height());
+	auto& rows = char_rects_.Get();
 
-	cDC.DrawTextW(const_cast<LPWSTR>(psz), nCnt, &rc, (int)DT_TOP|DT_LEFT); //| DT_NOPREFIX | DT_SINGLELINE | DT_NOCLIP
+	int end_row = (int)rows.size();
 
-	//for (int j = 0; j < nCnt; j++)	
-	//{
-	//	CRect rck = CharPosMap_[j].rc;//.GetRECT();
-	//	
-	//	cDC.FrameRect(rck, &br);
-	//}
-	cDC.OffsetViewportOrg(-rcText.left, -rcText.top);
+	offsetPt_ = CPoint(0, start_row * nLineHeight_);
+
+	cDC.OffsetViewportOrg(-offsetPt_.x, -offsetPt_.y);
+	
+	int tabStops = TabWidth();
+	for(int row = start_row; row < end_row; row++ )
+	{
+		auto& ir = rows[row];
+		CRect rc(0,ir.y, ir.cx, ir.y+ir.cy);
+		//cDC.DrawTextW(const_cast<LPWSTR>(ir.str.c_str()), ir.len, &rc, DT_TOP | DT_LEFT| DT_EXPANDTABS);
+		cDC.TabbedTextOut(rc.left, rc.top, ir.str.c_str(), ir.len, 1, &tabStops, rc.left);
+	}
+
+	
+
+	#ifdef __DRAW_ROW_RECT
+	CBrush br(RGB(0,0,0));
+	int jr = 0;
+	for(auto& r : char_rects_.Get())
+	{
+		for(int col = 0; col < r.len+1; col++)
+		{
+			LEFTRIGHT lr = r.rects[col];
+			CRect rck( lr.left, r.y, lr.right, r.y+r.cy);
+			cDC.FrameRect(rck, &br);
+		}
+
+		jr++;
+	}
+
+	#endif
+
+	cDC.OffsetViewportOrg(offsetPt_.x, offsetPt_.y);
+
 	return TRUE;
 }
 
@@ -204,83 +324,51 @@ BOOL CTextLayout::RectFromCharPos(UINT nPos, CRect *prc)
 
 BOOL CTextLayout::RectFromCharPosEx(int nPos,int alignment, CRect*prc, bool* blf)
 {
-	if ( nPos < 0 )
-	{		
-		if ( !CharPosMap_.empty())
-		{
-			*prc = CharPosMap_[0].rc;
-			prc->right=prc->left + TSF_FIRST_POS;
-		}
-		else if (alignment == 0 || alignment == -1) // left
-		{
-			prc->left = 0;
-			prc->bottom = prc->top + nLineHeight_; 
-			prc->right=TSF_FIRST_POS;
-		}
-		else if (alignment == 1) // center
-		{
-			prc->left = (prc->left+prc->right)/2;
-			prc->bottom = prc->top + nLineHeight_; 
-			prc->right = prc->left+ TSF_FIRST_POS;
-		}
-		else if ( alignment == 2) // right
-		{
-			prc->left = prc->right - TSF_FIRST_POS;
-			prc->bottom = prc->top + nLineHeight_; 		
-		}
-		return TRUE;
-	}
-
 	
-	if ( this->nLineCnt_ == 0 ) return FALSE;
-
-	if ( nPos < (int)CharPosMap_.size()) //find(nPos) != CharPosMap_.end())
+	if ( 0 <= nPos )
 	{
-		auto c = CharPosMap_[nPos];
-		CRect rc = c.rc;
-		if ( c.lf )
-		{			
-			rc.left = 0;
-			rc.right =TSF_FIRST_POS;
-			rc.OffsetRect(0, rc.Height());		
-			
-			if (blf)
-				*blf = true;
-		}
-		else
-		{
-			if (blf)
-				*blf = false;
-		}
+		auto& ar = char_rects_.Get();
+		int j = 0;
+		int pos = nPos;
 
-		*prc = rc;
+		for(auto& it : ar)
+		{
+			if ( j <= nPos && nPos < j+it.len )
+			{
+				_ASSERT( 0 <= pos && pos < it.len );
+
+				LEFTRIGHT lr = it.rects[pos];
+				CRect rc(lr.left, it.y, lr.right, it.y + it.cy);
+				
+				*prc = rc;
+				return TRUE;
+			}
+			else if ( nPos < j+it.len+1 )
+			{
+				CRect rc(0, it.y+it.cy, 1, it.y + it.cy*2);
+
+				*prc = rc;
+				return TRUE; // 空行の場合
+			}
+
+			j += (it.len + 1);
+			pos -= (it.len+1);
+
+		}
+		
+
 		return TRUE;
 	}
 
-	if ( nPos >= (int)CharPosMap_.size() )
+	else if (nPos < 0)
 	{
-		// 文末
-		if (blf) 
-			*blf = true;
-
-		auto c = CharPosMap_[CharPosMap_.size()-1];
-		auto rc = c.rc ;
-
-		if (c.lf )
-		{
-			rc.left = 0;
-			rc.right =TSF_FIRST_POS;
-			rc.OffsetRect(0, rc.Height());		
-		}
-		else
-		{
-			rc.left = rc.right;
-		}
-		*prc = rc;
+		prc->left = 0;
+		prc->bottom = prc->top + nLineHeight_;
+		prc->right = TSF_FIRST_POS;
 		return TRUE;
+
 	}
 
-	return FALSE;
 }
 
 //----------------------------------------------------------------
@@ -291,55 +379,47 @@ BOOL CTextLayout::RectFromCharPosEx(int nPos,int alignment, CRect*prc, bool* blf
 
 int CTextLayout::CharPosFromPoint(const CPoint& pt)
 {
-	_ASSERT( StarCharPos_ == 0 || (StarCharPos_ && this->bSingleLine_) );
-		
 	int j = 0;
-	int lastone = -1;
-	for( auto& it : CharPosMap_ )
+	bool bl = false;
+	for (auto& r : char_rects_.Get())
 	{
-		auto rc = it.rc;
+		for (int ic = 0; ic < r.len; ic++)
+		{	
+			LEFTRIGHT lr = r.rects[ic];
+			CRect rc(lr.left, r.y, lr.right, r.y + r.cy);
 
-		if ( it.lf )
-		{
-			rc.OffsetRect(0,rc.Height());
-			rc.left = 0;
-			rc.right = TSF_FIRST_POS;
-		}
-
-		if ( rc.top <= pt.y && pt.y <= rc.bottom )
-		{
-			lastone = j;
-
-			if ( rc.PtInRect(pt) )
-			{
-				float w = rc.Width();
-				if ( rc.left + (w*3/4) < pt.x )
-					return j+1;
-
-				return j;
-			}
-			else if ( j== 0 )
-			{
-				if ( pt.x < rc.left )
+			bl = false;
+			if ( rc.top <= pt.y && pt.y <= rc.bottom )
+			{			
+				if ( rc.PtInRect(pt))
 				{
-					return 0;
+					if (rc.left + (rc.Width() * 3 / 4) < pt.x)
+					{
+						return j+1;
+					}
+					return j;
 				}
+				j++;
+				bl = true;
 			}
 
-
-
+			if ( bl )
+			{
+				lr = r.rects[r.len];
+				if ( lr.right < pt.x )
+  					return j+r.len-1;
+			}			
 		}
-		else if ( lastone != -1 )
-			break;
 
+		if ( r.len == 0 )
+			if (pt.y < r.y+r.cy)
+				return j;
 
-		j++;
+		j += r.len+1;
 	}
 	
-	if (lastone == -1 )
-		lastone = (int)CharPosMap_.size();
+	return j;
 
-	return lastone+1; //-1;
 }
 
 
@@ -351,73 +431,23 @@ int CTextLayout::CharPosFromPoint(const CPoint& pt)
 
 UINT CTextLayout::FineFirstEndCharPosInLine(UINT uCurPos, BOOL bFirst)
 {
-	_ASSERT(CharPosMap_.size() != 0 );
-
-	auto c =  CharPosMap_[ min( uCurPos, (UINT)CharPosMap_.size()-1) ];
-
-    if (bFirst)
-	{
-		// 先頭列へ
-		UINT ret = min( uCurPos, (UINT)CharPosMap_.size()-1);
-		
-		while( 0 != ret )
-		{
-			auto c2 = CharPosMap_[ret];
-			if ( c.row != c2.row )
-			{
-				ret++;
-				break;
-			}
-			ret--;
-		}
-		return ret;
-
-	}
-	else
-	{	
-		// 行の最後尾
-		UINT i = uCurPos;
-		UINT ret=0;
-		while( i < CharPosMap_.size() )
-		{
-			auto c2 = CharPosMap_[i];
-
-			if ( c.row != c2.row || c2.lf )
-				break;
-
-			ret = i;
-			i++;
-		}
-		return ret+1;
-
-	}
-    return (UINT)(-1);
+	RC rc = RowCol(uCurPos);	
+	rc.col = (bFirst? 0: 9999);
+	return (UINT)ZPos(rc);
 }
-
-//void CTextLayout::GetTextLayout( IDWriteTextLayout** ppt )
-//{ 
-//	*ppt = DWTextLayout_; 
-//	DWTextLayout_->AddRef();
-//}
 
 //----------------------------------------------------------------
 //
 // memory clear
 //
 //----------------------------------------------------------------
-
+void CTextLayout::SetRecalc(bool bRecalc)
+{ 
+}
 void CTextLayout::Clear()
 {
+	
     nLineCnt_ = 0;
 
-	/*if ( DWTextLayout_ )
-	{
-		DWTextLayout_->Release();
-		DWTextLayout_ = nullptr;
-	}*/
-
-
-	CharPosMap_.clear();
-	char_rects_.Clear();
 }
 

@@ -196,7 +196,10 @@ class CVARIANTTool : public IVARIANTAbstract
 				std::stringstream sm;
 				while( cf.Read(cb, 255))
 				{					
-					sm << cb;
+					std::string buffer(cb);
+					// CRLF->LF (\n)
+					buffer.erase(std::remove(buffer.begin(), buffer.end(), '\r'), buffer.end());
+					sm << buffer;
 					memset(cb, 0, 256);
 				}
 				cf.Close();

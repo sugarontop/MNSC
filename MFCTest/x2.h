@@ -104,9 +104,9 @@ public:
 		ls_.ScrollbarYoff(off);
 	}
 
-	bool ScrollByMoude(bool bdown)
+	bool ScrollByWheel(bool bdown)
 	{
-		return ls_.ScrollByMoude(bdown);
+		return ls_.ScrollByWheel(bdown);
 	}
 
 

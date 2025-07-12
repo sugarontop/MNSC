@@ -20,6 +20,7 @@ CTextContainer::CTextContainer()
 	nBufferCharCount_ = 0;
 	undo_ = std::make_shared<UndoTextEditor>();
 	ime_stat_ = 0;
+	top_row_idx_ = 0;
 
 	EnsureBuffer(MINI_BUFFER_SIZE);
 }
@@ -36,6 +37,16 @@ UndoTextEditor::BInfo CTextContainer::Undo()
 
 BOOL CTextContainer::InsertText(UINT nPos, const WCHAR *psz, UINT nCnt, UINT& nResultCnt, bool undo_process)
 { 	
+	WCHAR xx = *psz;
+	if ( xx == '0')
+	{
+		int a = 0;
+
+	}
+	
+	
+	
+	
 	if ( LimitCharCnt_ < GetTextLength() + nCnt )
 	{
 		nCnt = LimitCharCnt_ - GetTextLength();
@@ -58,7 +69,7 @@ BOOL CTextContainer::InsertText(UINT nPos, const WCHAR *psz, UINT nCnt, UINT& nR
 
 	// move target area text to last.
 	_ASSERT( 0<=nPos );
-	_ASSERT(nPos <= nTextSize_ );
+	_ASSERT(nPos <= nTextSize_ && -1 != (int)nTextSize_);
 	
 	memmove(psz_ + nPos + nCnt, psz_ + nPos, (nTextSize_ - (UINT)nPos) * sizeof(WCHAR));
 	
@@ -163,17 +174,17 @@ BOOL CTextContainer::EnsureBuffer(UINT nNewTextSize)
 	if ( nBufferCharCount_ < nNewTextSize )
 	{
 		auto psz2 = new WCHAR[nNewTextSize+1];
-
-		if ( psz2 == nullptr )
+		if (psz2 == nullptr)
 			return FALSE;
+	
+		memset(psz2,0, nNewTextSize + 1);
 
-		memcpy(psz2,psz_,nBufferCharCount_*sizeof(WCHAR));
+		if(psz_)
+			memcpy(psz2,psz_,nBufferCharCount_*sizeof(WCHAR));
 
 		delete [] psz_;
 		psz_ = psz2;
 		nBufferCharCount_ = nNewTextSize+1;
-
-		memset(psz_,0, min(64,nBufferCharCount_) * sizeof(WCHAR));
 
 		return TRUE;
 	}

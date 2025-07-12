@@ -99,6 +99,14 @@ VARIANT ScriptCall(ScriptSt & st, LPCWSTR funcnm, VARIANT * prms, int pmcnt)
 
 void CMFCTestView::OnDraw(CDC* pDC)
 {
+	CBrush br;
+	CRect rc(0,0,1920,1080);
+	br.CreateSolidBrush(RGB(200,200,200));
+	pDC->FrameRect(&rc, &br);
+	
+	////////////////////////////////////////
+	
+	
 	CFont cf;
 	cf.CreatePointFont(110, L"Meiryo UI");
 	CFont* old = pDC->SelectObject(&cf);
@@ -147,14 +155,17 @@ int CMFCTestView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	active_layer_ = 0;
 	uilayers_.push_back(ui);
 
-
 	auto ui2 = std::make_shared<MessageLayerPlate>(1); // view_id==1
 	uilayers_.push_back(ui2);
+
+	auto ui3 = std::make_shared<MessageLayerPlate>(2); // view_id==2
+	uilayers_.push_back(ui3);
 
 	if ( !ui->Open(this, L"script\\init.txt"))
 		return -1;
 
 	ui2->mst_ = ui->mst_;
+	ui3->mst_ = ui->mst_;
 
 	return 0;
 }
@@ -165,7 +176,25 @@ void CMFCTestView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 	if (nChar == VK_F1)
 	{
 		// 画面の切り替え
-		active_layer_ = (active_layer_ == 0 ? 1 : 0);
+
+		if (active_layer_ == 0)
+		{
+			uilayers_[active_layer_]->Active(false);
+			active_layer_ = 1;
+		}
+		else if (active_layer_ == 1)
+		{
+			uilayers_[active_layer_]->Active(false);
+			active_layer_ = 2;
+		}
+		else if (active_layer_ == 2)
+		{
+			uilayers_[active_layer_]->Active(false);
+			active_layer_ = 0;
+		}
+
+		::DestroyCaret();
+
 		Invalidate();
 		return;
 	}

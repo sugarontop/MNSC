@@ -43,16 +43,16 @@ class CTextEditor
 		void MoveSelectionNext();
 		void MoveSelectionPrev();
 		
-		BOOL MoveSelectionUpDown(BOOL bUp, bool bShiftKey);
+		BOOL MoveSelectionUpDown(BOOL bUp, bool bShiftKey, int col,int yoff=1);
 		BOOL MoveSelectionToLineFirstEnd(BOOL bFirst, bool bShiftKey);
 
 		//void Render(D2DContext& cxt, DWRITE_TEXT_METRICS*ptm, ID2D1SolidColorBrush* br, IDWriteTextFormat* tf );
 		//void CalcRender(D2DContext& hdc, IDWriteTextFormat* tf );
 
 
-		void Draw(CDC& cDC );
-		void CalcRender(CDC& cDC);
-
+		void Draw(CDC& cDC, bool readonly );
+		void CalcRender(CDC& cDC, bool readonly);
+		void DrawScrollbar(CDC& cDC);
 		
 
 		int GetSelectionStart() const {return ct_->SelStart();}
@@ -72,6 +72,7 @@ class CTextEditor
 		void Reset( IBridgeTSFInterface* rect_size );
 
 		void InvalidateRect();
+		void InvalidateRect2(CRect rc);
 		float GetLineHeight() {return layout_.GetLineHeight();}
 		CTextLayout *GetLayout() {return &layout_;}
 		int CurrentCaretPos();
@@ -86,6 +87,17 @@ class CTextEditor
 		void OnChangeIME(bool bOn);
 		BOOL SelectionTab(BOOL bIns);
 		void Undo();
+
+		int RowCount() const { return layout_.char_rects_.RowCount(); }
+		
+		// scrollbar
+		bool ScrollByWheel(bool bup);
+		
+		void ScrollbarYoff(int offy);
+		CRect InitScollbar(CSize viewsz, int rowcount, int item_height);
+
+		void ScrollbarRowoff(int off_row);
+		
 	public:
 		CTextLayout layout_;
 		CTextContainer* ct_;
@@ -97,6 +109,10 @@ class CTextEditor
 		CTextEditSink* pTextEditSink_;	
 		TextInfo ti_;
 		CBitmap bmpText_;
+		bool rebuild_;
+		
+		CRect vscbar_rc_;
+		CSize view_sz_;
 	private:
 		D2DMat* pmat_;
 		ITfThreadMgr2* weak_tmgr_;
@@ -106,7 +122,8 @@ class CTextEditor
 		TfEditCookie ecTextStore_;
 		ITfDocumentMgr* pDocumentMgr_;
 		ITfContext* pInputContext_;
-		bool caret_stat_;
+		
+		
 		
 };
 
@@ -160,9 +177,14 @@ class CTextEditorCtrl : public CTextEditor
 		void Clear();
 
 		bool CopyBitmap(CBitmap* dstbmp);
+
+
+		
 		
 	private :
 		void OnSetFocus(WPARAM wParam, LPARAM lParam);
+		CPoint MousePoint(CRect rc, LPARAM lParam);
+		int ScrollbarMousePoint(CRect rc, LPARAM lParam);
 		
 		BOOL OnKeyDown(WPARAM wParam, LPARAM lParam);
 		void OnLButtonDown(float x, float y);
@@ -172,6 +194,7 @@ class CTextEditorCtrl : public CTextEditor
 
 	private:
 		int SelDragStart_;
+		
 
 };
 

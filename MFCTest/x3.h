@@ -6,6 +6,10 @@
 #include "tsf\TextEditor.h"
 #include "tsf\IBridgeTSFInterface.h"
 
+BOOL PushAxisAlignedClip(CDC* pDC, const CRect& clipRect);
+BOOL PopAxisAlignedClip(CDC* pDC);
+
+
 class IVARIANTTextbox : public IVARIANTAbstract, public IBridgeTSFInterface, public DrawingObject
 {
 public:
@@ -19,33 +23,29 @@ public:
 		fontheight_ = 21;
 		border_ = true;
 		readonly_ = false;
+		fontname_ = L"Meiryo UI";
 	}
 
 	virtual void Draw(CDC* pDC)
-	{
-		CFont cf;
-		cf.CreatePointFont(fontheight_*10, L"Meiryo UI");
-		auto oldf = pDC->SelectObject(&cf);
+	{		
+		CRect rc1=rc_;
+		rc1.InflateRect(1,1);
 
+		// 領域フィルタ
+		PushAxisAlignedClip(pDC, rc1);
+
+		// フォント設定
+		CFont cf;
+		cf.CreatePointFont(fontheight_*10, fontname_.c_str());
+		auto oldf = pDC->SelectObject(&cf);
 		if (bActive_)
 		{
-			ctrl()->Draw(*pDC);
-		}
-		else if ((HBITMAP)bmpText_ == nullptr && (int)ct_.GetTextLength() > -1 )
-		{
-			CBrush br(readonly_ ? READONLY_COLOR : RGB(255, 255, 255));
-			CPen pen(PS_NULL, 0, RGB(0, 0, 0));
-			auto oldb = pDC->SelectObject(&br);
-			auto oldp = pDC->SelectObject(&pen);
-			auto oldm = pDC->SetBkMode(TRANSPARENT);
-			pDC->Rectangle(rc_);
-			pDC->DrawTextW(ct_.GetTextBuffer(), ct_.GetTextLength(), &rc_, (int)DT_TOP | DT_LEFT);
-			pDC->SetBkMode(oldm);
-			pDC->SelectObject(oldb);
-			pDC->SelectObject(oldp);
+			// focus時、文字表示、スクロールバー表示、キャレット表示
+			ctrl()->Draw(*pDC, readonly_);
 		}
 		else
 		{
+			// unfocus時、確定した文字のbitmap表示
 			CDC cDC;
 			cDC.CreateCompatibleDC(pDC);
 			auto old = cDC.SelectObject(&bmpText_);
@@ -56,18 +56,23 @@ public:
 			cDC.DeleteDC();
 		}
 
-
+		// 枠線の表示
 		if (border_)
 		{
 			CBrush br;
 			br.Attach((HBRUSH)GetStockObject(BLACK_BRUSH));
-			CRect rc1(rc_);
-			rc1.InflateRect(1,1);
-			pDC->FrameRect(rc1, &br);
+
+			pDC->OffsetViewportOrg(rc_.left, rc_.top);
+
+			CRect rc2(0,0,rc_.Width(), rc_.Height());
+			rc2.InflateRect(1,1);
+			pDC->FrameRect(rc2, &br);
+
+			pDC->OffsetViewportOrg(-rc_.left, -rc_.top);
 		}
 
 		pDC->SelectObject(oldf);
-
+		PopAxisAlignedClip(pDC);
 	}
 	virtual void setText(const std::wstring& str)
 	{				
@@ -98,7 +103,7 @@ public:
 		}
 		else if (txt.vt == VT_UNKNOWN)
 		{
-			std::wstring cb = L"settext but VT_UNKNOWN";
+			std::wstring cb = L"VT_UNKNOWN type";
 			setTextInner(cb.c_str(),cb.length());
 		}
 
@@ -108,14 +113,13 @@ public:
 	{
 		if (bFocus)
 		{
+			bActive_ = true;
+
 			mat_._31 = (float)rc_.left;
 			mat_._32 = (float)rc_.top;
 
-			bActive_ = true;
 			ctrl()->SetContainer(&ct_, this);
 			ctrl()->SetFocus(&mat_);
-
-			// caretは初回のCTextEditor::CalcRenderで作成
 		}
 		else
 		{
@@ -123,29 +127,38 @@ public:
 
 			ctrl()->CopyBitmap(&bmpText_);
 			ctrl()->layout_.Clear();
-		
-			::DestroyCaret();
+			
+			
+			
+			DestroyCaret();
 		}
 
 	}
 	void setProperty(IVARIANTMap* map)
 	{
-		_variant_t brd, readonly, fontheight,text;
+		_variant_t brd, readonly, fontheight,text, fontnm;
 
-		if (map->GetItem(L"readonly", &readonly))
+		if (map->GetItem(L"readonly", &readonly) && readonly.vt == VT_BOOL)
 			readonly_ = readonly.boolVal;
 		
-		if (map->GetItem(L"border", &brd))
+		if (map->GetItem(L"border", &brd) && brd.vt == VT_BOOL)
 			border_ = brd.boolVal;
 		
-		if (map->GetItem(L"fontheight", &fontheight))
+		if (map->GetItem(L"fontheight", &fontheight) && fontheight.vt == VT_INT)
 			fontheight_ = fontheight.intVal;
 
-		if (map->GetItem(L"text", &text))
+		if (map->GetItem(L"fontname", &fontnm) && fontnm.vt == VT_BSTR)
+			fontname_ = fontnm.bstrVal;
+
+		if (map->GetItem(L"text", &text) && text.vt == VT_BSTR)
 			setText(text);
 	}
 	bool ReadOnly() const { return readonly_; }
 
+	bool ScrollByWheel(bool bup)
+	{
+ 		return ctrl()->ScrollByWheel(bup);
+	}
 
 	virtual void setRect(const CRect& rc) { rc_ = rc; }
 	virtual CRect getRect() { return rc_; }
@@ -161,9 +174,9 @@ public:
 	bool bActive_;
 	CBitmap bmpText_;
 	int fontheight_;
+	std::wstring fontname_;
 	bool border_;
 	bool readonly_;
-
 public:
 	virtual HRESULT __stdcall QueryInterface(REFIID riid, void** ppv) override {
 		if (riid == IID_IUnknown) {
@@ -181,7 +194,10 @@ public:
 		std::wstring funcnm = cfuncnm;
 		if (funcnm == L"settext" && vcnt > 0)
 		{
-			return setText(v[0]);
+			VARIANT ret = setText(v[0]);
+
+			SetFocus(true);
+			return ret;
 		}
 		else if (funcnm == L"setprop" && vcnt > 0)
 		{
@@ -195,17 +211,23 @@ public:
 
 					setProperty(pm);
 
+					SetFocus(true);
+
+					Redraw();
+
 					return _variant_t(0).Detach();
 				}
 			}
 		}
-
-		
 		
 		std::wstring err = L"Invoke err:";
 		err += cfuncnm;
 
 		throw(err);
+	}
+	void Redraw()
+	{
+		ctrl()->InvalidateRect();
 	}
 
 public :
