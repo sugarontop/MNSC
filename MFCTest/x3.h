@@ -23,7 +23,7 @@ public:
 		fontheight_ = 21;
 		border_ = true;
 		readonly_ = false;
-		fontname_ = L"Meiryo UI";
+		fontname_ = L"MS –¾’©";
 	}
 
 	virtual void Draw(CDC* pDC)
@@ -127,9 +127,7 @@ public:
 
 			ctrl()->CopyBitmap(&bmpText_);
 			ctrl()->layout_.Clear();
-			
-			
-			
+
 			DestroyCaret();
 		}
 

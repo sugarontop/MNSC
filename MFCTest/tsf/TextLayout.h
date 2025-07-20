@@ -37,7 +37,7 @@ class CTextLayout
 		virtual ~CTextLayout();
 				
 		void DrawSelectRange(CDC& cDC, const FRectF& rcText, int nSelStart, int nSelEnd);
-		BOOL Draw(CDC& cDC, int start_row, const FRectF& rcText, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos);
+		BOOL Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx);
 		BOOL CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
 		BOOL ReCreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
 	public :
@@ -48,7 +48,9 @@ class CTextLayout
 		UINT FineFirstEndCharPosInLine(UINT uCurPos, BOOL bFirst);
 
 		float GetLineHeight() const;
-		float GetLineWidth() const { return row_width_; }
+		float GetLineWidth() const { return row_width_;}
+
+		float GetLineWidthMax() const { return char_rects_.LineWidthMax(); }
 
 		void Password( bool bl ){ bPassword_ = bl; }
 
@@ -62,7 +64,6 @@ class CTextLayout
 		RC RowCol(int zPos) const;
 		int ZPos( RC rc) const;
 
-		//void test(){nLineHeight_ = 0;}
 		CPoint Offset() const { return offsetPt_; }
 		int RowCount() const { return (int)char_rects_.RowCount(); }
 

@@ -115,14 +115,13 @@ bool CharsRect::CreateRow(CDC& cDC,int row, LPCWSTR str, int slen, int* lineHeig
 const std::vector<RowString>& CharsRect::Create(CDC& cDC, LPCWSTR str, int slen, int* tabwidth, int* lineHeight)
 {
 	int space_width=0;
-	//if (*lineHeight == 0)
 	{
 		CSize sz1;
 		GetTextExtentPoint32(cDC.GetSafeHdc(), L" ", 1, &sz1);
 		*lineHeight = sz1.cy;
 		*tabwidth = sz1.cx * 4;
 	}
-	
+	line_width_max_ = 0;
 	
 	if (str != nullptr)
 	{
@@ -136,10 +135,8 @@ const std::vector<RowString>& CharsRect::Create(CDC& cDC, LPCWSTR str, int slen,
 		for (int i = 0; i < slen + 1; i++)
 		{
 			CSize sz1;
-
-			
-
 			GetTextExtentPoint32(cDC.GetSafeHdc(), str + i, 1, &sz1);
+			
 
 			if (sz1.cx == 0 && *(str+i) == L'\n')
 			{
@@ -173,6 +170,8 @@ const std::vector<RowString>& CharsRect::Create(CDC& cDC, LPCWSTR str, int slen,
 				is = i + 1;
 
 				line_height_ = rs.cy;
+				line_width_max_ = max(line_width_max_, rs.cx);
+
 
 				lrar.clear();
 				if (str[i] == 0)

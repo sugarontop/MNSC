@@ -265,25 +265,31 @@ float CTextLayout::TabWidth() const
 }
 
 
-BOOL CTextLayout::Draw(CDC& cDC, int start_row, const FRectF& rcText, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos)
+BOOL CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx)
 {
-	_ASSERT(rcText.left==0 && rcText.top == 0);
+	//_ASSERT(rcText.left==0 && rcText.top == 0);
 	
 	auto& rows = char_rects_.Get();
 
 	int end_row = (int)rows.size();
 
-	offsetPt_ = CPoint(0, start_row * nLineHeight_);
+	offsetPt_ = CPoint(offx, start_row * nLineHeight_);
 
 	cDC.OffsetViewportOrg(-offsetPt_.x, -offsetPt_.y);
 	
+	int height = 0;
+
 	int tabStops = TabWidth();
 	for(int row = start_row; row < end_row; row++ )
 	{
+		if (view_height < height )
+			break;
+
 		auto& ir = rows[row];
 		CRect rc(0,ir.y, ir.cx, ir.y+ir.cy);
 		//cDC.DrawTextW(const_cast<LPWSTR>(ir.str.c_str()), ir.len, &rc, DT_TOP | DT_LEFT| DT_EXPANDTABS);
 		cDC.TabbedTextOut(rc.left, rc.top, ir.str.c_str(), ir.len, 1, &tabStops, rc.left);
+		height += ir.cy;
 	}
 
 	
@@ -411,9 +417,8 @@ int CTextLayout::CharPosFromPoint(const CPoint& pt)
 			}			
 		}
 
-		if ( r.len == 0 )
-			if (pt.y < r.y+r.cy)
-				return j;
+		if (pt.y < r.y+r.cy)
+			return j;
 
 		j += r.len+1;
 	}

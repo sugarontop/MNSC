@@ -153,7 +153,7 @@ namespace V6 {
 	class CharsRect
 	{
 		public:
-			CharsRect() :line_height_(0) {};
+			CharsRect() :line_height_(0), line_width_max_(0){};
 			~CharsRect() { Clear(); }
 
 			const std::vector <RowString>& Create(CDC& cDC, LPCWSTR str, int slen,int* tabwidth, int* lineHeight);
@@ -162,6 +162,8 @@ namespace V6 {
 
 			void Clear() { row_rects_.clear(); line_height_ = 0; }
 			float LineHeight() const { return line_height_; }
+			float LineWidthMax() const { return line_width_max_; }
+			
 			int RowCount() const { return (int)row_rects_.size(); }
 			std::vector<RECT> GetTextRects(int row, int* cnt) const;
 
@@ -180,6 +182,7 @@ namespace V6 {
 		private:
 			std::vector<RowString> row_rects_;
 			float line_height_;
+			float line_width_max_;
 
 	};
 

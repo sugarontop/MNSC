@@ -21,6 +21,9 @@ CTextContainer::CTextContainer()
 	undo_ = std::make_shared<UndoTextEditor>();
 	ime_stat_ = 0;
 	top_row_idx_ = 0;
+	scrollbar_offx_ = 0;
+	line_width_max_ = 0;
+	line_height_max_ = 0;
 
 	EnsureBuffer(MINI_BUFFER_SIZE);
 }
@@ -38,11 +41,6 @@ UndoTextEditor::BInfo CTextContainer::Undo()
 BOOL CTextContainer::InsertText(UINT nPos, const WCHAR *psz, UINT nCnt, UINT& nResultCnt, bool undo_process)
 { 	
 	WCHAR xx = *psz;
-	if ( xx == '0')
-	{
-		int a = 0;
-
-	}
 	
 	
 	
@@ -85,6 +83,15 @@ BOOL CTextContainer::InsertText(UINT nPos, const WCHAR *psz, UINT nCnt, UINT& nR
 
 	nResultCnt = nCnt;
 	return TRUE;
+}
+
+bool CTextContainer::IsShowHScrollbar() const
+{
+	return (rc_.Width() < line_width_max_);
+}
+bool CTextContainer::IsShowVScrollbar() const
+{
+	return (rc_.Height() < line_height_max_);
 }
 
 std::wstring CTextContainer::GetRowText(int pos)
@@ -148,6 +155,16 @@ void CTextContainer::Clear()
 	psz_ = nullptr;
 	nBufferCharCount_ = 0;
 	nTextSize_ = 0;
+
+	vscbar_rc_ = {};
+	hscbar_rc_ = {};
+
+	ime_stat_ = 0;
+	top_row_idx_ = 0;
+	scrollbar_offx_ = 0;
+	line_width_max_ = 0;
+	line_height_max_ = 0;
+
 
 	nSelStart_= nSelEnd_=0;
 	bSelTrail_ = false;

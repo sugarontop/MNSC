@@ -44,7 +44,7 @@ class CTextEditor
 		void MoveSelectionPrev();
 		
 		BOOL MoveSelectionUpDown(BOOL bUp, bool bShiftKey, int col,int yoff=1);
-		BOOL MoveSelectionToLineFirstEnd(BOOL bFirst, bool bShiftKey);
+		UINT MoveSelectionToLineFirstEnd(BOOL bFirst, bool bShiftKey);
 
 		//void Render(D2DContext& cxt, DWRITE_TEXT_METRICS*ptm, ID2D1SolidColorBrush* br, IDWriteTextFormat* tf );
 		//void CalcRender(D2DContext& hdc, IDWriteTextFormat* tf );
@@ -52,7 +52,7 @@ class CTextEditor
 
 		void Draw(CDC& cDC, bool readonly );
 		void CalcRender(CDC& cDC, bool readonly);
-		void DrawScrollbar(CDC& cDC);
+		
 		
 
 		int GetSelectionStart() const {return ct_->SelStart();}
@@ -93,12 +93,17 @@ class CTextEditor
 		// scrollbar
 		bool ScrollByWheel(bool bup);
 		
-		void ScrollbarYoff(int offy);
+	protected :
 		CRect InitScollbar(CSize viewsz, int rowcount, int item_height);
-
-		void ScrollbarRowoff(int off_row);
+		CRect InitHScollbar(CSize viewsz, int rowcount, int item_height);
+		void DrawScrollbar(CDC& cDC);
 		
-	public:
+		void ScrollbarYoff(int offy);
+		void ScrollbarXoff(int offx);
+		void ScrollbarRowoff(int off_row);
+
+		void AdjustHScrollbar();
+public:
 		CTextLayout layout_;
 		CTextContainer* ct_;
 		IBridgeTSFInterface* bri_;	
@@ -111,7 +116,6 @@ class CTextEditor
 		CBitmap bmpText_;
 		bool rebuild_;
 		
-		CRect vscbar_rc_;
 		CSize view_sz_;
 	private:
 		D2DMat* pmat_;

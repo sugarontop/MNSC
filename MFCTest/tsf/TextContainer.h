@@ -60,6 +60,9 @@ class CTextContainer
 
 		std::wstring GetRowText(int pos);
 
+		bool IsShowHScrollbar() const;
+		bool IsShowVScrollbar() const;
+
 	private :
 		int nSelStart_, nSelEnd_;
 	public :
@@ -73,6 +76,10 @@ class CTextContainer
 
 		byte ime_stat_;
 		int top_row_idx_;
+		int scrollbar_offx_;
+		float line_width_max_;
+		float line_height_max_;
+		CRect vscbar_rc_, hscbar_rc_;
 	private:
 		BOOL EnsureBuffer(UINT nNewTextSize);
 		const UINT LimitCharCnt_ = 65000;
