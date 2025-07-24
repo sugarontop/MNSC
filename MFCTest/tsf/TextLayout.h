@@ -37,7 +37,7 @@ class CTextLayout
 		virtual ~CTextLayout();
 				
 		void DrawSelectRange(CDC& cDC, const FRectF& rcText, int nSelStart, int nSelEnd);
-		BOOL Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx);
+		CPoint Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx);
 		BOOL CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
 		BOOL ReCreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
 	public :
@@ -83,6 +83,7 @@ class CTextLayout
 		CPoint offsetPt_;
 
 		CharsRect char_rects_;
+		
 		
 };
 

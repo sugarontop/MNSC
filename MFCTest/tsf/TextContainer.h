@@ -74,7 +74,6 @@ class CTextContainer
 		CPoint offpt_;
 		int nStartCharPos_;
 
-		byte ime_stat_;
 		int top_row_idx_;
 		int scrollbar_offx_;
 		float line_width_max_;

@@ -265,9 +265,11 @@ float CTextLayout::TabWidth() const
 }
 
 
-BOOL CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx)
+CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx)
 {
 	//_ASSERT(rcText.left==0 && rcText.top == 0);
+
+	CPoint ptorg;
 	
 	auto& rows = char_rects_.Get();
 
@@ -292,7 +294,7 @@ BOOL CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_wi
 		height += ir.cy;
 	}
 
-	
+	ptorg = cDC.GetViewportOrg();
 
 	#ifdef __DRAW_ROW_RECT
 	CBrush br(RGB(0,0,0));
@@ -313,7 +315,7 @@ BOOL CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_wi
 
 	cDC.OffsetViewportOrg(offsetPt_.x, offsetPt_.y);
 
-	return TRUE;
+	return ptorg;
 }
 
 

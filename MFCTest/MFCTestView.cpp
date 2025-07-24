@@ -12,7 +12,7 @@
 
 #include "MFCTestDoc.h"
 #include "MFCTestView.h"
-
+#include <imm.h>
 
 #include "IVARIANTApplication.h"
 #include "MessageLayerPlate.h"
@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CMFCTestView, CView)
 	ON_WM_DESTROY()
 	ON_WM_KEYDOWN()
 	ON_WM_LBUTTONDOWN()
+	ON_MESSAGE(WM_IME_COMPOSITION, OnImeComposition)
 END_MESSAGE_MAP()
 
 // CMFCTestView コンストラクション/デストラクション
@@ -121,7 +122,7 @@ void CMFCTestView::OnDraw(CDC* pDC)
 }
 
 BOOL CMFCTestView::PreTranslateMessage(MSG* pMsg)
-{	
+{		
 	if ((WM_MOUSEFIRST <= pMsg->message && pMsg->message <= WM_MOUSELAST)
 		|| (WM_KEYFIRST <= pMsg->message && pMsg->message <= WM_KEYLAST))
 		return (0 != uilayers_[active_layer_]->WindowProc(pMsg->hwnd, pMsg->message, pMsg->wParam, pMsg->lParam));
@@ -141,6 +142,17 @@ void CMFCTestView::OnDestroy()
 
 	TSFClose(m_hWnd);
 
+}
+
+
+LRESULT CMFCTestView::OnImeComposition(WPARAM wParam, LPARAM lParam)
+{
+	if (lParam & GCS_RESULTSTR) 
+	{
+		uilayers_[active_layer_]->WindowProc(m_hWnd, WM_IME_COMPOSITION, wParam, lParam);
+	}
+
+	return 0;
 }
 
 int CMFCTestView::OnCreate(LPCREATESTRUCT lpCreateStruct)

@@ -54,6 +54,7 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg LRESULT OnImeComposition(WPARAM wParam, LPARAM lParam);
 };
 
 #ifndef _DEBUG  // MFCTestView.cpp のデバッグ バージョン

@@ -23,7 +23,7 @@ begin
 	
 	
 	tx1=_ap.create_object(view_id,"textbox", {"x":300, "y": 400, "cx":600, "cy":60,"border":1 } );	
-	tx2=_ap.create_object(view_id,"textbox", {"x":300, "y": 500, "cx":600, "cy":400,"multiline":true, "border":1, "fontheight":11 } );		
+	tx2=_ap.create_object(view_id,"textbox", {"x":300, "y": 500, "cx":600, "cy":200,"multiline":true, "border":1, "fontheight":11 } );		
 	
 	
 end

@@ -85,6 +85,10 @@ class CTextStore :
    
 		void InitSink(ITfThreadMgr2* mgr, TfClientId TfClientId);
 		void CloseSink(ITfThreadMgr2* mgr);
+
+
+		std::function<void()> selection_changed;
+
 	private:
 		void PrepareAttributes(ULONG cFilterAttrs, const TS_ATTRID *paFilterAttrs);
    
@@ -96,6 +100,7 @@ class CTextStore :
 		DWORD opencloseck_;
 		CComPtr<ITfThreadMgr2> mgr2_;
 
+		
 
 		// from tsfapp.
 		// lock,lock,lock

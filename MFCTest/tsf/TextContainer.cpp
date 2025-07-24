@@ -19,7 +19,7 @@ CTextContainer::CTextContainer()
 	view_size_ = {0};
 	nBufferCharCount_ = 0;
 	undo_ = std::make_shared<UndoTextEditor>();
-	ime_stat_ = 0;
+	
 	top_row_idx_ = 0;
 	scrollbar_offx_ = 0;
 	line_width_max_ = 0;
@@ -78,8 +78,8 @@ BOOL CTextContainer::InsertText(UINT nPos, const WCHAR *psz, UINT nCnt, UINT& nR
 
 	psz_[nTextSize_] = 0;
 
-	if ( undo_process )
-		undo_->AddChar( nPos, nCnt, ime_stat_ ); // ime_stat_: [0 ansi input, 1-3 ime imput]
+	//if ( undo_process )
+	//	undo_->AddChar( nPos, nCnt, ime_stat_ ); // ime_stat_: [0 ansi input, 1-3 ime imput]
 
 	nResultCnt = nCnt;
 	return TRUE;
@@ -118,8 +118,8 @@ BOOL CTextContainer::RemoveText(UINT nPos, UINT nCnt, bool undo_process)
 	auto start =  psz_ + nPos;
 	auto end =  psz_ + nPos + nCnt;
 
-	if (undo_process)
-		undo_->Delete(psz_, nPos, nPos+nCnt, ime_stat_);
+//	if (undo_process)
+//		undo_->Delete(psz_, nPos, nPos+nCnt, ime_stat_);
 
 
 	int cnt = (int)nTextSize_-(nPos+nCnt);
@@ -159,7 +159,7 @@ void CTextContainer::Clear()
 	vscbar_rc_ = {};
 	hscbar_rc_ = {};
 
-	ime_stat_ = 0;
+	
 	top_row_idx_ = 0;
 	scrollbar_offx_ = 0;
 	line_width_max_ = 0;

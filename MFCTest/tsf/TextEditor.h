@@ -49,7 +49,7 @@ class CTextEditor
 		//void Render(D2DContext& cxt, DWRITE_TEXT_METRICS*ptm, ID2D1SolidColorBrush* br, IDWriteTextFormat* tf );
 		//void CalcRender(D2DContext& hdc, IDWriteTextFormat* tf );
 
-
+		void SetFont(CDC& cDC);
 		void Draw(CDC& cDC, bool readonly );
 		void CalcRender(CDC& cDC, bool readonly);
 		
@@ -93,8 +93,9 @@ class CTextEditor
 		// scrollbar
 		bool ScrollByWheel(bool bup);
 		
+		void OnRefresh(bool bc);
 	protected :
-		CRect InitScollbar(CSize viewsz, int rowcount, int item_height);
+		CRect InitVScollbar(CSize viewsz, int rowcount, int item_height);
 		CRect InitHScollbar(CSize viewsz, int rowcount, int item_height);
 		void DrawScrollbar(CDC& cDC);
 		
@@ -103,6 +104,7 @@ class CTextEditor
 		void ScrollbarRowoff(int off_row);
 
 		void AdjustHScrollbar();
+		
 public:
 		CTextLayout layout_;
 		CTextContainer* ct_;
@@ -127,7 +129,7 @@ public:
 		ITfDocumentMgr* pDocumentMgr_;
 		ITfContext* pInputContext_;
 		
-		
+		LOGFONT lf_;
 		
 };
 
@@ -148,6 +150,7 @@ class CTextEditSink : public ITfTextEditSink
 		// ITfTextEditSink
 		//
 		STDMETHODIMP OnEndEdit(ITfContext *pic, TfEditCookie ecReadOnly, ITfEditRecord *pEditRecord);
+		
 
 		HRESULT _Advise(ITfContext *pic);
 		HRESULT _Unadvise();

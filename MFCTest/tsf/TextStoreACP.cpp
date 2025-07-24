@@ -806,6 +806,9 @@ void CTextStore::PrepareAttributes(ULONG cFilterAttrs, const TS_ATTRID *paFilter
 
 void CTextStore::OnSelectionChange()
 {
+    if (selection_changed)
+        selection_changed();
+
     if (TextStoreACPSink_)
         TextStoreACPSink_->OnSelectionChange();
 }

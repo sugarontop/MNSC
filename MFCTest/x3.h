@@ -38,6 +38,9 @@ public:
 		CFont cf;
 		cf.CreatePointFont(fontheight_*10, fontname_.c_str());
 		auto oldf = pDC->SelectObject(&cf);
+
+		ctrl()->SetFont(*pDC);
+
 		if (bActive_)
 		{
 			// focus時、文字表示、スクロールバー表示、キャレット表示
