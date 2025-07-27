@@ -33,8 +33,6 @@ BEGIN_MESSAGE_MAP(CMFCTestView, CView)
 	ON_WM_CREATE()
 	ON_WM_DESTROY()
 	ON_WM_KEYDOWN()
-	ON_WM_LBUTTONDOWN()
-	ON_MESSAGE(WM_IME_COMPOSITION, OnImeComposition)
 END_MESSAGE_MAP()
 
 // CMFCTestView コンストラクション/デストラクション
@@ -145,15 +143,7 @@ void CMFCTestView::OnDestroy()
 }
 
 
-LRESULT CMFCTestView::OnImeComposition(WPARAM wParam, LPARAM lParam)
-{
-	if (lParam & GCS_RESULTSTR) 
-	{
-		uilayers_[active_layer_]->WindowProc(m_hWnd, WM_IME_COMPOSITION, wParam, lParam);
-	}
 
-	return 0;
-}
 
 int CMFCTestView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
@@ -215,9 +205,11 @@ void CMFCTestView::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 }
 
 
-void CMFCTestView::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。
 
-	CView::OnLButtonDown(nFlags, point);
+
+LRESULT CMFCTestView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+	
+	return CView::WindowProc(message, wParam, lParam);
 }
+

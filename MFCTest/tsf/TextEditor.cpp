@@ -305,6 +305,7 @@ UINT CTextEditor::MoveSelectionToLineFirstEnd(BOOL bFirst, bool bShiftKey)
 		ct_->nStartCharPos_ = 0;
 		nSel2 = ct_->SelEnd();
         nSel = layout_.FineFirstEndCharPosInLine(ct_->SelStart(), TRUE);
+        
     }
     else
     {
@@ -312,13 +313,14 @@ UINT CTextEditor::MoveSelectionToLineFirstEnd(BOOL bFirst, bool bShiftKey)
 		ct_->nStartCharPos_ = 0;
 		nSel2 = ct_->SelStart();
 		nSel = layout_.FineFirstEndCharPosInLine(ct_->SelEnd(), FALSE);
+     
     }
 
     if (nSel != (UINT)-1)
     {
 		if ( bShiftKey )
 		{
-			MoveSelection(nSel, nSel2,true);
+			MoveSelection(nSel, nSel2, !bFirst);
 		}
 		else
 		{
@@ -451,6 +453,7 @@ BOOL CTextEditor::DeleteAtSelection(BOOL fBack)
 		LONG ecs = ct_->SelEnd();
 
         pTextStore_->OnTextChange(ecs, ecs + 1, ecs);
+        pTextStore_->OnSelectionChange();
     }
 	 
     if (fBack && (ct_->SelStart() > 0))
@@ -823,7 +826,7 @@ void CTextEditor::SetFocus(D2DMat* pmat)
         s_create_caret_ = true;
 
         OnRefresh(false);
-        //ActionCaret(hWnd_, FALSE);
+        
         
     }
 }
@@ -1309,18 +1312,7 @@ LRESULT CTextEditorCtrl::WndProc(TSFApp* d, UINT message, WPARAM wParam, LPARAM 
                 layout_.SetRecalc(true);
 			}
 		    break;
-            case WM_IME_COMPOSITION:
-            {
-                if (lParam & GCS_RESULTSTR)
-                {
-                    //needsScrollAdjust = true; // 確定時にフラグをセット
-                    //InvalidateRect(hwndEdit, NULL, TRUE); // WM_PAINTをトリガー
-
-
-                    ret = 1;
-                }
-            }
-            break;
+            
 			case WM_LBUTTONDBLCLK:
 			{
 				this->DblClickSelection();
@@ -1497,33 +1489,26 @@ BOOL CTextEditorCtrl::OnKeyDown(WPARAM wParam, LPARAM lParam)
         case VK_DELETE:
 			nSelStart = GetSelectionStart();
 			nSelEnd = GetSelectionEnd();
-			if (nSelStart == nSelEnd)
-			{
-				DeleteAtSelection(FALSE);
-			}
-			else
-			{
-				DeleteSelection();
-			}
+            
+            rebuild_ = true;
 
-            this->rebuild_ = true;
-             
+			if (nSelStart == nSelEnd)
+				DeleteAtSelection(FALSE);
+			else
+				DeleteSelection();
+         
 		break;
 
         case VK_BACK:
              nSelStart = GetSelectionStart();
              nSelEnd = GetSelectionEnd();
-             if (nSelStart == nSelEnd)
-             {
-                 DeleteAtSelection(TRUE);
-             }
-             else
-             {
-                 DeleteSelection();
-             }
 
-             this->rebuild_ = true;
-             
+             rebuild_ = true;
+
+             if (nSelStart == nSelEnd)
+                 DeleteAtSelection(TRUE);
+             else
+                 DeleteSelection();
 		break;
 		case VK_ESCAPE:
 			nSelEnd = GetSelectionEnd();

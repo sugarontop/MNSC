@@ -78,8 +78,8 @@ BOOL CTextContainer::InsertText(UINT nPos, const WCHAR *psz, UINT nCnt, UINT& nR
 
 	psz_[nTextSize_] = 0;
 
-	//if ( undo_process )
-	//	undo_->AddChar( nPos, nCnt, ime_stat_ ); // ime_stat_: [0 ansi input, 1-3 ime imput]
+	if ( undo_process )
+		undo_->AddChar( nPos, nCnt );
 
 	nResultCnt = nCnt;
 	return TRUE;
@@ -118,8 +118,8 @@ BOOL CTextContainer::RemoveText(UINT nPos, UINT nCnt, bool undo_process)
 	auto start =  psz_ + nPos;
 	auto end =  psz_ + nPos + nCnt;
 
-//	if (undo_process)
-//		undo_->Delete(psz_, nPos, nPos+nCnt, ime_stat_);
+	if (undo_process)
+		undo_->Delete(psz_, nPos, nPos+nCnt);
 
 
 	int cnt = (int)nTextSize_-(nPos+nCnt);
@@ -130,6 +130,7 @@ BOOL CTextContainer::RemoveText(UINT nPos, UINT nCnt, bool undo_process)
 	}
 
 	nTextSize_ -= nCnt;
+	psz_[nTextSize_] = 0;
 
 	return TRUE;
 }
@@ -265,13 +266,13 @@ int CTextContainer::LineNo(LONG nPos) const
 
 /////////////////////////////////////////////////////////////
 
-void UndoTextEditor::AddChar(UINT pos,UINT len, byte stat)
+void UndoTextEditor::AddChar(UINT pos,UINT len)
 {	
 	BInfo b;
 	b.caretpos = pos;
 	b.len = len;
 	b.p = nullptr;
-	b.stat = stat * 10; // ì¸óÕånÇÕ1->10, 2->20, 3->30Ç÷ïœçX
+	//b.stat = stat * 10; // ì¸óÕånÇÕ1->10, 2->20, 3->30Ç÷ïœçX
 
 
 	undo_.push(b);
@@ -324,7 +325,7 @@ UndoTextEditor::BInfo UndoTextEditor::Undo()
 
 	return b;
 }
-void UndoTextEditor::Delete(LPCWSTR str, UINT pos0, UINT pos1, byte stat)
+void UndoTextEditor::Delete(LPCWSTR str, UINT pos0, UINT pos1)
 {
 	_ASSERT( pos0 <= pos1 );
 	
@@ -339,7 +340,7 @@ void UndoTextEditor::Delete(LPCWSTR str, UINT pos0, UINT pos1, byte stat)
 	b.p = std::shared_ptr<WCHAR[]>(cb);
 	b.len = (int)pos1- (int)pos0;
 	b.caretpos = pos0;
-	b.stat = stat;
+	
 
 	undo_.push(b);
 }

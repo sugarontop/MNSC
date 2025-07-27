@@ -22,8 +22,8 @@ class UndoTextEditor
 
 	public :
 		BInfo Undo();
-		void AddChar(UINT pos, UINT len, byte stat);
-		void Delete(LPCWSTR str, UINT pos0, UINT pos1, byte stat);
+		void AddChar(UINT pos, UINT len);
+		void Delete(LPCWSTR str, UINT pos0, UINT pos1);
 		void Clear();
 		void UndoAdjust();
 };
