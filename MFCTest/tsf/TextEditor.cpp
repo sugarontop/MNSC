@@ -583,8 +583,28 @@ void CTextEditor::Draw(CDC& cDC, bool readonly)
 
     auto oldf = memDC.SelectObject(cDC.GetCurrentFont());
 
+    std::vector<CompositionInfo> cis;
+   
+
+   if (nCompositionRenderInfo_ ==3)
+   {
+    int a = 0;
+   }
+
+    for (UINT j = 0; j < nCompositionRenderInfo_; j++)
+    {
+        ATLTRACE(L" j=%d , nCompositionRenderInfo=%d (%d-%d)  %d,%d,%d\n", j, nCompositionRenderInfo_, pCompositionRenderInfo_[j].nStart, pCompositionRenderInfo_[j].nEnd, pCompositionRenderInfo_[j].da.crText.type, pCompositionRenderInfo_[j].da.crBk.type, pCompositionRenderInfo_[j].da.lsStyle);
+        CompositionInfo ci;
+
+        ci.start = pCompositionRenderInfo_[j].nStart;
+        ci.end   = pCompositionRenderInfo_[j].nEnd;
+        ci.type  = pCompositionRenderInfo_[j].da.lsStyle;
+        ci.da = pCompositionRenderInfo_[j].da;
+
+        cis.push_back(ci);
+    }
     // memDCに文字を表示
-    CPoint view_org = layout_.Draw(memDC, ct_->top_row_idx_,cx,cy2, ct_->GetTextBuffer(), (int)ct_->GetTextLength(), selstart, selend, ct_->bSelTrail_, pos, ct_->scrollbar_offx_);
+    CPoint view_org = layout_.Draw(memDC, ct_->top_row_idx_,cx,cy2, ct_->GetTextBuffer(), (int)ct_->GetTextLength(), selstart, selend, ct_->bSelTrail_, pos, ct_->scrollbar_offx_, cis);
 
     BitBlt(cDC, ct_->rc_.left, ct_->rc_.top, cx, cy, memDC, 0, 0, SRCCOPY);
 
@@ -1530,13 +1550,6 @@ BOOL CTextEditorCtrl::OnKeyDown(WPARAM wParam, LPARAM lParam)
 
         }
         break;
-        case VK_F2:
-        {
-
-            ret = 1;
-        }
-        break;
-        
             
     }
 
@@ -2058,11 +2071,7 @@ STDAPI CTextEditSink::OnEndEdit(ITfContext *pic, TfEditCookie ecReadOnly, ITfEdi
                                     LONG nStart;
                                     LONG nEnd;
                                     pRangeACP->GetExtent(&nStart, &nEnd);
-                                    
-									
 									_pEditor->AddCompositionRenderInfo(nStart, nStart + nEnd, &da);
-
-
                                     pRangeACP->Release();
                                 }
                             }

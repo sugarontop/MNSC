@@ -265,11 +265,11 @@ float CTextLayout::TabWidth() const
 }
 
 
-CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx)
+CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx, std::vector<CompositionInfo>& cis)
 {
 	//_ASSERT(rcText.left==0 && rcText.top == 0);
 
-	CPoint ptorg;
+	CPoint ret_ptorg;
 	
 	auto& rows = char_rects_.Get();
 
@@ -279,8 +279,9 @@ CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_
 
 	cDC.OffsetViewportOrg(-offsetPt_.x, -offsetPt_.y);
 	
-	int height = 0;
 
+	// 行単位で文字出力
+	int height = 0;
 	int tabStops = TabWidth();
 	for(int row = start_row; row < end_row; row++ )
 	{
@@ -288,13 +289,33 @@ CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_
 			break;
 
 		auto& ir = rows[row];
-		CRect rc(0,ir.y, ir.cx, ir.y+ir.cy);
-		//cDC.DrawTextW(const_cast<LPWSTR>(ir.str.c_str()), ir.len, &rc, DT_TOP | DT_LEFT| DT_EXPANDTABS);
+		CRect rc(0,ir.y, ir.cx, ir.y+ir.cy);		
 		cDC.TabbedTextOut(rc.left, rc.top, ir.str.c_str(), ir.len, 1, &tabStops, rc.left);
 		height += ir.cy;
 	}
 
-	ptorg = cDC.GetViewportOrg();
+	// 変換途中の下線出力
+	for(auto& ci : cis)
+	{
+		if ( ci.start != ci.end )
+		{
+			_ASSERT(ci.start < ci.end);
+
+			auto xrect = char_rects_.SerialRects(ci.start, ci.end);
+			auto rc1 = xrect[0];
+			auto rc2 = xrect[xrect.size()-1];
+
+			CPen pen;
+
+			if (CreateUnderlinePen(&ci.da, 4, pen))
+			{
+				CPen* oldp = cDC.SelectObject(&pen);
+				cDC.MoveTo(CPoint(rc1.left+4, rc1.bottom));
+				cDC.LineTo(CPoint(rc2.right-4, rc2.bottom));
+				cDC.SelectObject(oldp);
+			}
+		}
+	}
 
 	#ifdef __DRAW_ROW_RECT
 	CBrush br(RGB(0,0,0));
@@ -313,11 +334,54 @@ CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_
 
 	#endif
 
+	ret_ptorg = cDC.GetViewportOrg();
+
 	cDC.OffsetViewportOrg(offsetPt_.x, offsetPt_.y);
 
-	return ptorg;
+	return ret_ptorg;
 }
 
+bool CTextLayout::CreateUnderlinePen(const TF_DISPLAYATTRIBUTE* pda, int nWidth, CPen& ret)
+{
+	const DWORD s_dwDotStyles[] = { 1,2 };
+	const DWORD s_dwDashStyles[] = { 3,2 };
+
+	DWORD dwPenStyle = PS_GEOMETRIC | PS_SOLID;
+	DWORD dwStyles = 0;
+	const DWORD* lpdwStyles = NULL;
+
+	if (pda->fBoldLine)
+		nWidth = (int)(nWidth * 1.5);
+
+	switch (pda->lsStyle)
+	{
+	case TF_LS_NONE:
+		return false;
+
+	case TF_LS_SOLID:
+		dwPenStyle = PS_GEOMETRIC | PS_SOLID | PS_ENDCAP_FLAT;
+		break;
+
+	case TF_LS_DOT:
+	case TF_LS_DASH:
+	case TF_LS_SQUIGGLE:
+		dwPenStyle = PS_GEOMETRIC | PS_USERSTYLE | PS_ENDCAP_FLAT;
+		dwStyles = 2;
+		lpdwStyles = s_dwDotStyles;
+		break;
+	}
+
+
+	LOGBRUSH lbr;
+	lbr.lbStyle = BS_SOLID;
+	lbr.lbHatch = 0;
+	lbr.lbColor = RGB(33,3,233);
+
+	HPEN hp = ExtCreatePen(dwPenStyle, nWidth, &lbr, dwStyles, lpdwStyles);
+	ret.Attach(hp);
+	return true;
+	
+}
 
 //----------------------------------------------------------------
 //

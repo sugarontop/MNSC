@@ -11,7 +11,7 @@
 
 #include "MFCTestDoc.h"
 #include "MFCTestView.h"
-
+#include "tsf/DisplayAttribute.h"
 #include <gdiplus.h>
 using namespace Gdiplus;
 
@@ -122,7 +122,10 @@ BOOL CMFCTestApp::InitInstance()
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
 
+	if (S_OK !=TSF::InitDisplayAttrbute())
+		return FALSE;
 
+	
 
 	// コマンド ラインで指定されたディスパッチ コマンドです。アプリケーションが
 	// /RegServer、/Register、/Unregserver または /Unregister で起動された場合、False を返します。
@@ -138,6 +141,9 @@ BOOL CMFCTestApp::InitInstance()
 int CMFCTestApp::ExitInstance()
 {
 	//TODO: 追加したリソースがある場合にはそれらも処理してください
+
+	TSF::UninitDisplayAttrbute();
+
 	AfxOleTerm(FALSE);
 	GdiplusShutdown(gdiplusToken);
 	return CWinApp::ExitInstance();

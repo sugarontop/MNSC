@@ -76,7 +76,7 @@ bool CharsRect::CreateRow(CDC& cDC,int row, LPCWSTR str, int slen, int* lineHeig
 			rc.right = rc.left + sz1.cx;
 			rc.bottom = rc.top + sz1.cy;
 
-			lrar.push_back( LEFTRIGHT(rc.left,rc.right));
+			lrar.push_back( LEFTRIGHT(i, rc.left,rc.right));
 
 			strar.push_back(*pch);
 
@@ -150,7 +150,7 @@ const std::vector<RowString>& CharsRect::Create(CDC& cDC, LPCWSTR str, int slen,
 			rc.right = rc.left + sz1.cx;
 			rc.bottom = rc.top + sz1.cy;
 
-			lrar.push_back(LEFTRIGHT(rc.left, rc.right));
+			lrar.push_back(LEFTRIGHT(i,rc.left, rc.right));
 			rc.left = rc.right;
 
 			if (str[i] == L'\n' || str[i] == 0 || i == slen)

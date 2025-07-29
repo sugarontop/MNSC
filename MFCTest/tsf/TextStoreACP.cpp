@@ -176,6 +176,8 @@ STDAPI CTextStore::RequestLock(DWORD dwLockFlags, HRESULT *phrSession)
 
 	if ( _LockDocument(dwLockFlags))
     {
+        //ATLTRACE(L"TextStoreACPSink_->OnLockGranted\n");
+        
         *phrSession = TextStoreACPSink_->OnLockGranted(dwLockFlags);
 	    _UnlockDocument();
         return S_OK;   

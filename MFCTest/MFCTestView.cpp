@@ -138,6 +138,9 @@ void CMFCTestView::OnDestroy()
 	for(auto& ui : uilayers_ )
 		ui->Close();
 
+
+	
+
 	TSFClose(m_hWnd);
 
 }
@@ -168,6 +171,9 @@ int CMFCTestView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	ui2->mst_ = ui->mst_;
 	ui3->mst_ = ui->mst_;
+
+
+	
 
 	return 0;
 }

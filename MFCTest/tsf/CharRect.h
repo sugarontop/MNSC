@@ -131,10 +131,11 @@ namespace V6 {
 
 	struct LEFTRIGHT
 	{
-		LEFTRIGHT():left(0),right(0){}
-		LEFTRIGHT(int l,int r):left(l),right(r){}
+		LEFTRIGHT():left(0),right(0),pos(0){}
+		LEFTRIGHT(int _pos, int l,int r):left(l),right(r), pos(_pos){}
 		int left;
 		int right;
+		int pos;
 	};
 
 	struct RowString

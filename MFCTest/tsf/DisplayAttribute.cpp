@@ -53,7 +53,7 @@ CDispAttrProps* TSF::GetDispAttrProps()
 //
 //----------------------------------------------------------------------------
 
-LRESULT InitDisplayAttrbute()
+LRESULT TSF::InitDisplayAttrbute()
 {
 
     if (s_DisplayAttributeMgr)
@@ -80,7 +80,7 @@ LRESULT InitDisplayAttrbute()
 //
 //----------------------------------------------------------------------------
 
-LRESULT UninitDisplayAttrbute()
+LRESULT TSF::UninitDisplayAttrbute()
 {
 
     if (s_DisplayAttributeMgr)

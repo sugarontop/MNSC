@@ -25,6 +25,7 @@ struct TextInfo
 	int decoration_typ;
 };
 
+
 class CTextEditor 
 {
 	public:
