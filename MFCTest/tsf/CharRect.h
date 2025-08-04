@@ -161,7 +161,7 @@ namespace V6 {
 
 			bool CreateRow(CDC& cDC, int row, LPCWSTR str, int slen, int* lineHeight, int tabwidth, RowString& out);
 
-			void Clear() { row_rects_.clear(); line_height_ = 0; }
+			void Clear() { row_rects_.clear(); line_height_ = 0; line_width_max_=0;}
 			float LineHeight() const { return line_height_; }
 			float LineWidthMax() const { return line_width_max_; }
 			
@@ -175,7 +175,7 @@ namespace V6 {
 
 			
 			int Row(int zPos, int* HeadzPos) const;
-			std::vector<RECT> SerialRects(int zPos1, int zPos2) const;
+			std::vector<CRect> SerialRects(int zPos1, int zPos2) const;
 			RECT RowRect(int row, int col, bool last) const;
 			
 

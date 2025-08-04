@@ -41,7 +41,7 @@ public:
 
 		ctrl()->SetFont(*pDC);
 
-		if (bActive_)
+		if (bActive_ && ctrl()->ct_!=nullptr)
 		{
 			// focus時、文字表示、スクロールバー表示、キャレット表示
 			ctrl()->Draw(*pDC, readonly_);
@@ -130,7 +130,7 @@ public:
 
 			ctrl()->CopyBitmap(&bmpText_);
 			ctrl()->layout_.Clear();
-
+			ctrl()->UnsetFocus();
 			DestroyCaret();
 		}
 

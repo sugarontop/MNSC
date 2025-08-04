@@ -30,6 +30,17 @@ struct CompositionInfo
 	TF_DISPLAYATTRIBUTE da;
 };
 
+struct TextInfoEx
+{
+	bool result;
+	int rowcnt;
+	int sum_height;
+	int line_height;
+	int line_max_width;
+	int top_idx;
+
+};
+
 //----------------------------------------------------------------
 //
 //
@@ -45,8 +56,8 @@ class CTextLayout
 		virtual ~CTextLayout();
 				
 		void DrawSelectRange(CDC& cDC, const FRectF& rcText, int nSelStart, int nSelEnd);
-		CPoint Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx, std::vector<CompositionInfo>& cis);
-		BOOL CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
+		CPoint Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int* max_linewidth, std::vector<CompositionInfo>& cis);
+		TextInfoEx CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
 		BOOL ReCreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos);
 	public :
 		int CharPosFromPoint(const CPoint& pt);
@@ -63,8 +74,7 @@ class CTextLayout
 		void Password( bool bl ){ bPassword_ = bl; }
 
 		bool Recalc() const { return bRecalc_; }
-		void SetRecalc(bool bRecalc);
-
+		
 		D2D1_COLOR_F selected_halftone_color_;
 		void Clear();
 		int Row(int zPos);

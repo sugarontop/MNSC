@@ -26,6 +26,8 @@ struct TextInfo
 };
 
 
+
+
 class CTextEditor 
 {
 	public:
@@ -52,6 +54,9 @@ class CTextEditor
 
 		void SetFont(CDC& cDC);
 		void Draw(CDC& cDC, bool readonly );
+
+		void InnerDraw(CDC& cDC, bool readonly);
+
 		void CalcRender(CDC& cDC, bool readonly);
 		
 		
@@ -70,6 +75,7 @@ class CTextEditor
 
 		RECT ClientToScreenMFC(RECT rc) const;
 		void SetFocus(D2DMat* pmat);
+		void UnsetFocus();
 		void Reset( IBridgeTSFInterface* rect_size );
 
 		void InvalidateRect();
@@ -95,16 +101,18 @@ class CTextEditor
 		bool ScrollByWheel(bool bup);
 		
 		void OnRefresh(bool bc);
+		void CaretUpdate(int md=0);
 	protected :
 		CRect InitVScollbar(CSize viewsz, int rowcount, int item_height);
 		CRect InitHScollbar(CSize viewsz, int rowcount, int item_height);
-		void DrawScrollbar(CDC& cDC);
+		void DrawScrollbar(CDC& cDC, int rowcnt);
 		
 		void ScrollbarYoff(int offy);
-		void ScrollbarXoff(int offx);
-		void ScrollbarRowoff(int off_row);
+		void ScrollbarXoff(int offx, bool bCaretUpdate = true);
+		void ScrollbarRowoff(int off_row, bool bCaretUpdate=true);
 
 		void AdjustHScrollbar();
+		void SyncScrollbarX(float bai=1.0f);
 		
 public:
 		CTextLayout layout_;
@@ -131,7 +139,7 @@ public:
 		ITfContext* pInputContext_;
 		
 		LOGFONT lf_;
-		
+		TextInfoEx tix_;
 };
 
 
@@ -190,7 +198,7 @@ class CTextEditorCtrl : public CTextEditor
 		
 		
 	private :
-		void OnSetFocus(WPARAM wParam, LPARAM lParam);
+		
 		CPoint MousePoint(CRect rc, LPARAM lParam);
 		int ScrollbarMousePoint(CRect rc, LPARAM lParam);
 		

@@ -52,6 +52,7 @@ bool CharsRect::CreateRow(CDC& cDC,int row, LPCWSTR str, int slen, int* lineHeig
 		LEFTRIGHT lr;
 		CRect rc(0,0,0,0);
 		*lineHeight = 0;
+		line_width_max_ = 0;
 
 		int is = 0;
 		std::vector<WCHAR> strar;
@@ -77,6 +78,8 @@ bool CharsRect::CreateRow(CDC& cDC,int row, LPCWSTR str, int slen, int* lineHeig
 			rc.bottom = rc.top + sz1.cy;
 
 			lrar.push_back( LEFTRIGHT(i, rc.left,rc.right));
+
+			line_width_max_ = max(line_width_max_, rc.right);
 
 			strar.push_back(*pch);
 
@@ -153,6 +156,8 @@ const std::vector<RowString>& CharsRect::Create(CDC& cDC, LPCWSTR str, int slen,
 			lrar.push_back(LEFTRIGHT(i,rc.left, rc.right));
 			rc.left = rc.right;
 
+			line_width_max_ = max(line_width_max_, rc.right);
+
 			if (str[i] == L'\n' || str[i] == 0 || i == slen)
 			{
 				RowString rs;
@@ -203,9 +208,9 @@ int CharsRect::Row(int zPos, int* HeadzPos) const
 	}
 	return row;
 }
-std::vector<RECT> CharsRect::SerialRects(int zPos1, int zPos2) const
+std::vector<CRect> CharsRect::SerialRects(int zPos1, int zPos2) const
 {
-	std::vector<RECT> ret;
+	std::vector<CRect> ret;
 	
 	int sPos = min(zPos1,zPos2);
 	int ePos = max(zPos1, zPos2);
@@ -215,7 +220,18 @@ std::vector<RECT> CharsRect::SerialRects(int zPos1, int zPos2) const
 	int sRow = Row(sPos, &s1);
 	int eRow = Row(ePos, &e1);
 
-	if ( sRow == eRow )
+	if ( zPos1 == zPos2 )
+	{
+		auto& it = row_rects_[sRow];
+		auto& ar = it.rects;
+
+		int idx1 = sPos - s1;
+
+		LEFTRIGHT lr = ar[idx1];
+		CRect rc(lr.left, it.y, lr.right, it.y + it.cy);
+		ret.push_back(rc);
+	}
+	else if ( sRow == eRow )
 	{
 		auto& it = row_rects_[sRow];
 		auto& ar = it.rects;

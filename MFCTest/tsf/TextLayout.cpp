@@ -25,7 +25,7 @@ CTextLayout::~CTextLayout()
 //
 // Calc layout 行数の把握と文字単位にPOS,LEN,RECTを取得
 //----------------------------------------------------------------
-BOOL CTextLayout::CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos)
+TextInfoEx CTextLayout::CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE& sz, bool bSingleLine, int zCaret, int& StarCharPos)
 {
 	Clear();
 	char_rects_.Clear();
@@ -105,26 +105,28 @@ BOOL CTextLayout::CreateLayout(CDC& cDC, const WCHAR* psz, int nCnt, const SIZE&
 		TabWidth_ = 0;
 		const std::vector <RowString>& prcs = char_rects_.Create(cDC, psz, slen, &TabWidth_ , &lineheight);
 
+		float line_max_width = char_rects_.LineWidthMax();
+		int rowcnt = (int)prcs.size();
 		nLineHeight_ = lineheight;
 
-		int rcidx = 0;
-		for(auto& r : prcs)
-		{
-			CRect krc;
-			for(int i= 0; i < r.len; i++)
-			{
-				LEFTRIGHT lr = r.rects[i];
-				CRect rc(lr.left, r.y, lr.right, r.y + r.cy);
+		int sum_height = rowcnt* nLineHeight_;
 
-				krc = rc;
-			}
-		}
 
-		return TRUE;
+		TextInfoEx ti;
+		ti.line_height = lineheight;
+		ti.line_max_width = (int)line_max_width;
+		ti.rowcnt = rowcnt;
+		ti.sum_height = sum_height;
+		ti.result = true;
+		
+
+
+		return ti;
 	}
+	TextInfoEx ti = {};
+	ti.result = false;
 
-
-	return FALSE;
+	return ti;
 }
 
 int CTextLayout::Row(int zPos)
@@ -239,18 +241,14 @@ void CTextLayout::DrawSelectRange(CDC& cDC, const FRectF& rcText, int nSelStart,
 	{		
 		auto selarea = char_rects_.SerialRects(nSelStart, nSelEnd);
 		
-		
 		Gdiplus::Graphics graphics(cDC.m_hDC);
 		graphics.SetSmoothingMode(SmoothingModeAntiAlias);
 
 		// 透過四角形の描画
 		Gdiplus::SolidBrush brush(Color(100, 200, 100, 200)); 
 
-		
-
 		for(auto& rc3 : selarea )
 		{
-			//TRACE(L"%d, %d  %d-%d\n", rc3.left, rc3.right, nSelStart, nSelEnd);
 			graphics.FillRectangle(&brush, (INT)rc3.left, (INT)rc3.top, (INT)(rc3.right-rc3.left), (INT)(rc3.bottom-rc3.top));
 		}
 	}
@@ -265,7 +263,7 @@ float CTextLayout::TabWidth() const
 }
 
 
-CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, int offx, std::vector<CompositionInfo>& cis)
+CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos,int* max_linewidth, std::vector<CompositionInfo>& cis)
 {
 	//_ASSERT(rcText.left==0 && rcText.top == 0);
 
@@ -275,13 +273,11 @@ CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_
 
 	int end_row = (int)rows.size();
 
-	offsetPt_ = CPoint(offx, start_row * nLineHeight_);
-
 	cDC.OffsetViewportOrg(-offsetPt_.x, -offsetPt_.y);
 	
 
 	// 行単位で文字出力
-	int height = 0;
+	int height = 0, width=0;
 	int tabStops = TabWidth();
 	for(int row = start_row; row < end_row; row++ )
 	{
@@ -292,7 +288,12 @@ CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_
 		CRect rc(0,ir.y, ir.cx, ir.y+ir.cy);		
 		cDC.TabbedTextOut(rc.left, rc.top, ir.str.c_str(), ir.len, 1, &tabStops, rc.left);
 		height += ir.cy;
+		width = max(width, ir.cx);
 	}
+	*max_linewidth = width;
+	
+
+
 
 	// 変換途中の下線出力
 	for(auto& ci : cis)
@@ -512,9 +513,7 @@ UINT CTextLayout::FineFirstEndCharPosInLine(UINT uCurPos, BOOL bFirst)
 // memory clear
 //
 //----------------------------------------------------------------
-void CTextLayout::SetRecalc(bool bRecalc)
-{ 
-}
+
 void CTextLayout::Clear()
 {
 	

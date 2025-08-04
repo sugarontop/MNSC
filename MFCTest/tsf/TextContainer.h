@@ -77,7 +77,7 @@ class CTextContainer
 		int top_row_idx_;
 		int scrollbar_offx_;
 		float line_width_max_;
-		float line_height_max_;
+		int row_cnt_;
 		CRect vscbar_rc_, hscbar_rc_;
 	private:
 		BOOL EnsureBuffer(UINT nNewTextSize);

@@ -23,7 +23,7 @@ CTextContainer::CTextContainer()
 	top_row_idx_ = 0;
 	scrollbar_offx_ = 0;
 	line_width_max_ = 0;
-	line_height_max_ = 0;
+	row_cnt_ = 0;
 
 	EnsureBuffer(MINI_BUFFER_SIZE);
 }
@@ -91,7 +91,7 @@ bool CTextContainer::IsShowHScrollbar() const
 }
 bool CTextContainer::IsShowVScrollbar() const
 {
-	return (rc_.Height() < line_height_max_);
+	return (row_cnt_ > 1);
 }
 
 std::wstring CTextContainer::GetRowText(int pos)
@@ -164,7 +164,7 @@ void CTextContainer::Clear()
 	top_row_idx_ = 0;
 	scrollbar_offx_ = 0;
 	line_width_max_ = 0;
-	line_height_max_ = 0;
+	row_cnt_ = 0;
 
 
 	nSelStart_= nSelEnd_=0;
@@ -272,7 +272,7 @@ void UndoTextEditor::AddChar(UINT pos,UINT len)
 	b.caretpos = pos;
 	b.len = len;
 	b.p = nullptr;
-	//b.stat = stat * 10; // ì¸óÕånÇÕ1->10, 2->20, 3->30Ç÷ïœçX
+	
 
 
 	undo_.push(b);

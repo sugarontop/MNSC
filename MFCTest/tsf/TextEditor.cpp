@@ -548,179 +548,48 @@ void CTextEditor::SetFont(CDC& cDC)
 {
     cDC.GetCurrentFont()->GetLogFont(&lf_);
 }
-void CTextEditor::Draw(CDC& cDC, bool readonly)
-{
-    if (ct_->vscbar_rc_.bottom == 0 ) 
-    {
-        int rowcount = RowCount();
-        int item_height = GetLineHeight();
 
-        view_sz_ = ct_->rc_.Size();
-        ct_->vscbar_rc_ = InitVScollbar(view_sz_, rowcount, item_height);
-        ct_->hscbar_rc_ = InitHScollbar(view_sz_, rowcount, item_height);
-
-    }
-
-    int selstart = (int)ct_->SelStart(); 
-    int selend = (int)ct_->SelEnd();
- 
-
-    bool b1 = ct_->bSelTrail_;
-    int pos = CurrentCaretPos();
-
-    int cx = ct_->rc_.Width();
-    int cy = ct_->rc_.Height();
-    int cy2 = ct_->rc_.Height() - (ct_->IsShowHScrollbar() ? SCROLLBAR_WIDTH : 0);
-
-    bmpText_.DeleteObject();
-
-    CDC memDC;
-    memDC.CreateCompatibleDC(&cDC);
-    bmpText_.CreateCompatibleBitmap(&cDC, cx, cy);
-    auto oldb = memDC.SelectObject(&bmpText_);
-    CRect rc(0, 0, cx, cy);
-    memDC.FillSolidRect(rc, RGB(255, 255, 255));
-
-    auto oldf = memDC.SelectObject(cDC.GetCurrentFont());
-
-    std::vector<CompositionInfo> cis;
-   
-
-   if (nCompositionRenderInfo_ ==3)
-   {
-    int a = 0;
-   }
-
-    for (UINT j = 0; j < nCompositionRenderInfo_; j++)
-    {
-        ATLTRACE(L" j=%d , nCompositionRenderInfo=%d (%d-%d)  %d,%d,%d\n", j, nCompositionRenderInfo_, pCompositionRenderInfo_[j].nStart, pCompositionRenderInfo_[j].nEnd, pCompositionRenderInfo_[j].da.crText.type, pCompositionRenderInfo_[j].da.crBk.type, pCompositionRenderInfo_[j].da.lsStyle);
-        CompositionInfo ci;
-
-        ci.start = pCompositionRenderInfo_[j].nStart;
-        ci.end   = pCompositionRenderInfo_[j].nEnd;
-        ci.type  = pCompositionRenderInfo_[j].da.lsStyle;
-        ci.da = pCompositionRenderInfo_[j].da;
-
-        cis.push_back(ci);
-    }
-    // memDCに文字を表示
-    CPoint view_org = layout_.Draw(memDC, ct_->top_row_idx_,cx,cy2, ct_->GetTextBuffer(), (int)ct_->GetTextLength(), selstart, selend, ct_->bSelTrail_, pos, ct_->scrollbar_offx_, cis);
-
-    BitBlt(cDC, ct_->rc_.left, ct_->rc_.top, cx, cy, memDC, 0, 0, SRCCOPY);
-
-    memDC.SelectObject(oldb);
-    memDC.SelectObject(oldf);
+//void CTextEditor::InnerDraw(CDC& cDC, bool readonly)
+//{
+//    /*auto xx = view_sz_;
+//
+//    int cx = ct_->rc_.Width()+200;
+//    int cy = ct_->rc_.Height()+200;
+//
+//    CBitmap bmp;
+//    CDC memDC;
+//    memDC.CreateCompatibleDC(&cDC);
+//    bmp.CreateCompatibleBitmap(&cDC, cx, cy);
+//
+//    auto oldb = memDC.SelectObject(&bmp);
+//    auto oldf = memDC.SelectObject(cDC.GetCurrentFont());
+//    CRect rc(0, 0, cx, cy);
+//    memDC.FillSolidRect(rc, RGB(0, 255, 255));
+//
+//    InnerDraw(memDC,readonly);
+//
+//    BitBlt(cDC, 0,0,cx, cy, memDC, 0, 0, SRCCOPY);
+//    memDC.SelectObject(oldb);
+//    memDC.SelectObject(oldf);*/
+//}
 
 
-    // 選択範囲の表示 
-    cDC.SaveDC();
-    cDC.SetViewportOrg(view_org);
-    layout_.DrawSelectRange(cDC, ct_->rc_, selstart, selend);
-    cDC.RestoreDC(-1);
 
-    // Draw Scrollbar
-    if ( 1 < layout_.RowCount() )
-    {
-        cDC.SaveDC();
-        cDC.OffsetViewportOrg(ct_->rc_.left, ct_->rc_.top);
-        DrawScrollbar(cDC);
-        cDC.RestoreDC(-1);
-    }
-}
-
-void CTextEditor::OnRefresh(bool bc)
-{    
-    // get char rects.
-    if ( lf_.lfHeight != 0)
-    {
-        CClientDC  cDC(nullptr);
-        CFont cf;
-        cf.CreateFontIndirect(&lf_);
-        auto oldf = cDC.SelectObject(&cf);
-        CalcRender(cDC, false);
-        cDC.SelectObject(&oldf);
-    }
-
-    // show caret and adjust scrollbar.
-    if (bc)
-    {
-        auto offpt = layout_.Offset();
-        int pos = CurrentCaretPos();
-
-        // caretの表示
-        CRect caretRect = { 0,0,0,0 };
-        if (!layout_.char_rects_.empty())
-        {
-            //cDC.OffsetViewportOrg(ct_->rc_.left, ct_->rc_.top);
-
-            CRect rcStart;
-            bool blf1 = false;
-            layout_.RectFromCharPosEx(pos - 1, -1, &rcStart, &blf1);
-
-            if (rcStart.top - ct_->top_row_idx_ * layout_.GetLineHeight() < 0)
-            {
-                CPoint pt(rcStart.left, 0);
-
-                int pos = layout_.CharPosFromPoint(pt);
-
-                //bool ct_->SelTrail() const { return bSelTrail_; }
-                ct_->SetSelStart(pos);
-                ct_->SetSelEnd(pos);
-
-                layout_.RectFromCharPos((int)pos, &rcStart);
-            }
-
-            caretRect = rcStart;
-
-            caretRect.left = caretRect.right;
-            caretRect.right = caretRect.right + 4;
-
-            //cDC.OffsetViewportOrg(-ct_->rc_.left, -ct_->rc_.top);
-        }
-
-        caretRect.OffsetRect(-offpt.x, -offpt.y);
-
-        int x = ct_->rc_.left + caretRect.left;
-        int y = ct_->rc_.top + caretRect.top;
-
-        bool bShowCaret = (0 <= caretRect.top && caretRect.bottom < view_sz_.cy
-            && 0 <= caretRect.left && caretRect.right < view_sz_.cx);
-
-        ActionCaret(hWnd_, FALSE);
-
-        int cy = ct_->rc_.Size().cy;
-        int vsb_h = SCROLLBAR_WIDTH;
-        int cy2 = caretRect.bottom;
-
-        if (cy2 > cy - vsb_h)
-        {            
-            ScrollbarRowoff(1);
-            y += -caretRect.Height();
-
-            bShowCaret = true;
-        }
-
-        ::SetCaretPos(x, y);
-
-        if (bShowCaret)
-            ActionCaret(hWnd_, TRUE);
-    }
-}
-void CTextEditor::DrawScrollbar(CDC& cDC)
+void CTextEditor::DrawScrollbar(CDC& cDC, int rowcnt)
 {
     CBrush brb,br;
 
     brb.CreateSolidBrush(RGB(220,220,220));
     br.CreateSolidBrush(RGB(20, 20, 20));
    
-    if ( ct_->IsShowVScrollbar())
+    if ( rowcnt > 1)
     {
         CRect v1(ct_->vscbar_rc_);
         v1.top = 0;
         v1.bottom = ct_->rc_.Height();
         cDC.FillRect(v1, &brb);
         cDC.FillRect(ct_->vscbar_rc_, &br);
-    }
+    }   
 
     if (ct_->IsShowHScrollbar())
     {
@@ -745,18 +614,22 @@ void CTextEditor::CalcRender(CDC& cDC, bool readonly)
 
     if (rebuild_)
     {
-        layout_.CreateLayout(cDC, ct_->GetTextBuffer(), ct_->GetTextLength(), ct_->view_size_, ct_->bSingleLine_, zCaretPos, ct_->nStartCharPos_);
+        tix_ = layout_.CreateLayout(cDC, ct_->GetTextBuffer(), ct_->GetTextLength(), ct_->view_size_, ct_->bSingleLine_, zCaretPos, ct_->nStartCharPos_);
         rebuild_ = false;
     }
     else
         layout_.ReCreateLayout(cDC, ct_->GetTextBuffer(), ct_->GetTextLength(), ct_->view_size_, ct_->bSingleLine_, zCaretPos, ct_->nStartCharPos_);
 
-    layout_.SetRecalc(false);
+      
+    // 
 
-    ct_->line_width_max_ = layout_.GetLineWidthMax();
-    ct_->line_height_max_ = GetLineHeight()*RowCount();
+    if (tix_.result )
+    {
+        ct_->line_width_max_ = max(ct_->line_width_max_, tix_.line_max_width ); //(int)layout_.char_rects_.LineWidthMax());
+        ct_->row_cnt_ = tix_.rowcnt;
 
-    
+    }
+
     if (s_create_caret_ && readonly == false)
     {
         h = layout_.GetLineHeight();
@@ -778,11 +651,9 @@ void CTextEditor::CalcRender(CDC& cDC, bool readonly)
 //
 //----------------------------------------------------------------
 
-
-
 RECT CTextEditor::CandidateRect(RECT rclog) const
 {    
-     if ( pmat_)
+     if ( pmat_ && ct_ )
      {
         D2DMat map = *pmat_;
 
@@ -829,8 +700,6 @@ BOOL CTextEditor::IsImeOn() const
 //
 //----------------------------------------------------------------
 
-
-
 void CTextEditor::SetFocus(D2DMat* pmat)
 {
     s_create_caret_ = false;
@@ -846,11 +715,13 @@ void CTextEditor::SetFocus(D2DMat* pmat)
         s_create_caret_ = true;
 
         OnRefresh(false);
-        
-        
     }
 }
-
+void CTextEditor::UnsetFocus()
+{
+    ct_ = nullptr;
+    pmat_ = nullptr;
+}
 
 //----------------------------------------------------------------
 //
@@ -877,15 +748,10 @@ void CTextEditor::Reset( IBridgeTSFInterface* bi )
             ct_->top_row_idx_=0;
             ct_->scrollbar_offx_=0;
             ct_->line_width_max_=0;
-            ct_->line_height_max_ = 0;
+            //ct_->line_height_max_ = 0;
 
         }
-	}
-	else
-	{
-		int a = 0;
-
-	}
+	}	
 }
 
 //----------------------------------------------------------------
@@ -910,7 +776,7 @@ void CTextEditor::ClearCompositionRenderInfo()
 //----------------------------------------------------------------
 void CTextEditor::OnComposition( int msg, int len )
 {
-	TRACE( L"void CTextEditor::OnComposition( %d, %d )\n", msg,len);
+	//TRACE( L"void CTextEditor::OnComposition( %d, %d )\n", msg,len);
 
     switch( msg ) 
     {
@@ -954,6 +820,11 @@ void CTextEditor::OnChangeIME(bool bOn)
 }
 
 
+//----------------------------------------------------------------
+//　
+//　DualDisplayで問題あり
+//
+//----------------------------------------------------------------
 RECT CTextEditor::ClientToScreenMFC(RECT rc) const
 {
     HWND hWnd = GetWnd();
@@ -1063,7 +934,7 @@ void CTextEditorCtrl::OnEditChanged()
 {
 	// from CTextEditSink::OnEndEdit
 
-    layout_.SetRecalc(true);
+    //layout_.SetRecalc(true);
 }
 //----------------------------------------------------------------
 //
@@ -1072,7 +943,7 @@ void CTextEditorCtrl::OnEditChanged()
 //----------------------------------------------------------------
 void CTextEditorCtrl::Clear()
 {
-    layout_.SetRecalc(true);
+    //layout_.SetRecalc(true);
     search_x_ = 0;
     ti_ = {};
 }
@@ -1329,7 +1200,7 @@ LRESULT CTextEditorCtrl::WndProc(TSFApp* d, UINT message, WPARAM wParam, LPARAM 
 				        }				   
                     }
                 }
-                layout_.SetRecalc(true);
+                //layout_.SetRecalc(true);
 			}
 		    break;
             
@@ -1490,6 +1361,7 @@ BOOL CTextEditorCtrl::OnKeyDown(WPARAM wParam, LPARAM lParam)
         case VK_HOME:
         {
             first_x = 0;
+
             UINT pos = MoveSelectionToLineFirstEnd(TRUE, pushShift);
 
             AdjustHScrollbar();
@@ -1499,10 +1371,11 @@ BOOL CTextEditorCtrl::OnKeyDown(WPARAM wParam, LPARAM lParam)
 
         case VK_END:
         {
-             UINT pos = MoveSelectionToLineFirstEnd(FALSE, pushShift);
-             AdjustHScrollbar();
+            UINT pos = MoveSelectionToLineFirstEnd(FALSE, pushShift);
+             
+            AdjustHScrollbar();
 
-             ret = true;
+            ret = true;
         }           
 		break;
 
@@ -1557,15 +1430,211 @@ BOOL CTextEditorCtrl::OnKeyDown(WPARAM wParam, LPARAM lParam)
 
 	return ret;
 }
-//----------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------
 
-void CTextEditorCtrl::OnSetFocus(WPARAM wParam, LPARAM lParam)
+//----------------------------------------------------------------
+//
+// vscroll bar
+//
+//----------------------------------------------------------------
+void CTextEditor::CaretUpdate(int md)
 {
-    //SetFocus();
+    int pos = CurrentCaretPos();
+    bool bShowCaret = true;
+    bool bl = true;
+
+    ActionCaret(hWnd_, FALSE);
+    int x = 0,y = 0;
+    view_sz_ = ct_->rc_.Size();
+
+    while(bl)
+    {
+        bl = false;
+        CRect caretRect = layout_.char_rects_.SerialRects(pos, pos)[0];
+    
+        auto offpt = layout_.Offset();
+
+        caretRect.OffsetRect(-offpt.x, -offpt.y);
+
+        x = ct_->rc_.left + caretRect.left;
+        y = ct_->rc_.top + caretRect.top;
+
+        bShowCaret = (0 <= caretRect.top && caretRect.bottom < view_sz_.cy);
+        bShowCaret = bShowCaret && (0 <= caretRect.left && caretRect.right < view_sz_.cx);
+        
+        
+        // 横へスクロール
+        if ( !bShowCaret && md!=1 )
+        {
+            if (caretRect.right > view_sz_.cx)
+            {
+                float h = layout_.GetLineHeight();            
+                layout_.offsetPt_.x += h * 5;
+                SyncScrollbarX(1.5f);
+
+                bl = true;
+            }
+            else if (caretRect.left < 0 )
+            {
+                layout_.offsetPt_.x=0;
+                //SyncScrollbarX();
+            }
+        }
+    }
+    
+
+    ::SetCaretPos(x, y);
+
+    if (bShowCaret)
+        ActionCaret(hWnd_, TRUE);
+
+}
+void CTextEditor::Draw(CDC& cDC, bool readonly)
+{
+    _ASSERT(ct_);
+
+    if (ct_->hscbar_rc_.right == 0)
+    {
+        int rowcount = RowCount();
+        ct_->row_cnt_ = rowcount;
+        int item_height = GetLineHeight();
+
+        view_sz_ = ct_->rc_.Size();
+        ct_->vscbar_rc_ = InitVScollbar(view_sz_, rowcount, item_height);
+        ct_->hscbar_rc_ = InitHScollbar(view_sz_, rowcount, item_height);
+
+    }
+
+    int selstart = (int)ct_->SelStart();
+    int selend = (int)ct_->SelEnd();
+
+
+    bool b1 = ct_->bSelTrail_;
+    int pos = CurrentCaretPos();
+
+    int cx = ct_->rc_.Width();
+    int cy = ct_->rc_.Height();
+    int cy2 = ct_->rc_.Height() - (ct_->IsShowHScrollbar() ? SCROLLBAR_WIDTH : 0);
+
+    bmpText_.DeleteObject();
+
+    CDC memDC;
+    memDC.CreateCompatibleDC(&cDC);
+    bmpText_.CreateCompatibleBitmap(&cDC, cx, cy);
+    auto oldb = memDC.SelectObject(&bmpText_);
+    CRect rc(0, 0, cx, cy);
+    memDC.FillSolidRect(rc, RGB(255, 255, 255));
+
+    auto oldf = memDC.SelectObject(cDC.GetCurrentFont());
+
+    std::vector<CompositionInfo> cis;
+
+    for (UINT j = 0; j < nCompositionRenderInfo_; j++)
+    {
+        //ATLTRACE(L" j=%d , nCompositionRenderInfo=%d (%d-%d)  %d,%d,%d\n", j, nCompositionRenderInfo_, pCompositionRenderInfo_[j].nStart, pCompositionRenderInfo_[j].nEnd, pCompositionRenderInfo_[j].da.crText.type, pCompositionRenderInfo_[j].da.crBk.type, pCompositionRenderInfo_[j].da.lsStyle);
+        CompositionInfo ci;
+
+        ci.start = pCompositionRenderInfo_[j].nStart;
+        ci.end = pCompositionRenderInfo_[j].nEnd;
+        ci.type = pCompositionRenderInfo_[j].da.lsStyle;
+        ci.da = pCompositionRenderInfo_[j].da;
+
+        cis.push_back(ci);
+    }
+
+    int maxlinewidth = 0;
+    // memDCに文字を表示
+    CPoint view_org = layout_.Draw(memDC, ct_->top_row_idx_, cx, cy2, ct_->GetTextBuffer(), (int)ct_->GetTextLength(), selstart, selend, ct_->bSelTrail_, pos, &maxlinewidth, cis);
+
+    BitBlt(cDC, ct_->rc_.left, ct_->rc_.top, cx, cy, memDC, 0, 0, SRCCOPY);
+
+    memDC.SelectObject(oldb);
+    memDC.SelectObject(oldf);
+
+
+    // 選択範囲の表示 
+    cDC.SaveDC();
+    cDC.SetViewportOrg(view_org);
+    layout_.DrawSelectRange(cDC, ct_->rc_, selstart, selend);
+    cDC.RestoreDC(-1);
+
+    // Draw Scrollbar    
+    if (ct_->bSingleLine_ == false)
+    {
+        cDC.SaveDC();
+        cDC.OffsetViewportOrg(ct_->rc_.left, ct_->rc_.top);
+        DrawScrollbar(cDC, layout_.RowCount());
+        cDC.RestoreDC(-1);
+    }
+}
+
+void CTextEditor::OnRefresh(bool bc)
+{
+    // get char rects.
+    if (lf_.lfHeight != 0)
+    {
+        CClientDC  cDC(nullptr);
+        CFont cf;
+        cf.CreateFontIndirect(&lf_);
+        auto oldf = cDC.SelectObject(&cf);
+        CalcRender(cDC, false);
+        cDC.SelectObject(&oldf);
+        ////////////////////////////////////
+
+        {            
+            CRect vscbar_rc;
+            auto rc = layout_.RowCol(CurrentCaretPos());
+            int d = (ct_->IsShowHScrollbar() ? SCROLLBAR_WIDTH : 0);
+            const float vh = (float)view_sz_.cy - (float)d;
+
+            auto y = (rc.row- ct_->top_row_idx_) * tix_.line_height;
+            bool bl = false;
+            while (1)
+            {                
+                if (vh < y)
+                {
+                    ct_->top_row_idx_++;
+
+                    y -= tix_.line_height;
+                    bl = true;
+                }
+                else
+                    break;
+            }
+
+            if ( bl )
+            {
+                //ct_->top_row_idx_++;
+                layout_.offsetPt_.y = (ct_->top_row_idx_+1) * tix_.line_height;                
+            }
+
+            // set Scrollbar position
+            int top_idx_ = ct_->top_row_idx_;
+            int vc = top_idx_ * tix_.line_height; // item_sz_.cy;
+            float nvh = tix_.line_height * tix_.rowcnt - vh;
+                
+            float thumb_height = max(50, min(vh, (vh * vh) / (nvh + vh)));
+            float b = vh - thumb_height;
+
+            vscbar_rc.top = (int)(vc * b / nvh);
+            vscbar_rc.bottom = vscbar_rc.top + thumb_height;
+            vscbar_rc.left = view_sz_.cx- SCROLLBAR_WIDTH;
+            vscbar_rc.right = vscbar_rc.left+ SCROLLBAR_WIDTH;
+            ct_->vscbar_rc_ = vscbar_rc;
+
+
+
+
+
+
+        }
+
+    }
+
+    // show caret and adjust scrollbar.
+    if (bc)
+    {
+        CaretUpdate();
+    }
 }
 
 //----------------------------------------------------------------
@@ -1574,10 +1643,14 @@ void CTextEditorCtrl::OnSetFocus(WPARAM wParam, LPARAM lParam)
 //
 //----------------------------------------------------------------
 
-bool CTextEditor::ScrollByWheel(bool bup)
+bool CTextEditor::ScrollByWheel(bool bup) // by mouse wheel
 {
     _ASSERT(GetLineHeight() != 0);
-
+    /*
+    ct_->top_row_idx_　算出
+        layout_.offsetPt_.y
+        ct_->vscbar_rc_.top 算出
+    */
 
     CSize sz = view_sz_;
     int d = (ct_->IsShowHScrollbar() ? SCROLLBAR_WIDTH : 0);
@@ -1585,7 +1658,7 @@ bool CTextEditor::ScrollByWheel(bool bup)
     ///////////////////////////////////////    
     CSize item_sz_(0,  GetLineHeight());
     CRect vscbar_rc = ct_->vscbar_rc_;
-    int& top_idx_ = ct_->top_row_idx_;
+    int& top_idx_ = ct_->top_row_idx_;  
 
     int cnt = RowCount();
     int total_h = item_sz_.cy * cnt;
@@ -1593,18 +1666,13 @@ bool CTextEditor::ScrollByWheel(bool bup)
     int afr = af / item_sz_.cy;
     int off = (bup ? -1 : 1);
     top_idx_ = max(0, min(top_idx_ + off, afr+1));
+    layout_.offsetPt_.y = top_idx_ * layout_.nLineHeight_;
 
-    
+
     // set Scrollbar position
     int vc = top_idx_ * item_sz_.cy;
     float vh = (float)sz.cy;
     float nvh = item_sz_.cy * cnt - vh;
-
-    //float b = vh - vscbar_rc.Height();
-    //float c = (float)vscbar_rc.top;
-    //int h = vscbar_rc.Height();
-
-
     float thumb_height = max(50, min(vh, (vh * vh) / (nvh + vh)));
     float b = vh - thumb_height;
 
@@ -1612,11 +1680,18 @@ bool CTextEditor::ScrollByWheel(bool bup)
     vscbar_rc.bottom = vscbar_rc.top + thumb_height;
     
     ct_->vscbar_rc_ = vscbar_rc;
+
+    CaretUpdate();
     return true;
 }
-void CTextEditor::ScrollbarRowoff(int off_row)
+void CTextEditor::ScrollbarRowoff(int off_row, bool bCaretUpdate) // by mouse on selecting mode
 {
     _ASSERT(GetLineHeight()!=0);
+    /*
+    ct_->top_row_idx_　算出
+        layout_.offsetPt_.y
+        ct_->vscbar_rc_.top 算出
+    */
 
     ct_->top_row_idx_ = max(0, min(ct_->top_row_idx_ + off_row, ((int)RowCount() - (int)(view_sz_.cy / GetLineHeight()))));
     
@@ -1630,16 +1705,14 @@ void CTextEditor::ScrollbarRowoff(int off_row)
     int& top_idx_ = ct_->top_row_idx_;
     int cnt = RowCount(); 
 
+
+    layout_.offsetPt_.y = top_idx_ * layout_.nLineHeight_;
+
+
     // set Scrollbar position
     int vc = top_idx_ * item_sz_.cy;
     float vh = (float)sz.cy;
     float nvh = item_sz_.cy * cnt - vh;
-
-    //float b = vh - vscbar_rc.Height();
-    //float c = (float)vscbar_rc.top;
-    
-    //int h = vscbar_rc.Height();
-
     float thumb_height = max(50, min(vh, (vh * vh) / (nvh + vh)));
     float b = vh - thumb_height;
 
@@ -1647,52 +1720,54 @@ void CTextEditor::ScrollbarRowoff(int off_row)
     vscbar_rc.bottom = vscbar_rc.top + thumb_height;
 
     ct_->vscbar_rc_ = vscbar_rc;
+
+    if(bCaretUpdate)
+        CaretUpdate();
 }
-void CTextEditor::ScrollbarYoff(int scrollbar_off_y)
+void CTextEditor::ScrollbarYoff(int scrollbar_off_y) // by Scrollbar
 {
     if (scrollbar_off_y == 0) return;
 
-    CSize item_sz_(0, GetLineHeight());
+    //////////////////////////////////////////////////////////////////////
+    /*
+    ct_->vscbar_rc_.top 移動
+    ct_->top_row_idx_　算出
+        layout_.offsetPt_.y
+    */
+
+    CRect rc = ct_->vscbar_rc_;
+    int h2 = rc.Height();
     CSize sz = view_sz_;
     int d = (ct_->IsShowHScrollbar() ? SCROLLBAR_WIDTH : 0);
     sz.cy -= d;
-
-
-    int& top_idx_ = ct_->top_row_idx_;
-    int cnt = RowCount();
-    int offy = scrollbar_off_y;
-
-    CRect rc = ct_->vscbar_rc_;
-
-    //////////////////////////////
-
-    rc.OffsetRect(0, offy);
-
-    if (rc.bottom > sz.cy)
+        
+    rc.OffsetRect(0, scrollbar_off_y);
+    if ( rc.top < 0 )
     {
-        offy = sz.cy - rc.bottom;
-        rc.OffsetRect(0, offy);
+        rc.top = 0;
+        rc.bottom = h2;
     }
+    if (rc.bottom > sz.cy)
+    {        
+        rc.bottom = sz.cy;
+        rc.top = rc.bottom-h2;
+    }
+    ct_->vscbar_rc_ = rc;
 
 
-    bool bl = true;
-    if (rc.top < 0)
-        bl = false;
-    if (rc.bottom-d > sz.cy)
-        bl = false;
+    CSize item_sz_(0, GetLineHeight());
+    int& top_idx_ = ct_->top_row_idx_;
+    float vh = (float)view_sz_.cy;
+    float nvh = item_sz_.cy * RowCount() - vh;
 
-    if (bl)
-        ct_->vscbar_rc_ = rc;
+    float thumb_height = max(50, min(vh, (vh * vh) / (nvh + vh)));
+    float b = vh - thumb_height;
+    float vc = ct_->vscbar_rc_.top * nvh / b;
+    top_idx_ = (int)max(0, min((int)(vc / item_sz_.cy), RowCount()));
+    layout_.offsetPt_.y = top_idx_ * layout_.nLineHeight_;
+    
 
-    float vh = (float)sz.cy;
-    float nvh = item_sz_.cy * cnt - vh;
-
-    float b = vh - ct_->vscbar_rc_.Height();
-    float c = (float)ct_->vscbar_rc_.top;
-    float vc = (c * nvh) / b;
-
-    //offy = (int)(vc + 0.5);
-    top_idx_ = (int)max(0, min((int)(vc / item_sz_.cy), cnt));
+    CaretUpdate();
 }
 
 
@@ -1714,7 +1789,52 @@ CRect CTextEditor::InitVScollbar(CSize viewsz, int rowcount, int item_height)
 // hscroll bar
 //
 //----------------------------------------------------------------
-void CTextEditor::ScrollbarXoff(int scrollbar_off_x)
+
+void CTextEditor::SyncScrollbarX(float bai)
+{
+    // layout_.offsetPt_.xとhscrollbarをsync
+
+    int x_pt = layout_.offsetPt_.x;
+
+    CSize sz = view_sz_;
+    int d = (ct_->IsShowVScrollbar() ? SCROLLBAR_WIDTH : 0);
+    sz.cx -= d;
+    
+    ct_->scrollbar_offx_ = x_pt;
+    int max_line_width = (int)ct_->line_width_max_;
+    CRect rc = ct_->hscbar_rc_;
+    
+
+    int offx = x_pt;
+    //////////////////////////////
+    rc.OffsetRect(offx, 0);
+    if (rc.right > sz.cx)
+    {
+        offx = sz.cx - rc.right;
+        rc.OffsetRect(offx, 0);
+    }
+
+    bool bl = true;
+    if (rc.left < 0)
+        bl = false;
+    if (rc.right > sz.cx + d)
+        bl = false;
+
+    if (bl)
+        ct_->hscbar_rc_ = rc;
+
+    ////////////////////////////////////////
+    if (bai > 1.0f)
+    {
+        max_line_width = max_line_width* bai;
+        int view_height = view_sz_.cx - d;
+        float vh = (float)view_height;
+        float nvh = max_line_width  - vh;
+        float width = max(50, min(vh, (vh * vh) / (nvh + vh)));
+        ct_->hscbar_rc_.right = ct_->hscbar_rc_.left + width;
+    }
+}
+void CTextEditor::ScrollbarXoff(int scrollbar_off_x, bool bCaretUpdate)
 {
     if (scrollbar_off_x == 0) return;
 
@@ -1755,6 +1875,11 @@ void CTextEditor::ScrollbarXoff(int scrollbar_off_x)
     float vc = (c * nvh) / b;
 
     ct_->scrollbar_offx_ = (int)max(0, min(vc, view_sz_.cx));
+
+    layout_.offsetPt_.x = ct_->scrollbar_offx_;
+
+    if(bCaretUpdate)
+        CaretUpdate(1);
 }
 
 // Align the h_scrollbar with the current caret.
@@ -1775,6 +1900,7 @@ void CTextEditor::AdjustHScrollbar()
         offx = view_sz_.cx - hscbar_rc.Width()- hscbar_rc.left;
     }
     ScrollbarXoff(offx);
+    CaretUpdate(1);
 }
 
 CRect CTextEditor::InitHScollbar(CSize viewsz, int rowcount, int item_height)
