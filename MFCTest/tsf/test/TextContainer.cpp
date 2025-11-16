@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "TextContainer.h"
 
 using namespace TSF;
@@ -299,7 +299,7 @@ void UndoTextEditor::AddChar(UINT pos,UINT len)
 
 void UndoTextEditor::UndoAdjust()
 {
-	// IME ON‚µ‚Ä“ü—ÍŠJn‚Ìstat=10‚Ü‚Å‚³‚©‚Ì‚Ú‚Á‚Äundoî•ñ‚ğÁ‚·B
+	// IME ONã—ã¦å…¥åŠ›é–‹å§‹ã®stat=10ã¾ã§ã•ã‹ã®ã¼ã£ã¦undoæƒ…å ±ã‚’æ¶ˆã™ã€‚
 	auto& undo2 = undo_;
 
 	std::vector<BInfo> ar;

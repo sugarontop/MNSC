@@ -194,7 +194,7 @@ class CTextEditorCtrl : public CTextEditor
 
 		bool CopyBitmap(CBitmap* dstbmp);
 
-
+		bool ClipboardCopyPaste( HWND hWnd, bool CopyOrPaste);
 		
 		
 	private :

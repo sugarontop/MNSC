@@ -78,6 +78,7 @@ public:
 			v.bstrVal = ::SysAllocString(it.first.c_str());
 			v.vt = VT_BSTR;
 			ar->Add(v);
+			::VariantClear(&v);
 		}
 
 		

@@ -55,8 +55,6 @@ BOOL CTextEditor::InitTSF(HWND hWnd, ITfThreadMgr2* tmgr, TfClientId clientid)
     
 	if (FAILED(tmgr->CreateDocumentMgr(&pDocumentMgr_)))
 		goto Exit;
-
-
    
     pTextStore_->QueryInterface( IID_IUnknown, (void**)&q);
 
@@ -74,8 +72,6 @@ BOOL CTextEditor::InitTSF(HWND hWnd, ITfThreadMgr2* tmgr, TfClientId clientid)
 #endif
 	
     pTextStore_->InitSink(tmgr, clientid);
-    
-
 
 	hWnd_ = hWnd;
 
@@ -133,8 +129,6 @@ BOOL CTextEditor::CloseTSF( )
     if (pTextStore_)
     {
         pTextStore_->CloseSink(weak_tmgr_);
-
-
         while( pTextStore_->Release() );
         pTextStore_ = NULL;
     }
@@ -192,12 +186,6 @@ void CTextEditor::MoveSelectionNext()
     ct_->SetSelEnd(zCaretPos);
     pTextStore_->OnSelectionChange();
 }
-
-//----------------------------------------------------------------
-//
-//　caretが動く時
-//
-//----------------------------------------------------------------
 
 void CTextEditor::MoveSelectionPrev()
 {
@@ -281,10 +269,6 @@ BOOL CTextEditor::MoveSelectionUpDown(BOOL bUp, bool bShiftKey, int col, int yof
         MoveSelection(zpos, zpos, !bUp);
 
     return TRUE;
-
-
-    return FALSE;
-
 }
 
 
@@ -443,8 +427,6 @@ BOOL CTextEditor::SelectionTab(BOOL bDel)
 
 BOOL CTextEditor::DeleteAtSelection(BOOL fBack)
 {
-    //layout_.bRecalc_ = true;
-
     if (!fBack && (ct_->SelEnd() < (int)ct_->GetTextLength()))
     {
         if (!ct_->RemoveText(ct_->SelEnd(), 1))
@@ -480,12 +462,9 @@ BOOL CTextEditor::DeleteAtSelection(BOOL fBack)
 
 BOOL CTextEditor::DeleteSelection()
 {
-
     ULONG nSelOldEnd = ct_->SelEnd();
     ct_->RemoveText(ct_->SelStart(), ct_->SelEnd() - ct_->SelStart());
-
     ct_->SetSelEnd( ct_->SelStart());
-
 
 	LONG acs = ct_->SelStart();
 
@@ -549,6 +528,11 @@ void CTextEditor::SetFont(CDC& cDC)
     cDC.GetCurrentFont()->GetLogFont(&lf_);
 }
 
+//----------------------------------------------------------------
+//
+//
+//
+//----------------------------------------------------------------
 //void CTextEditor::InnerDraw(CDC& cDC, bool readonly)
 //{
 //    /*auto xx = view_sz_;
@@ -620,11 +604,9 @@ void CTextEditor::CalcRender(CDC& cDC, bool readonly)
     else
         layout_.ReCreateLayout(cDC, ct_->GetTextBuffer(), ct_->GetTextLength(), ct_->view_size_, ct_->bSingleLine_, zCaretPos, ct_->nStartCharPos_);
 
-      
-    // 
-
     if (tix_.result )
     {
+        // send information to ct_.
         ct_->line_width_max_ = max(ct_->line_width_max_, tix_.line_max_width ); //(int)layout_.char_rects_.LineWidthMax());
         ct_->row_cnt_ = tix_.rowcnt;
 
@@ -633,7 +615,6 @@ void CTextEditor::CalcRender(CDC& cDC, bool readonly)
     if (s_create_caret_ && readonly == false)
     {
         h = layout_.GetLineHeight();
-        
 
         ActionCareteCaret(hWnd_,h);
 
@@ -678,7 +659,7 @@ BOOL CTextEditor::IsImeOn() const
 	CComPtr<ITfCompartmentMgr>  pCompartmentMgr;
 	BOOL isIMEOn = FALSE;
 
-	if (0 == weak_tmgr_->QueryInterface(IID_ITfCompartmentMgr, (LPVOID*)&pCompartmentMgr))
+	if (S_OK == weak_tmgr_->QueryInterface(IID_ITfCompartmentMgr, (LPVOID*)&pCompartmentMgr))
 	{
         CComPtr<ITfCompartment> cp1;
 
@@ -776,25 +757,19 @@ void CTextEditor::ClearCompositionRenderInfo()
 //----------------------------------------------------------------
 void CTextEditor::OnComposition( int msg, int len )
 {
-	//TRACE( L"void CTextEditor::OnComposition( %d, %d )\n", msg,len);
-
     switch( msg ) 
     {
         case 1:
         {
             ti_.decoration_typ = 1;
-
             ti_.decoration_start_pos = GetSelectionStart();
             ti_.decoration_end_pos = GetSelectionEnd();
-
-			
         }
         break;
         case 2:
         {            
             ti_.decoration_start_pos = max(0, GetSelectionEnd() - len);
             ti_.decoration_end_pos =GetSelectionEnd();
-			
         }
         break;
         case 3:
@@ -802,9 +777,7 @@ void CTextEditor::OnComposition( int msg, int len )
             ti_.decoration_typ = 0;
             ti_.decoration_end_pos = 0;
             ti_.decoration_start_pos = 0;
-			
-			
-			
+
 			ct_->UndoAdjust();
         }
         break;
@@ -813,10 +786,7 @@ void CTextEditor::OnComposition( int msg, int len )
 
 void CTextEditor::OnChangeIME(bool bOn)
 {
-	
-
 	SendMessage(GetWnd(),WM_D2D_ONIME_ONOFF, (bOn?1:0), 0);
-
 }
 
 
@@ -901,9 +871,6 @@ void CTextEditorCtrl::SetContainer( CTextContainer* ct, IBridgeTSFInterface* brt
         ct->SetSelStart(0);
         ct->SetSelEnd(0);
     }
-
-    
-
 }
 //----------------------------------------------------------------
 //
@@ -934,7 +901,6 @@ void CTextEditorCtrl::OnEditChanged()
 {
 	// from CTextEditSink::OnEndEdit
 
-    //layout_.SetRecalc(true);
 }
 //----------------------------------------------------------------
 //
@@ -943,7 +909,6 @@ void CTextEditorCtrl::OnEditChanged()
 //----------------------------------------------------------------
 void CTextEditorCtrl::Clear()
 {
-    //layout_.SetRecalc(true);
     search_x_ = 0;
     ti_ = {};
 }
@@ -1140,13 +1105,12 @@ LRESULT CTextEditorCtrl::WndProc(TSFApp* d, UINT message, WPARAM wParam, LPARAM 
             case WM_CHAR:
 			{
                 // wParam is a character of the result string. 
-			    bool bControlKey = ((GetKeyState(VK_CONTROL) & 0x80) != 0);			  
-			    if ( bControlKey )
-				    return 0;
+
+                WCHAR wch = (WCHAR)wParam;
 
 				bool bShiftKey = ((GetKeyState(VK_SHIFT) & 0x80) != 0);			  
 
-                WCHAR wch = (WCHAR)wParam;
+                
 			    // ansi charcter input.
                 bool bMultiline = (bri_->GetType() == IBridgeTSFInterface::MULTILINE);
                 if ( bMultiline )
@@ -1275,20 +1239,18 @@ BOOL CTextEditorCtrl::OnKeyDown(WPARAM wParam, LPARAM lParam)
 {
     BOOL ret = true; 
 
-	bool pushShift   = (GetKeyState(VK_SHIFT)& 0x80) != 0;
+	bool pushShift = (GetKeyState(VK_SHIFT)& 0x80) != 0;
+    bool pushCtrl  = (GetKeyState(VK_CONTROL) & 0x80) != 0;
 
-	int nSelStart;
-    int nSelEnd;
-
+	int nSelStart = 0;
+    int nSelEnd = 0;
     static int first_x = 0;
+
     switch (0xff & wParam)
     {
         case VK_RETURN:
         {
-            this->rebuild_ = true;
-
-            
-            
+            this->rebuild_ = true;         
         }
         break;
         case VK_LEFT:
@@ -1412,17 +1374,29 @@ BOOL CTextEditorCtrl::OnKeyDown(WPARAM wParam, LPARAM lParam)
             int offy = 2*(int)(view_sz_.cy / layout_.GetLineHeight());
             
             MoveSelectionUpDown(TRUE, pushShift, first_x, offy);
-
         }
         break;
         case VK_NEXT: // PAGE DOWN
         {
             int offy = 2*(int)(view_sz_.cy / layout_.GetLineHeight());
             MoveSelectionUpDown(FALSE, pushShift, first_x, offy);
-
-
         }
         break;
+        case 'C':
+            ret = (pushCtrl && ClipboardCopyPaste(hWnd_, true) ? 1 : 0);
+            break;
+        case 'V':
+            ret = (pushCtrl && ClipboardCopyPaste(hWnd_, false) ? 1 : 0);
+            break;
+       /* case 'X':
+            ret = (pushCtrl && Clipboard(d->hWnd_, L'C') ? 1 : 0);
+            if (ct_.nSelEnd_ > ct_.nSelStart_)
+            {
+                ct_.RemoveText(ct_.nSelStart_, ct_.nSelEnd_ - ct_.nSelStart_);
+                ct_.nSelEnd_ = ct_.nSelStart_;
+            }
+            break;*/
+        
             
     }
 
@@ -1541,9 +1515,8 @@ void CTextEditor::Draw(CDC& cDC, bool readonly)
         cis.push_back(ci);
     }
 
-    int maxlinewidth = 0;
     // memDCに文字を表示
-    CPoint view_org = layout_.Draw(memDC, ct_->top_row_idx_, cx, cy2, ct_->GetTextBuffer(), (int)ct_->GetTextLength(), selstart, selend, ct_->bSelTrail_, pos, &maxlinewidth, cis);
+    CPoint view_org = layout_.Draw(memDC, ct_->top_row_idx_, cx, cy2, ct_->GetTextBuffer(), (int)ct_->GetTextLength(), selstart, selend, ct_->bSelTrail_, pos, cis);
 
     BitBlt(cDC, ct_->rc_.left, ct_->rc_.top, cx, cy, memDC, 0, 0, SRCCOPY);
 
@@ -1620,12 +1593,6 @@ void CTextEditor::OnRefresh(bool bc)
             vscbar_rc.left = view_sz_.cx- SCROLLBAR_WIDTH;
             vscbar_rc.right = vscbar_rc.left+ SCROLLBAR_WIDTH;
             ct_->vscbar_rc_ = vscbar_rc;
-
-
-
-
-
-
         }
 
     }
@@ -2046,11 +2013,10 @@ bool CTextEditorCtrl::CopyBitmap(CBitmap* dstbmp)
     BITMAP bmpInfo;
     if (!bmpText_.GetBitmap(&bmpInfo))
         return false;
-
     
-     int cx = bmpInfo.bmWidth;
-     int cy = bmpInfo.bmHeight;
-    
+    int cx = bmpInfo.bmWidth;
+    int cy = bmpInfo.bmHeight;
+   
 
 	CDC cDC;
 	cDC.CreateCompatibleDC(NULL);
@@ -2072,11 +2038,56 @@ bool CTextEditorCtrl::CopyBitmap(CBitmap* dstbmp)
 	dstDC.BitBlt(0, 0, cx, cy, &cDC, 0, 0, SRCCOPY);
 	cDC.SelectObject(oldbmp);
 	return true;
-
-
-
 }
 
+bool CTextEditorCtrl::ClipboardCopyPaste( HWND hWnd, bool bCopy )
+{
+    if (OpenClipboard(hWnd))
+    {
+        if ( bCopy )
+        {                    
+            std::wstring s;
+            if ( ct_->GetSelectionText(&s))
+            {
+                UINT len = s.length();
+                HANDLE hglbCopy = GlobalAlloc(GMEM_DDESHARE, (len + 1) * sizeof(TCHAR));
+                if (hglbCopy == NULL)
+                {
+                    CloseClipboard();
+                    return false;
+                }
+
+                // Lock the handle and copy the text to the buffer. 
+                TCHAR* lptstrCopy = (TCHAR*)GlobalLock(hglbCopy);
+                memcpy(lptstrCopy, s.c_str(), len * sizeof(TCHAR));
+                lptstrCopy[len] = (TCHAR)0;    // null character 
+                GlobalUnlock(hglbCopy);
+
+                // Place the handle on the clipboard. 
+                EmptyClipboard();
+                SetClipboardData(CF_UNICODETEXT, hglbCopy);
+            }
+
+
+        }
+        else
+        {
+            HANDLE h = GetClipboardData(CF_UNICODETEXT);
+            if (h)
+            {
+                LPWSTR s1a = (LPWSTR)GlobalLock(h);
+                InsertAtSelection(s1a);
+                GlobalUnlock(h);
+
+                InvalidateRect();
+            }     
+        }
+    
+        ::CloseClipboard();
+        return true;
+    }
+    return false;
+}
 
 #endif
 

@@ -263,7 +263,7 @@ float CTextLayout::TabWidth() const
 }
 
 
-CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos,int* max_linewidth, std::vector<CompositionInfo>& cis)
+CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_width, LPCWSTR psz, int nCnt, int nSelStart, int nSelEnd, bool bTrail, int CaretPos, std::vector<CompositionInfo>& cis)
 {
 	//_ASSERT(rcText.left==0 && rcText.top == 0);
 
@@ -290,10 +290,6 @@ CPoint CTextLayout::Draw(CDC& cDC, int start_row, float view_height, float view_
 		height += ir.cy;
 		width = max(width, ir.cx);
 	}
-	*max_linewidth = width;
-	
-
-
 
 	// 変換途中の下線出力
 	for(auto& ci : cis)

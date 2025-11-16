@@ -1,6 +1,6 @@
  MFCEdit
 
- Timestamp is 68785dc6 (Thu Jul 17 11:19:50 2025)
+ Timestamp is 69192175 (Sun Nov 16 09:57:25 2025)
 
  Preferred load address is 0000000140000000
 
@@ -2647,8 +2647,8 @@
  0001:0001329a       ?dtor$30@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 000000014001429a f   MFCEditView.obj
  0001:000132b7       ?dtor$8@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 00000001400142b7 f   MFCEditView.obj
  0001:000132c3       ?dtor$9@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 00000001400142c3 f   MFCEditView.obj
- 0001:000132cf       ?dtor$37@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 00000001400142cf f   MFCEditView.obj
- 0001:000132ec       ?dtor$36@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 00000001400142ec f   MFCEditView.obj
+ 0001:000132cf       ?dtor$35@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 00000001400142cf f   MFCEditView.obj
+ 0001:000132ec       ?dtor$34@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 00000001400142ec f   MFCEditView.obj
  0001:00013309       ?dtor$10@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 0000000140014309 f   MFCEditView.obj
  0001:00013315       ?dtor$11@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 0000000140014315 f   MFCEditView.obj
  0001:00013321       ?dtor$12@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 0000000140014321 f   MFCEditView.obj
@@ -3018,8 +3018,8 @@
  0002:00008c6c       $unwind$?dtor$2@?0??Split@@YA?AV?$vector@V?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@V?$allocator@V?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@2@@std@@V?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@2@0@Z@4HA 000000014001dc6c     MFCEditView.obj
  0002:00008c6c       $unwind$?dtor$30@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 000000014001dc6c     MFCEditView.obj
  0002:00008c6c       $unwind$?dtor$31@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 000000014001dc6c     MFCEditView.obj
- 0002:00008c6c       $unwind$?dtor$36@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 000000014001dc6c     MFCEditView.obj
- 0002:00008c6c       $unwind$?dtor$37@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 000000014001dc6c     MFCEditView.obj
+ 0002:00008c6c       $unwind$?dtor$34@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 000000014001dc6c     MFCEditView.obj
+ 0002:00008c6c       $unwind$?dtor$35@?0??inetGet@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@@Z@4HA 000000014001dc6c     MFCEditView.obj
  0002:00008c6c       $unwind$?dtor$39@?0??Value@CVARIANTTool@@IEAA?AUtagVARIANT@@U2@0@Z@4HA 000000014001dc6c     MFCEditView.obj
  0002:00008c6c       $unwind$?dtor$3@?0???$use_facet@V?$collate@_W@std@@@std@@YAAEBV?$collate@_W@0@AEBVlocale@0@@Z@4HA 000000014001dc6c     MFCEditView.obj
  0002:00008c6c       $unwind$?dtor$3@?0??PasteTemplate@@YAXAEAVCEdit@@@Z@4HA 000000014001dc6c     MFCEditView.obj
