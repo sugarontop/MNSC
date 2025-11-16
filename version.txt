@@ -8,3 +8,6 @@ multiline Textbox‚ÌC³
 // 7/27
 multiline Textbox‚ÌC³
 
+// 11/16
+IVARIANTMapImp::Keys ‚Å‚ÌBSTR memory leak
+
